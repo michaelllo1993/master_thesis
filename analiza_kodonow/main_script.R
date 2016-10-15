@@ -1,6 +1,6 @@
 library(Biostrings);library(seqinr);
 setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/");
-load(file = "Sat May 28 15:06:05 2016.RData");
+load(file = "Mon Oct 10 15:46:35 2016.RData");
 
 ########### Loading Data ###################
 
