@@ -5,5 +5,4 @@ Automatyzacja status:
 - 04_SigP4_analyzer.pl (OK. Na wejsciu organizm, również można połączyć z poprzednimi)
 - shell command: cat sigpL_ALL*/sigp_ALL>>sigpL_ALL.out/sigp_ALL.out.(OK. Wystarczy dodać do pipelinu)
 - 05_Needle_wrappers (WYMAGA ROBOTY. Niepotrzebnie jest robiony jest alignmnet człowieka ze wszytskimi organizmami na raz. Zmienić na alignment dla pary podanej na wejściu)
--
 
