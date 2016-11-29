@@ -13,7 +13,7 @@ my %ids;
 my $i = 0;
 my $dir = getcwd;
 my @organisms;
-my $file = shift(@ARGV) || die "ALL_Hsap_Ortho.needle is missing";
+my $file = shift(@ARGV) || die "ALL_Organism_Ortho.needle is missing";
 my $Ortho_data_set = shift(@ARGV);$Ortho_data_set = "$dir\/$Ortho_data_set";
 system("sed -i 's/\"//g' $Ortho_data_set");
 

@@ -12,7 +12,7 @@ USAGE: SigP_analyzer.pl organism
 EOF
 
 my $sp4 = "SignalP4_positives_$ARGV[0].out" || die $usage;
-my $ensembl_parsed = "ensembl_parsed_$ARGV[0]" || die $usage;
+my $ensembl_parsed = "shortened_seq_$ARGV[0]" || die $usage;
 
 
 my %signalp=();
