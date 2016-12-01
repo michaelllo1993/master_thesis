@@ -4,7 +4,7 @@ use strict;
 #TEST IT!
 my $usage = <<EOF;
 
-USAGE: ensembl_peptide_seq_cut.pl organism
+USAGE: run_signalp.pl organism
 
 EOF
 
