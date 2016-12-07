@@ -866,3 +866,17 @@ for (org in seq(1,length(cDNA),by = 1)) {
   
   
   
+  
+  
+# Codon changes within L --------------------------------------------------
+for (org in seq(1,length(cDNA),1)){
+  for (i in seq(1,length(cDNA[[org]]$STOP))){
+    vec=c();
+  for (j in seq(1,length(unlist(cDNA[[org]]$STOP[i])),by = 1)) {
+    startt = sort(as.numeric(unlist(cDNA[[org]]$START[i])))[j]
+    stopp = sort(as.numeric(unlist(cDNA[[org]]$STOP[i])))[j]
+    vec = append(x = vec,values = seq(startt,stopp,by = 1));
+  }
+    temp = s2c(cDNA[[org]]$SEQUENCE[i])[vec]
+  }
+}

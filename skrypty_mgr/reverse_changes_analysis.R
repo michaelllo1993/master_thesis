@@ -14,6 +14,7 @@ system(command = command)
 data=read.csv(paste(wd,"/tmp_",args[2],".csv",sep=""),sep=",",header=FALSE);
 changes=c("");
 # Columns in tmp_<organism_exclusive_code> file: lower_name,lower_seq,higher_name,higher_seq
+# Consequently dane contains sequence from lower organism and dane.1 contains sequence from higher organism (reverse changes are anayzed; changes frequency from leucine in lower organism to other AA in higher one)
 for (i in seq(1,length(data[,1]))) {
   dane=(as.character(data[i,2]));
   dane.1=s2c(as.character(data[i,4]));
