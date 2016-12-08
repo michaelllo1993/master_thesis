@@ -869,14 +869,19 @@ for (org in seq(1,length(cDNA),by = 1)) {
   
   
 # Codon changes within L --------------------------------------------------
+  cDNA_test = list(a,a,a,a,a,a,a,a,a);
 for (org in seq(1,length(cDNA),1)){
+  print(paste("Organism: ",sep = "",names(cDNA)[org]))
   for (i in seq(1,length(cDNA[[org]]$STOP))){
     vec=c();
-  for (j in seq(1,length(unlist(cDNA[[org]]$STOP[i])),by = 1)) {
-    startt = sort(as.numeric(unlist(cDNA[[org]]$START[i])))[j]
-    stopp = sort(as.numeric(unlist(cDNA[[org]]$STOP[i])))[j]
-    vec = append(x = vec,values = seq(startt,stopp,by = 1));
-  }
-    temp = s2c(cDNA[[org]]$SEQUENCE[i])[vec]
+    starting=min(as.numeric(unlist(cDNA[[org]]$START[i])))#coding sequence start
+    stopping=max(as.numeric(unlist(cDNA[[org]]$STOP[i])))#coding sequence end
+    vec = seq(starting,stopping,by = 1)#numbers of coding nucleotides
+    cseq=c2s(s2c(cDNA[[org]]$SEQUENCE[i])[vec]); #proper coding sequence
+    cDNA[[org]]$SEQUENCE[i] = cseq
   }
 }
+
+  
+# Save environment --------------------------------------------------------
+save(file=paste(getwd(),"/",date(),sep = ""))
