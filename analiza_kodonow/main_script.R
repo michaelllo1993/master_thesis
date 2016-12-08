@@ -1,4 +1,4 @@
-library(Biostrings);library(seqinr);
+library(Biostrings);library(seqinr);library(parallel)
 setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/");
 load(file = "Mon Oct 10 15:46:35 2016.RData");
 
@@ -458,7 +458,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
       orthologues[[1]][[1]],orthologues[[2]][[1]],orthologues[[3]][[1]],orthologues[[4]][[1]],orthologues[[5]][[1]],orthologues[[6]][[1]],orthologues[[7]][[1]],orthologues[[8]][[1]]
     )
   ))
-  
+  2
   #import packages
   library(foreach)
   library(doParallel)
@@ -881,7 +881,33 @@ for (org in seq(1,length(cDNA),1)){
     cDNA[[org]]$SEQUENCE[i] = cseq
   }
 }
-
+  # Parallel computing ------------------------------------------------------
+  #setup parallel backend to use 3processors
+  cl <- makeCluster(3)
+  registerDoParallel(cl)
+  
+  #start time
+  strt <- Sys.time()
+  
+  a = c();
+  cDNA_test = list(a,a,a,a,a,a,a,a,a);
+  foreach(org = 1:9,.packages='seqinr') %dopar%
+    {
+      print(paste("Organism: ",sep = "",names(cDNA)[org]))
+      for (i in seq(1,length(cDNA[[org]]$STOP))){
+        vec=c();
+        starting=min(as.numeric(unlist(cDNA[[org]]$START[i])))#coding sequence start
+        stopping=max(as.numeric(unlist(cDNA[[org]]$STOP[i])))#coding sequence end
+        vec = seq(starting,stopping,by = 1)#numbers of coding nucleotides
+        cseq=c2s(s2c(cDNA[[org]]$SEQUENCE[i])[vec]); #proper coding sequence
+        cDNA[[org]]$SEQUENCE[i] = cseq
+      }
+    }
+stopCluster(cl)
   
 # Save environment --------------------------------------------------------
-save(file=paste(getwd(),"/",date(),sep = ""))
+save(... = ...,file=paste(getwd(),"/",date(),sep = ""))
+  
+
+
+
