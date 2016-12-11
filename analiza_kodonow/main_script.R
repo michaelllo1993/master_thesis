@@ -1,6 +1,6 @@
-library(Biostrings);library(seqinr);library(parallel)
+library(Biostrings);library(seqinr);library(parallel);  library(foreach);library(doParallel)
 setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/");
-load(file = "Mon Oct 10 15:46:35 2016.RData");
+load(file = "newest.RData");
 
 ########### Loading Data ###################
 
@@ -893,7 +893,6 @@ for (org in seq(1,length(cDNA),1)){
   cDNA_test = list(a,a,a,a,a,a,a,a,a);
   foreach(org = 1:9,.packages='seqinr') %dopar%
     {
-      print(paste("Organism: ",sep = "",names(cDNA)[org]))
       for (i in seq(1,length(cDNA[[org]]$STOP))){
         vec=c();
         starting=min(as.numeric(unlist(cDNA[[org]]$START[i])))#coding sequence start

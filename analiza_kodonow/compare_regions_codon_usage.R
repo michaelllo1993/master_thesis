@@ -1,0 +1,83 @@
+library(Biostrings);library(seqinr)
+load("compare_region/data.RData")
+load("compare_region/with_protein.RData")
+load("compare_region/with_sigp.RData")
+# all ---------------------------------------------------------------------
+
+
+a = matrix(data = NaN,nrow = length(cDNA$cDNA_homo_sapiens$SEQUENCE),ncol = length(leucine_codons));
+codons_count_protein = list(a,a,a,a,a,a,a,a,a);
+leucine_codons = c("TTA","TTG","CTT","CTC","CTA","CTG");
+
+for(org in seq(1,9,1)){
+  for (i in seq(1,length(cDNA[[org]]$SEQUENCE))) {
+
+    if (!length(sigp[[org]]$cDNA_ID[which(sigp[[org]]$cDNA_ID == cDNA[[org]]$cDNA_ID[i])]) == 0){
+      sp_end = sigp[[org]]$SP_END[which(sigp[[org]]$cDNA_ID == cDNA[[org]]$cDNA_ID[i])]
+    }
+    else {
+      sp_end = 1;
+    }
+    for (codon in seq(1,length(leucine_codons),by = 1)){
+      seq=c2s(s2c(cDNA[[org]]$SEQUENCE[i])[seq(sp_end*3,length(s2c(cDNA[[org]]$SEQUENCE[i])),by=1)])
+      codons_count_protein[[org]][i,codon]=length(which(strsplit(seq, "(?<=.{3})", perl = TRUE)[[1]] == leucine_codons[codon]))
+    }
+  }
+  print(paste("ORGANISM",org,"done"))
+}
+
+# sigp --------------------------------------------------------------------
+
+a = matrix(data = NaN,nrow = length(sigp$sigp_ALL_homo_sapiens$SEQ),ncol = length(leucine_codons));
+codons_count_sigp = list(a,a,a,a,a,a,a,a,a);
+leucine_codons = c("TTA","TTG","CTT","CTC","CTA","CTG");
+
+for(org in seq(1,9,1)) {
+  for (i in seq(1,length(sigp[[org]]$SEQ))) {
+    if (!length(sigpL[[org]]$cDNA_ID[which(sigpL[[org]]$cDNA_ID == sigp[[org]]$cDNA_ID[i])]) == 0){
+      sp_end = sigpL[[org]]$SP_END[which(sigpL[[org]]$cDNA_ID == sigp[[org]]$cDNA_ID[i])]
+      lsaar_start = sigpL[[org]]$LSAAR_START[which(sigpL[[org]]$cDNA_ID == sigp[[org]]$cDNA_ID[i])]
+      lsaar_length = sigpL[[org]]$LSAAR_LENGTH[which(sigpL[[org]]$cDNA_ID == sigp[[org]]$cDNA_ID[i])]
+      for (codon in seq(1,length(leucine_codons),by = 1)) {
+        seq=c2s(s2c(cDNA[[org]]$SEQ[which(cDNA[[org]]$cDNA_ID == sigp[[org]]$cDNA_ID[i])])[c(seq(1,(lsaar_start*3+1),1),seq((lsaar_start*3+1)+(lsaar_length*3),length(s2c(sigp[[org]]$SEQ[i]))*3))])
+        codons_count_sigp[[org]][i,codon]=length(which(strsplit(seq, "(?<=.{3})", perl = TRUE)[[1]] == leucine_codons[codon]))
+      }
+    }
+    else {
+      for (codon in seq(1,length(leucine_codons),by = 1)) {
+        seq=c2s(s2c(cDNA[[org]]$SEQ[which(cDNA[[org]]$cDNA_ID == sigp[[org]]$cDNA_ID[i])])[seq(1,sigp[[org]]$SP_END[i]*3)])
+        codons_count_sigp[[org]][i,codon]=length(which(strsplit(seq, "(?<=.{3})", perl = TRUE)[[1]] == leucine_codons[codon]))
+      }
+  }
+  }
+  print(paste("ORGANISM",org,"done"))
+}
+
+# L-SAAR ------------------------------------------------------------------
+
+a = matrix(data = NaN,nrow = length(sigpL$sigpL_ALL_homo_sapiens$SEQ),ncol = length(leucine_codons));
+codons_count_lsaar = list(a,a,a,a,a,a,a,a,a);
+leucine_codons = c("TTA","TTG","CTT","CTC","CTA","CTG");
+
+for(org in seq(1,9,1)) {
+  for (i in seq(1,length(sigpL[[org]]$SEQ))) {
+      for (codon in seq(1,length(leucine_codons),by = 1)) {
+        if(!is.na(sigpL[[org]]$LSAAR_LENGTH[i])){
+        seq=c2s(s2c(cDNA[[org]]$SEQ[which(cDNA[[org]]$cDNA_ID == sigpL[[org]]$cDNA_ID[i])])[seq((sigpL[[org]]$LSAAR_START[i]*3+1),(sigpL[[org]]$LSAAR_START[i]*3+1)+(sigpL[[org]]$LSAAR_LENGTH[i]*3))])
+        codons_count_lsaar[[org]][i,codon]=length(which(strsplit(seq, "(?<=.{3})", perl = TRUE)[[1]] == leucine_codons[codon]))
+        }
+      }
+  }
+  print(paste("ORGANISM",org,"done"))
+}
+for (i in seq(1,length(codons_count_lsaar),1)){
+  codons_count_lsaar[[i]] = codons_count_lsaar[[i]][seq(1,length(which(!is.na(codons_count_lsaar[[i]][,1]))),1),]
+  codons_count_protein[[i]] = codons_count_protein[[i]][seq(1,length(which(!is.na(codons_count_protein[[i]][,1]))),1),]
+  codons_count_sigp[[i]] = codons_count_sigp[[i]][seq(1,length(which(!is.na(codons_count_sigp[[i]][,1]))),1),]
+  colnames(codons_count_lsaar[[i]]) = leucine_codons
+  colnames(codons_count_sigp[[i]]) = leucine_codons
+  colnames(codons_count_protein[[i]]) = leucine_codons
+}
+names(codons_count_lsaar)=prot_names
+names(codons_count_protein)=prot_names
+names(codons_count_sigp)=prot_names

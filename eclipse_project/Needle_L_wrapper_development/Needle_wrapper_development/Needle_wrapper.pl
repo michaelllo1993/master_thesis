@@ -8,7 +8,7 @@ use List::MoreUtils 'first_index';
 # <organism_and_orthologues_protein_ids.tsv> must have the same column order as <organism_of_interest>+<orthologues>
 my $usage = <<EOF;
 
-USAGE: Needle_ALL_wrapper.pl <organism_and_orthologues_protein_ids.tsv> <sigpL_ALL.out> <organism_of_interest> <orthologues>
+USAGE: Needle_wrapper.pl <organism_and_orthologues_protein_ids.tsv> <sigpL_ALL.out> <organism_of_interest> <orthologues>
 
 EOF
 my $dir = getcwd;
