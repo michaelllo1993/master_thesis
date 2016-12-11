@@ -70,6 +70,9 @@ for(org in seq(1,9,1)) {
   }
   print(paste("ORGANISM",org,"done"))
 }
+
+# data manipualtion -------------------------------------------------------
+
 for (i in seq(1,length(codons_count_lsaar),1)){
   codons_count_lsaar[[i]] = codons_count_lsaar[[i]][seq(1,length(which(!is.na(codons_count_lsaar[[i]][,1]))),1),]
   codons_count_protein[[i]] = codons_count_protein[[i]][seq(1,length(which(!is.na(codons_count_protein[[i]][,1]))),1),]
@@ -81,3 +84,38 @@ for (i in seq(1,length(codons_count_lsaar),1)){
 names(codons_count_lsaar)=prot_names
 names(codons_count_protein)=prot_names
 names(codons_count_sigp)=prot_names
+
+# data into matrices ------------------------------------------------------
+
+codons_count_lsaar_fraction = matrix(NaN,nrow = length(codons_count_lsaar) ,ncol = length(leucine_codons))
+for (org in seq(1,length(codons_count_lsaar),1)){
+  for (cod in seq(1,length(leucine_codons),1)){
+    codons_count_lsaar_fraction[org,cod] = sum(codons_count_lsaar[[org]][,cod],na.rm = T)/sum(codons_count_lsaar[[org]],na.rm = T)
+  }
+}
+
+codons_count_sigp_fraction = matrix(NaN,nrow = length(codons_count_sigp) ,ncol = length(leucine_codons))
+for (org in seq(1,length(codons_count_sigp),1)){
+  for (cod in seq(1,length(leucine_codons),1)){
+    codons_count_sigp_fraction[org,cod] = sum(codons_count_sigp[[org]][,cod],na.rm = T)/sum(codons_count_sigp[[org]],na.rm = T)
+  }
+}
+
+codons_count_protein_fraction = matrix(NaN,nrow = length(codons_count_protein) ,ncol = length(leucine_codons))
+for (org in seq(1,length(codons_count_protein),1)) {
+  for (cod in seq(1,length(leucine_codons),1)) {
+    codons_count_protein_fraction[org,cod] = sum(codons_count_protein[[org]][,cod],na.rm = T)/sum(codons_count_protein[[org]],na.rm = T)
+  }
+}
+
+rownames(codons_count_protein_fraction)=prot_names
+rownames(codons_count_sigp_fraction)=prot_names
+rownames(codons_count_lsaar_fraction)=prot_names
+
+colnames(codons_count_protein_fraction)=leucine_codons
+colnames(codons_count_sigp_fraction)=leucine_codons
+colnames(codons_count_lsaar_fraction)=leucine_codons
+
+# saving environment ------------------------------------------------------
+
+save.image(file = paste(sep = "",date(),".RData"))
