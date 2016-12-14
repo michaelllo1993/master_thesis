@@ -1,4 +1,4 @@
-1) Download sequences: cDNA, protein to ~/Uczelnia/MGR/praca_magisterska	name them (name.txt, name_cDNA.txt)	cp name.txt ~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/proteins
+Download sequences: cDNA, protein to ~/Uczelnia/MGR/praca_magisterska	name them (name.txt, name_cDNA.txt)	cp name.txt ~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/proteins
 2) perl seq2csv.pl name
 3) perl seq2csv_cDNA.pl name
 4) bash script_delete_redundant_lines.sh	mv result to ~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/proteins
