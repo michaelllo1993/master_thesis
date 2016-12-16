@@ -886,7 +886,7 @@ for (org in seq(1,length(cDNA),1)){
   cl <- makeCluster(3)
   registerDoParallel(cl)
   
-  #start time
+  #start timecDN
   strt <- Sys.time()
   
   a = c();
@@ -903,7 +903,24 @@ for (org in seq(1,length(cDNA),1)){
       }
     }
 stopCluster(cl)
-  
+
+
+# prepare cDNA sequences (0-69*3) to RevTrans -----------------------------
+prep2revtrans = list(a,a,a,a,a,a,a,a,a);
+for (org in seq(1,length(cDNA),1)){
+  prep2revtrans[[org]] = as.matrix(cDNA[[org]])[,c(2,5)]
+  for (i in seq(1,length(prep2revtrans[[org]][,2]),1)){
+    if (length(s2c(prep2revtrans[[org]][i,2]$SEQUENCE)) >= 3*69){
+      prep2revtrans[[org]][i,2] = c2s(s2c(prep2revtrans[[org]][i,2]$SEQUENCE)[1:(3*69)])
+    }
+    else{
+      prep2revtrans[[org]][i,2] = prep2revtrans[[org]][i,2]$SEQUENCE
+    }
+}
+names(prep2revtrans) = prot_names
+for (i in seq(1, length(prep2revtrans),1)){
+  write.csv(row.names = F,x = prep2revtrans[[i]],file = paste(getwd(),"/","prep2revtrans","_",prot_names[i],".csv",sep = ""))
+}
 # Save environment --------------------------------------------------------
 save(... = ...,file=paste(getwd(),"/",date(),sep = ""))
   
