@@ -46,7 +46,7 @@ for (org in seq(1,length(OoI),by = 1)){
   names(OoI[[org]]) = leucine_codons
 }
 
-# test saving -------------------------------------------------------------
+# results saving -------------------------------------------------------------
 all_codon_names = append('---',sort(names(GENETIC_CODE)))
 nms = names(OoI)
 for (org in seq(1,length(OoI),by = 1)){

@@ -97,5 +97,41 @@ rownames(codons_count_lsaar_fraction)=prot_names
 colnames(codons_count_protein_fraction)=leucine_codons
 colnames(codons_count_sigp_fraction)=leucine_codons
 colnames(codons_count_lsaar_fraction)=leucine_codons
+
+
+# Statistical analysis of CTG codon usage in different regions ---------------------------------------
+# Normality test
+# all
+normality_test_CTG_lsaars_all = shapiro.test(x = codons_count_lsaar_fraction[,6])
+normality_test_CTG_sigp_all = shapiro.test(x = codons_count_sigp_fraction[,6])
+normality_test_CTG_protein_all = shapiro.test(x = codons_count_protein_fraction[,6])
+
+qqnorm(codons_count_lsaar_fraction[,6])
+qqline(codons_count_lsaar_fraction[,6],col="red")
+qqnorm(codons_count_sigp_fraction[,6])
+qqline(codons_count_sigp_fraction[,6],col="red")
+qqnorm(codons_count_protein_fraction[,6])
+qqline(codons_count_protein_fraction[,6],col="red")
+
+# w/o frog
+normality_test_CTG_lsaars_nofrog = shapiro.test(x = codons_count_lsaar_fraction[1:8,6])
+normality_test_CTG_sigp_nofrog = shapiro.test(x = codons_count_sigp_fraction[1:8,6])
+normality_test_CTG_protein_nofrog = shapiro.test(x = codons_count_protein_fraction[1:8,6])
+
+qqnorm(codons_count_lsaar_fraction[1:8,6])
+qqline(codons_count_lsaar_fraction[1:8,6],col="red")
+qqnorm(codons_count_sigp_fraction[1:8,6])
+qqline(codons_count_sigp_fraction[1:8,6],col="red")
+qqnorm(codons_count_protein_fraction[1:8,6])
+qqline(codons_count_protein_fraction[1:8,6],col="red")
+
+# variance equality test
+var_equality_lsaar_sigp = var.test(codons_count_lsaar_fraction[1:8,6],codons_count_sigp_fraction[1:8,6])
+var_equality_sigp_protein = var.test(codons_count_sigp_fraction[1:8,6],codons_count_protein_fraction[1:8,6])
+
+# mean equality test
+t_test_lsaar_sigp = t.test(x = codons_count_lsaar_fraction[1:9,6], y = codons_count_sigp_fraction[1:8,6], alternative = "greater",var.equal = T)
+t_test_sigp_protein = t.test(x = codons_count_sigp_fraction[1:9,6], y = codons_count_protein_fraction[1:8,6], alternative = "greater",var.equal = F)
+
 # saving environment ------------------------------------------------------
 save.image(file = paste(sep = "",date(),".RData"))
