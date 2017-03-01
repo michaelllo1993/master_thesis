@@ -1,6 +1,6 @@
 library(Biostrings);library(seqinr);library(parallel);  library(foreach);library(doParallel)
 setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/");
-load(file = "newest.RData");
+load(file = "Sun Dec 11 22:59:37 2016.RData");
 
 ########### Loading Data ###################
 

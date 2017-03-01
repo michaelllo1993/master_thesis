@@ -106,30 +106,37 @@ normality_test_CTG_lsaars_all = shapiro.test(x = codons_count_lsaar_fraction[,6]
 normality_test_CTG_sigp_all = shapiro.test(x = codons_count_sigp_fraction[,6])
 normality_test_CTG_protein_all = shapiro.test(x = codons_count_protein_fraction[,6])
 
-qqnorm(codons_count_lsaar_fraction[,6])
-qqline(codons_count_lsaar_fraction[,6],col="red")
-qqnorm(codons_count_sigp_fraction[,6])
-qqline(codons_count_sigp_fraction[,6],col="red")
-qqnorm(codons_count_protein_fraction[,6])
-qqline(codons_count_protein_fraction[,6],col="red")
+n1 = length(codons_count_lsaar_fraction[,6])
+probabilities = (1:n1)/(n1+1)
+normal_quantiles_lsaar = qnorm(codons_count_lsaar_fraction[,6],mean(codons_count_lsaar_fraction[1:8,6]),sd(codons_count_lsaar_fraction[,6]))
+plot(sort(normal_quantiles_lsaar), sort(codons_count_lsaar_fraction[,6]) , xlab = 'Theoretical quantiles from normal distribution', ylab = 'Sample quatiles of CTG codon usage', main = 'Normal Quantile-Quantile Plot of CTG codon usage in L-SAARs ')
+
+normal_quantiles_sigp = qnorm(codons_count_sigp_fraction[,6],mean(codons_count_sigp_fraction[1:8,6]),sd(codons_count_sigp_fraction[,6]))
+plot(sort(normal_quantiles_sigp), sort(codons_count_sigp_fraction[,6]) , xlab = 'Theoretical quantiles from normal distribution', ylab = 'Sample quatiles of CTG codon usage', main = 'Normal Quantile-Quantile Plot of CTG codon usage in signal peptide ')
+
+normal_quantiles_protein = qnorm(codons_count_protein_fraction[,6],mean(codons_count_protein_fraction[1:8,6]),sd(codons_count_protein_fraction[,6]))
+plot(sort(normal_quantiles_protein), sort(codons_count_protein_fraction[,6]) , xlab = 'Theoretical quantiles from normal distribution', ylab = 'Sample quatiles of CTG codon usage', main = 'Normal Quantile-Quantile Plot of CTG codon usage in protein ')
+
 
 # w/o frog
 normality_test_CTG_lsaars_nofrog = shapiro.test(x = codons_count_lsaar_fraction[1:8,6])
 normality_test_CTG_sigp_nofrog = shapiro.test(x = codons_count_sigp_fraction[1:8,6])
 normality_test_CTG_protein_nofrog = shapiro.test(x = codons_count_protein_fraction[1:8,6])
 
-qqnorm(codons_count_lsaar_fraction[1:8,6])
-qqline(codons_count_lsaar_fraction[1:8,6],col="red")
-qqnorm(codons_count_sigp_fraction[1:8,6])
-qqline(codons_count_sigp_fraction[1:8,6],col="red")
-qqnorm(codons_count_protein_fraction[1:8,6])
-qqline(codons_count_protein_fraction[1:8,6],col="red")
+n2 = length(codons_count_lsaar_fraction[1:8,6])
+probabilities = (1:n2)/(n2+1)
+normal_quantiles_lsaar = qnorm(codons_count_lsaar_fraction[1:8,6],mean(codons_count_lsaar_fraction[1:8,6]),sd(codons_count_lsaar_fraction[1:8,6]))
+plot(sort(normal_quantiles_lsaar), sort(codons_count_lsaar_fraction[1:8,6]) , xlab = 'Theoretical quantiles from normal distribution', ylab = 'Sample quatiles of CTG codon usage', main = 'Normal Quantile-Quantile Plot of CTG codon usage in L-SAARs ')
+normal_quantiles_sigp = qnorm(codons_count_sigp_fraction[1:8,6],mean(codons_count_sigp_fraction[1:8,6]),sd(codons_count_sigp_fraction[1:8,6]))
+plot(sort(normal_quantiles_sigp), sort(codons_count_sigp_fraction[1:8,6]) , xlab = 'Theoretical quantiles from normal distribution', ylab = 'Sample quatiles of CTG codon usage', main = 'Normal Quantile-Quantile Plot of CTG codon usage in signal peptide ')
+normal_quantiles_protein = qnorm(codons_count_protein_fraction[1:8,6],mean(codons_count_protein_fraction[1:8,6]),sd(codons_count_protein_fraction[1:8,6]))
+plot(sort(normal_quantiles_protein), sort(codons_count_protein_fraction[1:8,6]) , xlab = 'Theoretical quantiles from normal distribution', ylab = 'Sample quatiles of CTG codon usage', main = 'Normal Quantile-Quantile Plot of CTG codon usage in protein ')
 
 # variance equality test
 var_equality_lsaar_sigp = var.test(codons_count_lsaar_fraction[1:8,6],codons_count_sigp_fraction[1:8,6])
 var_equality_sigp_protein = var.test(codons_count_sigp_fraction[1:8,6],codons_count_protein_fraction[1:8,6])
 
-# mean equality test
+# mean equality
 t_test_lsaar_sigp = t.test(x = codons_count_lsaar_fraction[1:9,6], y = codons_count_sigp_fraction[1:8,6], alternative = "greater",var.equal = T)
 t_test_sigp_protein = t.test(x = codons_count_sigp_fraction[1:9,6], y = codons_count_protein_fraction[1:8,6], alternative = "greater",var.equal = F)
 
