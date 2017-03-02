@@ -30,9 +30,7 @@ OoI = lapply(1:length(organism_of_interest), function(x) lapply(1:length(leucine
 OoI_LSAAR = lapply(1:length(organism_of_interest), function(x) lapply(1:length(leucine_codons), function(x) NaN))
 other_codons = c();
 other_codons_LSAAR = c();
-for (org in seq(1,length(tmp_codes),by = 1)){
-  print(paste("Processing orgsnism: ",sep = "", tmp_organisms[org]))
-  for (l in seq(1, length(leucine_codons),by = 1)){
+d .  for (l in seq(1, length(leucine_codons),by = 1)){
     for (i in seq(1, dim(organism_of_interest[[org]])[1],by = 1)){
       organism_of_interest_codons = strsplit(organism_of_interest[[org]][i,2], "(?<=.{3})", perl = TRUE)[[1]]
       organism_of_interest_L_indices = which(organism_of_interest_codons == leucine_codons[l])

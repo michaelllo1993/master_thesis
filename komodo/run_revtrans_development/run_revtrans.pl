@@ -65,7 +65,7 @@ close(IN1);
 print("DONE.\n");
 
 #Parsing the output; writing to the .csv file
-#Firstly, only human ids and sequences are written
+#Firstly, only human? ids and sequences are written
 my $status;
 open (IN2, $output_file) || die("$output_file is missing");
 open (OUT2, ">", $output_file_csv1) || die("$output_file_csv1 is missing");
@@ -119,3 +119,4 @@ close(OUT2);
 #Finally, the two files are merged together
 system("paste -d ',' $output_file_csv1 $output_file_csv2 > $output_file_csv");
 system("sed -i '/^,/ d' $output_file_csv");
+system("rm $output_file_csv1 $output_file_csv2 $output_file");
