@@ -30,8 +30,13 @@ OoI = lapply(1:length(organism_of_interest), function(x) lapply(1:length(leucine
 OoI_LSAAR = lapply(1:length(organism_of_interest), function(x) lapply(1:length(leucine_codons), function(x) NaN))
 other_codons = c();
 other_codons_LSAAR = c();
-d .  for (l in seq(1, length(leucine_codons),by = 1)){
+for (org in seq(1,length(tmp_codes),by = 1)){
+  print(paste("Processing orgsnism: ",sep = "", tmp_organisms[org]))
+  for (l in seq(1, length(leucine_codons),by = 1)){
     for (i in seq(1, dim(organism_of_interest[[org]])[1],by = 1)){
+      check_for_ns = s2c(organism_of_interest[[org]][i,2]);
+      check_for_ns[which(check_for_ns == "N")] = "C"
+      organism_of_interest[[org]][i,2] = c2s(check_for_ns)
       organism_of_interest_codons = strsplit(organism_of_interest[[org]][i,2], "(?<=.{3})", perl = TRUE)[[1]]
       organism_of_interest_L_indices = which(organism_of_interest_codons == leucine_codons[l])
       organism_of_interest_codons[which(organism_of_interest_codons == "---")] = "TGG"
@@ -112,4 +117,5 @@ for (org in seq(1,length(OoI_LSAAR),by = 1)){
   write.csv(x = output,file = paste(wd,"/codon_changes_within_LSAAR_",nms[org],".csv",sep = ""),row.names = T)
 }
 print(paste("Results saved to:", paste(wd,"/codon_changes_within_LSAAR_<organism name>",sep="")))
+
 
