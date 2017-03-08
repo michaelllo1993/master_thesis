@@ -16,7 +16,7 @@ leucine_codons = c("TTA","TTG","CTT","CTC","CTA","CTG");
 # comparison --------------------------------------------------------------
 for(org in lower_OoI){
   for(region in RoI){
-    occurrences=data.matrix(read.csv(paste("/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/analiza_kodonow/within_leucine/",OoI,"/codon_changes_within_",region,"_",org,".csv",sep = ""),header = T,sep = ",",row.names = all_codon_names))[,-1]
+    occurrences=data.matrix(read.csv(paste("/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/codon_analysis/within_leucine/",OoI,"/codon_changes_within_",region,"_",org,".csv",sep = ""),header = T,sep = ",",row.names = all_codon_names))[,-1]
     occurrences[which(occurrences==0)] = NA
     within_leucine = occurrences[leucine_codons,]
     heatmap.2(within_leucine, Rowv = NA,Colv = NA,scale = "row", key = T, key.xtickfun = NULL,density.info = "none",trace = "none",symkey = F,col=redblue,na.color = "red", colsep = c(1,2,3,4,5,6),sepwidth = c(0.001, 0.001),rowsep = seq(1,dim(occurrences)[1],1),xlab = paste("Codons in",OoI),ylab = paste("Codons in",lower_OoI),cellnote = within_leucine,notecol="black",notecex=1.5, main = paste("Codon changes within leucine in all ",RoI,"s",sep = ""),keysize = 1)
@@ -35,6 +35,6 @@ for(org in lower_OoI){
     }
     rownames(output) = leucine_codons
     colnames(output) = c("point_mutations","slippage")
-    write.csv(x = output,file = paste(sep = "","/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/analiza_kodonow/to_leucine_transformation/",OoI,"/",org,"_",OoI,"_codon_changes_in_",region,".csv"))
+    write.csv(x = output,file = paste(sep = "","/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/codon_analysis/to_leucine_transformation/",OoI,"/",org,"_",OoI,"_codon_changes_in_",region,".csv"))
   }
 }

@@ -1,10 +1,10 @@
 library(Biostrings);library(seqinr);library(parallel);  library(foreach);library(doParallel)
-setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/");
+setwd("~/Uczelnia/MGR/praca_magisterska/codon_analysis/");
 load(file = "Sun Dec 11 22:59:37 2016.RData");
 
 ########### Loading Data ###################
 
-setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/proteins/");
+setwd("~/Uczelnia/MGR/praca_magisterska/codon_analysis/proteins/");
 myFiles <- list.files(pattern = "*.csv");
 proteins = list();
 prot_names = c();
@@ -15,7 +15,7 @@ for (k in 1:length(myFiles)) {
 prot_names[k] = strsplit(myFiles,"[.]")[[k]][1];
 names(proteins) = prot_names;
 
-setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/mappers/");
+setwd("~/Uczelnia/MGR/praca_magisterska/codon_analysis/mappers/");
 myFiles1 <- list.files(pattern = "*.csv");
 mapper = list();
 map_names = c();
@@ -25,7 +25,7 @@ for (k in 1:length(myFiles1)) {
 }
 names(mapper) = map_names;
 
-setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/");
+setwd("~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/");
 myFiles <- list.files(pattern = "*.csv");
 cDNA = list();
 cDNA_names = c();
@@ -104,7 +104,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   
   ########### Analysis all available ###########
   ########### ALL ###########
-  setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/");
+  setwd("~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/");
   myFiles <- list.files(pattern = "*.csv");
   leucine_codons = c("TTA","TTG","CTT","CTC","CTA","CTG");
   codon = list();
@@ -167,7 +167,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   )
   
   ########### SIGP ###########
-  setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/proteins/sigp/");
+  setwd("~/Uczelnia/MGR/praca_magisterska/codon_analysis/proteins/sigp/");
   myFiles_L <- list.files(pattern = "^sigpL_*");
   myFiles <-
     list.files(pattern = "^sigp_*");myFiles <-
@@ -238,7 +238,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   }
   
   setwd(
-    "~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/sigp/"
+    "~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/sigp/"
   );
   for (org in seq(1,length(prot_names),by = 1)) {
     write.csv(
@@ -280,7 +280,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   )
   
   setwd(
-    "~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/statresults"
+    "~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/statresults"
   );
   for (i in seq(1,length(sigp_results))) {
     write.csv(sigp_results[[i]],file = paste(
@@ -345,7 +345,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   
   
   setwd(
-    "~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/LSAARsigp/"
+    "~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/LSAARsigp/"
   );
   for (org in seq(1,length(prot_names),by = 1)) {
     write.csv(
@@ -388,7 +388,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
       sd_LSAAR_results,sum = sum_LSAAR_results
   )
   setwd(
-    "~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/statresults"
+    "~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/statresults"
   );
   for (i in seq(1,length(LSAAR_results))) {
     write.csv(LSAAR_results[[i]],file = paste(
@@ -398,7 +398,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   
   ########### Analysis only for avaialable ortho ######### 
   
-  setwd("~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/mappers/");
+  setwd("~/Uczelnia/MGR/praca_magisterska/codon_analysis/mappers/");
   myFiles_ortho <-
     list.files(pattern = "^homo_sapiens*"); #divided into separate files because ensemble enables only 6 orthologous organisms at once.
   ortho_mapper = list();
@@ -540,7 +540,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   }
   
   setwd(
-    "~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/ortho_only/"
+    "~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/ortho_only/"
   );
   myFiles <- list.files(pattern = "*.csv");
   leucine_codons = c("TTA","TTG","CTT","CTC","CTA","CTG");
@@ -604,7 +604,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   )
   
   setwd(
-    "~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/statresults"
+    "~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/statresults"
   );
   for (i in seq(1,length(all_results_ortho))) {
     write.csv(
@@ -699,7 +699,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   
   
   setwd(
-    "~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/corrected_ortho_only/"
+    "~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/corrected_ortho_only/"
   );
   myFiles <- list.files(pattern = "*.csv");
   leucine_codons = c("TTA","TTG","CTT","CTC","CTA","CTG");
@@ -763,7 +763,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   )
   
   setwd(
-    "~/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/statresults"
+    "~/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/statresults"
   );
   for (i in seq(1,length(all_results_ortho))) {
     write.csv(
@@ -859,7 +859,7 @@ for (org in seq(1,length(cDNA),by = 1)) {
   names(codon_usage)=prot_names
   
   for (i in seq(1,length(codon_usage),by = 1)){
-    fname = paste("/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/analiza_kodonow/cDNA/codons_freq_results/codon_usage/",prot_names[i],"_codon_usage.csv",sep = "");
+    fname = paste("/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/codon_analysis/cDNA/codons_freq_results/codon_usage/",prot_names[i],"_codon_usage.csv",sep = "");
     write.csv(x = codon_usage[[i]],file = fname,row.names = T,col.names = T)
   }
   
