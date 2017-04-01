@@ -9,4 +9,4 @@ Automatyzacja status/workflow:
 - SP_LSAAR_length_analysis.R (OK. na wejściu spl_length_analysis_prepped_file_<org>_Ortho.csv i zwraca korelacje. Jakies wykresy dodac ?)
 - prep2comp.pl (OK. na weściu output z Needla (ALL_<organizm>_Ortho_all.needle), ortho_dataset.tsv (w zależności od organizmu zainteresowania) i organizmy (uwaga, kolejność)
 - SP_compare.R (OK. na wejściu prep2comp_<OoI>_all.csv i OoI(ensembl exclusive code) Ortho(ensembl exclusive code). Zwraca tabelki z AA na miejscu L. Jakies wykresy dodac?)
-
+- prep2revtrans.R (OK. na wejściu łacińska nazwa orgnizmu do przygotowania danych. skrypt musi być odpalony w miejscu gdzie są dane do analizy (o nazwie cDNA_<organizm>.csv). Zwraca pliki prep2revtrans_<organizm>.csv do dalszej analizy)
