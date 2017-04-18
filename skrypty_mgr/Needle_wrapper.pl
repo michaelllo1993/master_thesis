@@ -8,7 +8,7 @@ use List::MoreUtils 'first_index';
 # <organism_and_orthologues_protein_ids.tsv> must have the same column order as <organism_of_interest>+<orthologues>
 my $usage = <<EOF;
 
-USAGE: Needle_ALL_wrapper.pl <organism_and_orthologues_protein_ids.tsv> <sigp(L)_ALL.out> <organism_of_interest> <orthologues>
+USAGE: Needle_ALL_wrapper.pl <SP/WHOLE> <organism_and_orthologues_protein_ids.tsv> <sigp(L)_ALL.out/organism_of_interest.out> <organism_of_interest> <orthologues>
 
 EOF
 my $dir = getcwd;
@@ -16,6 +16,7 @@ print "\n\nStarting analysis in: " . $dir . "\n\n";
 
 my %ids;
 my $i = 0;
+my $region = shift(@ARGV);
 my $Ortho_data_set = shift(@ARGV);$Ortho_data_set = "$dir\/$Ortho_data_set";
 system("sed -i 's/\"//g' $Ortho_data_set");
 my $sigpL_ALL_FILE = shift(@ARGV);$sigpL_ALL_FILE = "$dir\/$sigpL_ALL_FILE";
@@ -52,20 +53,14 @@ while (my $line = <IN>) {
 }
 
 
-print "\n\n";
-print($Ortho_data_set);
-print "\n\n";
-
-# Get letter codes of all analysed organisms
+# Get letter codes of all analyzed organisms
 close(IN);
 my $remember = $i;
 my @string;
 for(my $i = 0; $i < scalar(@organisms); $i++){
-	print $i . "\n";
 	my $rnd = int(rand($remember));
 	if($ids{$rnd}{$organisms[$i]} eq "NULL"){
 		until($ids{$rnd}{$organisms[$i]} ne "NULL"){
-			print $ids{$rnd}{$organisms[$i]} . "\n";
 			$rnd = int(rand($remember));
 		}
 		$string[$i] = $ids{$rnd}{$organisms[$i]};
@@ -73,14 +68,11 @@ for(my $i = 0; $i < scalar(@organisms); $i++){
 	else {
 		$string[$i] = $ids{$rnd}{$organisms[$i]};
 	}
-	print "$string[$i]\n";
 	$string[$i] =~ s/[0-9]//g;
-	print "$string[$i]\n";
 }
 
-
 # Creating Ensemble ids mapper
-open (OUT0, ">","Ensembl_ids_mapper.csv");
+open (OUT0, ">","$organisms[0]\_Ensembl_ids_mapper.csv");
 my @keys = keys %ids;
 
 my $iter = 0;
@@ -93,10 +85,11 @@ for (my $l = 1; $l <= scalar(@keys); $l++) {
 	print OUT0 "\n"; $iter++;
 }
 close (OUT0);
-print "\nEnsembl_ids_mapper.csv created in $dir/Ensembl_ids_mapper.csv\n";
 
-# Improting Ensemble ids mapper to hash of arrays
-open (IN0, "+<", "$dir/Ensembl_ids_mapper.csv");
+print "\nEnsembl_ids_mapper.csv created in $dir/$organisms[0]_Ensembl_ids_mapper.csv\n";
+
+# Importing Ensemble ids mapper to hash of arrays
+open (IN0, "+<", "$dir/$organisms[0]\_Ensembl_ids_mapper.csv");
 my $j = 0;
 my %HoA;
 while (my $line1 = <IN0>) {
@@ -108,14 +101,25 @@ while (my $line1 = <IN0>) {
 }
 close(IN0);
 
-
 # Reading FASTA files into hash
+print "\nReading FASTA protein sequneces\n\n";
 my %fasta;
 my $id="";
 my $seq="";
 
 for (my $j = 0; $j < scalar(@organisms); $j++) {
-	my $parsed_FILE = "ensembl_parsed_$organisms[$j]" || die $usage;
+	
+	my $prefix = "";
+	my $suffix = "";
+	if($region =~ /^SP$/){
+		$prefix = "ensembl_parsed_";
+	} elsif ($region =~ /^WHOLE$/){
+		$suffix = ".txt";
+	}
+	my $parsed_FILE = "$prefix$organisms[$j]$suffix" || die $usage;
+	#fixing files - deleting lines with faulty characters i.e. "_" or entries without sequences
+	system("sed -i '/\_/d' $parsed_FILE");
+	system("sed -i '/>|/d' $parsed_FILE");
 	open (IN, "$parsed_FILE") || die ("Parsed file is missing.");
 	while(<IN>) {
 		chomp;
@@ -139,28 +143,26 @@ for (my $j = 0; $j < scalar(@organisms); $j++) {
 	close(IN);
 }
 
-# Reading sigpL_ALL_FILE into hash
+# Reading sigpL_ALL_FILE or organism_of_interest.out into hash
 open (INs, "$sigpL_ALL_FILE") || die ("File missing.");
 
 my %sigpL_ALL_L;
 
-
-
 while (my $line = <INs>) {
 	chomp $line;
 	my @fields = split(",",$line);
-	if($fields[0] =~ /^ENS/){
-		$sigpL_ALL_L{$fields[0]}{seq} = $fields[2];
+	if($fields[0]){
+		if($fields[0] =~ /^ENS/){
+			$sigpL_ALL_L{$fields[0]}{seq} = $fields[2];
+		}
 	}
 }
 
 close(INs);
 
-
 my $seq_sigp;
 my $id_o;
 my $index;
-
 
 foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 	if ($ens_id =~ /^$string[0]\d/) {
@@ -169,11 +171,11 @@ foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 		close (OUT);
 		my $l_seq_sigp = length($sigpL_ALL_L{$ens_id}{seq});
 		open (OUT2, ">","$ens_id\_ORTHO_L_ALL_temp.fasta") || die("File missing.");
-		$index = first_index {$_ eq $ens_id} @{$HoA{$organisms[0]}}; print $index . "\n";
+		$index = first_index {$_ eq $ens_id} @{$HoA{$organisms[0]}};
 		for (my $on = 1; $on < scalar(@organisms); $on++) { #starts from 1 because first oraganism ($organism[0]) is the organism of interest (from first column of .tsv file)
 			$id_o = $HoA{$organisms[$on]}[$index];
 			if(($id_o !~ /^NULL/) && exists($fasta{$organisms[$on]}{$id_o})) {
-				$seq_sigp = $fasta{$organisms[$on]}{$id_o}; print "$fasta{$organisms[$on]}{$id_o}\n";
+				$seq_sigp = $fasta{$organisms[$on]}{$id_o};
 				print OUT2 ">".$id_o."\n".$seq_sigp."\n";
 				$seq_sigp = "";
 			}
