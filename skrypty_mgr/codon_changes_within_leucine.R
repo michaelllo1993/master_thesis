@@ -80,10 +80,15 @@ for (org in seq(1,length(OoI),by = 1)){
   output=matrix(data=NA,nrow = length(all_codon_names),ncol = 1)
   rownames(output) = all_codon_names
   for (l in seq(1,length(leucine_codons),by = 1)){
-    tmp = as.matrix(OoI[[org]][[l]])
+    #tmp = as.matrix(OoI[[org]][[l]])
+    tmp = OoI[[org]][[l]]
     if(any(grep("N",rownames(tmp),perl = T))){
       rows_to_delete = grep("N",rownames(tmp),perl = T)
-      tmp = tmp[-rows_to_delete,]
+      tmp = tmp[-rows_to_delete]
+    }
+    if(length(setdiff(names(tmp), all_codon_names))!=0){
+      rows_to_delete = which(names(tmp)==setdiff(names(tmp), all_codon_names))
+      tmp = tmp[-rows_to_delete]
     }
     output=merge(output,tmp,by="row.names",all=T)
     output=as.matrix(output[,-1])

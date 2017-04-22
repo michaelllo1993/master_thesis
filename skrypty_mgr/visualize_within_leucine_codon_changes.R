@@ -19,11 +19,11 @@ regions = c("L","LSAAR")
 i=1
 # comparison --------------------------------------------------------------
 for (RoI in regions){
-  occurrences=data.matrix(read.csv(paste("/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/codon_analysis/within_leucine/",OoI,"/codon_changes_within_",RoI,"_",lower_OoI,".csv",sep = ""),header = T,sep = ",",row.names = all_codon_names))[,-1]
+  occurrences=data.matrix(read.csv(paste("/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/analysis/codon_analysis/",OoI,"/codon_changes_within_",RoI,"_",lower_OoI,".csv",sep = ""),header = T,sep = ",",row.names = all_codon_names))[,-1]
   occurrences[which(occurrences==0)] = NA
   within_leucine = occurrences[leucine_codons,]
   within_leucine_list[[i]] = within_leucine
-  svg(filename=paste("/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/codon_analysis/within_leucine/",OoI,"/codon_changes_within_",RoI,"_",lower_OoI,".svg",sep = ""), 
+  svg(filename=paste("/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/analysis/codon_analysis/",OoI,"/codon_changes_within_",RoI,"_",lower_OoI,".svg",sep = ""), 
       width=40, 
       height=30, 
       pointsize=50)

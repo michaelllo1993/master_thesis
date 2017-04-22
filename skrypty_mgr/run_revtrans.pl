@@ -8,8 +8,9 @@ use List::MoreUtils 'first_index';
 my $usage = <<EOF;
 
 USAGE: run_revtrans.pl <organism of interest Latin name> <organism exclusive ENS code>
-
+USES DATA: prep2revtrans_full of all organisms(or not full depending on the region analyzed - remmeber to change couple lines below!), prep2comp_ of organism of interest
 EOF
+
 my $code = $ARGV[1];
 my $revtrans = "/home/mstolarczyk/Programy/RevTrans/RevTrans-1.4/revtrans.py";
 my $dir = getcwd;
