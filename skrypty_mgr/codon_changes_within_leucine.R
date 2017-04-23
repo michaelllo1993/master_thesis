@@ -56,10 +56,8 @@ for (org in seq(1,length(tmp_codes),by = 1)){
       other_codons = append(other_codons,other_codons_tmp)
     }
     OoI[[org]][[l]] = sort(table(other_codons),decreasing = T)
-    names(OoI[[org]][[l]]) = toupper(names(OoI[[org]][[l]]))
     other_codons = c();
     OoI_LSAAR[[org]][[l]] = sort(table(other_codons_LSAAR),decreasing = T)
-    names(OoI_LSAAR[[org]][[l]]) = toupper(names(OoI_LSAAR[[org]][[l]]))
     other_codons_LSAAR = c();
   }
 }
@@ -80,18 +78,22 @@ for (org in seq(1,length(OoI),by = 1)){
   output=matrix(data=NA,nrow = length(all_codon_names),ncol = 1)
   rownames(output) = all_codon_names
   for (l in seq(1,length(leucine_codons),by = 1)){
-    #tmp = as.matrix(OoI[[org]][[l]])
-    tmp = OoI[[org]][[l]]
-    if(any(grep("N",rownames(tmp),perl = T))){
+    tmp = as.matrix(OoI[[org]][[l]])
+    if(length(grep("N",rownames(tmp),perl = T)!=0)){
       rows_to_delete = grep("N",rownames(tmp),perl = T)
-      tmp = tmp[-rows_to_delete]
+      tmp1 = tmp[-c(rows_to_delete),]
+      tmp=as.matrix(tmp1)
     }
-    if(length(setdiff(names(tmp), all_codon_names))!=0){
-      rows_to_delete = which(names(tmp)==setdiff(names(tmp), all_codon_names))
-      tmp = tmp[-rows_to_delete]
+    if(length(setdiff(rownames(tmp),all_codon_names))!=0){
+      rows_to_delete = c()
+      for (i in seq(1,length(setdiff(rownames(tmp),all_codon_names)))){
+        rows_to_delete = append(rows_to_delete,which(rownames(tmp)==(setdiff(rownames(tmp),all_codon_names))[i]))
+      }
+        tmp1 = tmp[-c(rows_to_delete),]
+        tmp=as.matrix(tmp1)
     }
     output=merge(output,tmp,by="row.names",all=T)
-    output=as.matrix(output[,-1])
+    output=as.matrix(output[,-c(1)])
     rownames(output) = all_codon_names
   }
   output=output[,-1]
@@ -99,7 +101,7 @@ for (org in seq(1,length(OoI),by = 1)){
   colnames(output) = leucine_codons
   write.csv(x = output,file = paste(wd,"/codon_changes_within_L_",nms[org],".csv",sep = ""),row.names = T)
 }
-print(paste("Results saved to:", paste(wd,"/codon_changes_within_L_<organism name>")))
+print(paste("Results saved to:", paste(wd,"/codon_changes_within_L_<organism name>",sep = "")))
 
 
 # results saving L-SAARs --------------------------------------------------
