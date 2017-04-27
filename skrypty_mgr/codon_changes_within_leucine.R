@@ -56,8 +56,10 @@ for (org in seq(1,length(tmp_codes),by = 1)){
       other_codons = append(other_codons,other_codons_tmp)
     }
     OoI[[org]][[l]] = sort(table(other_codons),decreasing = T)
+    names(OoI[[org]][[l]])=toupper(names(OoI[[org]][[l]])) 
     other_codons = c();
     OoI_LSAAR[[org]][[l]] = sort(table(other_codons_LSAAR),decreasing = T)
+    names(OoI_LSAAR[[org]][[l]])=toupper(names(OoI_LSAAR[[org]][[l]])) 
     other_codons_LSAAR = c();
   }
 }
