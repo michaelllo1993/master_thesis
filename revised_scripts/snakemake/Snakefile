@@ -1,0 +1,31 @@
+rule prep_and_run_signalp:
+    input:
+        "{sample}.txt"
+    output:
+        "{sample}_sigp.out"
+    wildcard_constraints:
+        sample="\w+\_\w+",
+    shell:
+        "perl 1prep_and_run_signalp.pl {input} > {output}"
+
+rule analyze_signalp:
+    input:
+        "{sample}_sigp.out"
+    output:
+        "{sample}_signalp_positives.out"
+    wildcard_constraints:
+        sample="\w+\_\w+",
+    shell:
+        "perl 2analyze_signalp.pl {input} > {output}"
+
+rule extract_signalp:
+    input:
+        "{sample}_signalp_positives.out",
+        "ensembl_parsed_{sample}",
+        "{sample}_extract_signalp.cfg"
+    output:
+        "extracted_sigp_{sample}.out"
+    wildcard_constraints:
+        sample="\w+\_\w+"
+    shell:
+        "perl 3test.pl {input} > {output}"
