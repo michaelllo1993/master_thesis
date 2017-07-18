@@ -86,7 +86,7 @@ if($tag =~ "all"){
 		if($signalp{$id}{decision})							# if it is TRUE - now I use id and not temp_protid because temp_protid was only local above
 		{										# for SigP4 it's always TRUE - I don't print seq that don't have sig peptide
 			$seq_cl= substr($fasta{$id}{seq},0, $signalp{$id}{cl_site});		# from $seq take only the part from 0 to cl_site (= signal peptide seq)
-			print $id."\t".$fasta{$id}{id_t}."\t".$fasta{$id}{seq}."\t".$signalp{$id}{cl_site}."\n";
+			print $id."\t".$fasta{$id}{id_t}."\t".$fasta{$id}{seq}."\t".$signalp{$id}{cl_site}.",";
 		}
 	}
 }
@@ -98,11 +98,11 @@ elsif($tag =~ /^\w{1}/){
 			$seq_cl= substr($fasta{$id}{seq},0, $signalp{$id}{cl_site});
 			if(@tab = $seq_cl =~ /(${tag}{${tag_threshold},$signalp{$id}{cl_site}})/g)						# globally search for the pattern (max length = cl_site pos) in each sp seq
 			{
-				print $id."\t".$fasta{$id}{id_t}."\t".$fasta{$id}{seq}."\t".$signalp{$id}{cl_site}."\t";	# if we want only sigP length print $seq_cl instead of $fasta{$id}{seq}
+				print $id.",".$fasta{$id}{id_t}.",".$fasta{$id}{seq}.",".$signalp{$id}{cl_site}.",";	# if we want only sigP length print $seq_cl instead of $fasta{$id}{seq}
 				$pos=0;
 				for($i=0; $i < scalar(@tab); $i++)
 				{
-					print length($tab[$i])."\t".index($seq_cl,$tab[$i],$pos)."\t";	# prints length of the L-repeat (length($tab[$i])) and its position (index($seq_cl,$tab[$i],$pos)) in the sequence
+					print length($tab[$i]).",".index($seq_cl,$tab[$i],$pos);	# prints length of the L-repeat (length($tab[$i])) and its position (index($seq_cl,$tab[$i],$pos)) in the sequence
 					$pos += (index($seq_cl,$tab[$i],$pos)+length($tab[$i]));
 				}
 				print "\n";
@@ -110,4 +110,3 @@ elsif($tag =~ /^\w{1}/){
 		}
 	}
 }
-
