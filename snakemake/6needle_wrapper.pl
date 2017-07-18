@@ -57,11 +57,13 @@ close(IN0);
 # Get letter codes of all analyzed organisms
 my $remember = $i;
 my @string;
+my $multiplier = 1;
 for(my $i = 0; $i < scalar(@organisms); $i++){
 	my $rnd = int(rand($remember));
 	if(${$HoA{$organisms[$i]}}[$rnd] eq "NULL"){
 		until(${$HoA{$organisms[$i]}}[$rnd] ne "NULL"){
-			$rnd = int((rand($remember))*10);
+                        $multiplier++;
+			$rnd = int((rand($remember))*$multiplier);
 		}
 		$string[$i] = ${$HoA{$organisms[$i]}}[$rnd];
 	}
