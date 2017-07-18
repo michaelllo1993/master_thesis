@@ -28,4 +28,58 @@ rule extract_signalp:
     wildcard_constraints:
         sample="\w+\_\w+"
     shell:
-        "perl 3test.pl {input} > {output}"
+        "perl 3extract_signalp.pl {input} > {output}"
+
+rule prep_data_for_wholeseq_needle:
+    input:
+        "{sample}.txt"
+    output:
+        "{sample}.out"
+    wildcard_constraints:
+        sample="\w+\_\w+"
+    shell:
+        "perl 4prep_needle.pl {input} > {output}"
+
+rule create_ensembl_ids_mapper:
+    input:
+        "{sample}_ids_mapper.cfg",
+        "{sample}.tsv"
+    output:
+        "{sample}_ids_mapper.csv"
+    wildcard_constraints:
+        sample="\w+\_\w+"
+    shell:
+        "perl 5create_ens_ids_mapper.pl {input} > {output}"
+
+rule run_needle:
+#ensembl_parsed_{sample} or {sample}.txt data must be placed in $dir/data/ directory
+    input:
+        "{sample}_run_needle.cfg",
+        "{sample}_ids_mapper.csv"
+    output:
+        "{sample}.needle_out"
+    wildcard_constraints:
+        sample="\w+\_\w+"
+    shell:
+        "perl 6needle_wrapper.pl {input} > {output}"
+
+data = ["homo_sapiens","pan_troglodytes","gorilla_gorilla","macaca_mulatta","mus_musculus","rattus_norvegicus","bos_taurus","gallus_gallus","xenopus_tropicalis"]
+rule merge_all_extracted_sigps:
+    input:
+        expand("extracted_sigp_{organisms}.out", organisms=data)
+    output:
+        "extracted_sigp_all.out"
+    wildcard_constraints:
+        organisms="\w+\_\w+"
+    shell:
+        "cat {input} >> {output}"
+
+rule prep_sigp_length_analysis:
+    input:
+        "{sample}_length_analysis.cfg",
+        "extracted_sigp_all.out",
+        "{sample}_ids_mapper.csv"
+    output:
+        "{sample}_to_sigp_length_analysis.csv"
+    shell:
+        "perl 7prep_length_analysis.pl {input} > {output}"
