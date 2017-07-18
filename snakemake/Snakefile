@@ -52,7 +52,6 @@ rule create_ensembl_ids_mapper:
         "perl 5create_ens_ids_mapper.pl {input} > {output}"
 
 rule run_needle:
-#ensembl_parsed_{sample} or {sample}.txt data must be placed in $dir/data/ directory
     input:
         "{sample}_run_needle.cfg",
         "{sample}_ids_mapper.csv"
@@ -83,3 +82,21 @@ rule prep_sigp_length_analysis:
         "{sample}_to_sigp_length_analysis.csv"
     shell:
         "perl 7prep_length_analysis.pl {input} > {output}"
+
+rule sigp_length_analysis:
+	input: 
+		"{sample}_to_sigp_length_analysis.csv"
+	output:
+		"{sample}_sigp_length_analysis.out"
+	shell:
+		"Rscript 8sigp_saar_length_analysis.R {input} > {output}"
+
+rule prep_seq_comp:
+	input: 
+		"{sample}_prepapre_sequence_comparison.cfg","
+		"{sample}.needle_out",
+		"{sample}_ids_mapper.csv"
+	output:
+		"prepared_sequence_comparison.csv"
+	shell:
+		"perl 9prepapre_sequence_comparison.pl {input} > {output}
