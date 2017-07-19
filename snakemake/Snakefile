@@ -93,13 +93,13 @@ rule sigp_length_analysis:
 
 rule prep_seq_comp:
 	input:
-		"{sample}_prepapre_sequence_comparison.cfg",
+		"{sample}_prepare_sequence_comparison.cfg",
 		"{sample}.needle_out",
 		"{sample}_ids_mapper.csv"
 	output:
 		"{sample}_prepared_sequence_comparison.csv"
 	shell:
-		"perl 9prepapre_sequence_comparison.pl {input} > {output}"
+		"perl 9prepare_sequence_comparison.pl {input} > {output}"
 
 rule seq_comp:
 	input:

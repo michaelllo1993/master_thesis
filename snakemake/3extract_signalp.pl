@@ -102,7 +102,7 @@ elsif($tag =~ /^\w{1}/){
 				$pos=0;
 				for($i=0; $i < scalar(@tab); $i++)
 				{
-					print length($tab[$i]).",".index($seq_cl,$tab[$i],$pos);	# prints length of the L-repeat (length($tab[$i])) and its position (index($seq_cl,$tab[$i],$pos)) in the sequence
+					print length($tab[$i]).",".index($seq_cl,$tab[$i],$pos).",";	# prints length of the L-repeat (length($tab[$i])) and its position (index($seq_cl,$tab[$i],$pos)) in the sequence
 					$pos += (index($seq_cl,$tab[$i],$pos)+length($tab[$i]));
 				}
 				print "\n";
