@@ -8,18 +8,16 @@ USAGE: prep2Needle_development.pl input_file_name
 
 EOF
 
-my $input_file = "$ARGV[0].txt";
+my $input_file = $ARGV[0];
 open(my $file, '<', $input_file) or die "Could not open '$input_file' $! \n";
-open (OUT, ">$ARGV[0].out");
 
 while (my $line = <$file>){
 	chomp $line;
 	if($line =~ /^>(ENS\S+)\|(ENS\S+)/){
-		print OUT "\n" . $1 . "," . $2 . ",";
+		print "\n" . $1 . "," . $2 . ",";
 	}
 	else{
-		print OUT $line;
+		print $line;
 	}
 }
-close(OUT);
 close($file);

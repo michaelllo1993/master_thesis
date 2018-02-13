@@ -8,29 +8,42 @@ use List::MoreUtils 'first_index';
 # <organism_and_orthologues_protein_ids.tsv> must have the same column order as <organism_of_interest>+<orthologues>
 my $usage = <<EOF;
 
-USAGE: Needle_ALL_wrapper.pl <SP/WHOLE> <organism_and_orthologues_protein_ids.tsv> <sigp(L)_ALL.out/organism_of_interest.out> <organism_of_interest> <orthologues>
+USAGE: Needle_wrapper.pl <organism_and_orthologues_protein_ids.tsv> <sigp(L)_ALL.out/organism_of_interest.out>
 
 EOF
 my $dir = getcwd;
-print "\n\nStarting analysis in: " . $dir . "\n\n";
+
+#Reading config file
+
+my $File = pop @ARGV;
+open (my $CONFIG, $File);
+
+my %User_Preferences;
+while (my $line = <$CONFIG>) {
+		chomp $line;
+		if ($line =~ /^(\w+)\s*=\s*(\w+)/){
+	    my $var = $1;
+			my $value = $2;
+	    $User_Preferences{$var} = $value;
+		}
+}
+close ($CONFIG);
+
+my @organisms;
+foreach my $key (sort(keys %User_Preferences)) {
+  if ($key =~ /^org/){
+    push @organisms, $User_Preferences{$key};
+  }
+}
 
 my %ids;
 my $i = 0;
-my $region = shift(@ARGV);
+my $region = $User_Preferences{region};
 my $Ortho_data_set = shift(@ARGV);$Ortho_data_set = "$dir\/$Ortho_data_set";
 system("sed -i 's/\"//g' $Ortho_data_set");
 my $sigpL_ALL_FILE = shift(@ARGV);$sigpL_ALL_FILE = "$dir\/$sigpL_ALL_FILE";
 system("sed -i 's/\"//g' $sigpL_ALL_FILE");
-my @organisms;
 
-while (@ARGV){
-	my $element = shift(@ARGV);
-	push @organisms, $element;
-}
-print "Organisms in the analysis:\n";
-foreach my $n (@organisms) {
-	print $n . "\n";
-}
 
 open (IN, "$Ortho_data_set") || die("Orthologues ids file missing.");
 my $ncols = scalar(@organisms);
@@ -51,7 +64,6 @@ while (my $line = <IN>) {
 		}
 	}
 }
-
 
 # Get letter codes of all analyzed organisms
 close(IN);
@@ -97,7 +109,7 @@ while (my $line1 = <IN0>) {
 	my @fields1 = split "," , $line1;
 	for (my $i = 0; $i < scalar(@organisms); $i++){
 		push @{$HoA{$organisms[$i]}}, $fields1[$i+1]; #Plus one because first column in the mapper is the ID
-	} 
+	}
 }
 close(IN0);
 
@@ -108,7 +120,7 @@ my $id="";
 my $seq="";
 
 for (my $j = 0; $j < scalar(@organisms); $j++) {
-	
+	#Establishing the sequence files names: in case of SP alignment - ensembl_parsed_*, in case of WHOLE sequence alignment - *.txt input files
 	my $prefix = "";
 	my $suffix = "";
 	if($region =~ /^SP$/){
@@ -116,7 +128,8 @@ for (my $j = 0; $j < scalar(@organisms); $j++) {
 	} elsif ($region =~ /^WHOLE$/){
 		$suffix = ".txt";
 	}
-	my $parsed_FILE = "$prefix$organisms[$j]$suffix" || die $usage;
+	print "\n\n" . "test" . "\n\n";
+	my $parsed_FILE = "$dir/data/$prefix$organisms[$j]$suffix" || die $usage;
 	#fixing files - deleting lines with faulty characters i.e. "_" or entries without sequences
 	system("sed -i '/\_/d' $parsed_FILE");
 	system("sed -i '/>|/d' $parsed_FILE");
@@ -128,21 +141,21 @@ for (my $j = 0; $j < scalar(@organisms); $j++) {
 				if($id ne "")
 				{
 					$fasta{$organisms[$j]}{$id}=$seq;
-				}  
+				}
 				$id = $1;
 				$seq="";
 			}
 		}
 		else {
 			if ($_ !~ /^PEPTIDE/) {
-				$seq.=$_; 
-			}	
+				$seq.=$_;
+			}
 		}
 	}
 	$fasta{$organisms[$j]}{$id}=$seq; # the last value will be added (because the last one is not printed in the loop anymore)
 	close(IN);
 }
-
+# Same here, depending on the region of interest (SP or WHOLE) the variable $sigpL_ALL_FILE holds extracted sigp results or WHOLE AA sequences
 # Reading sigpL_ALL_FILE or organism_of_interest.out into hash
 open (INs, "$sigpL_ALL_FILE") || die ("File missing.");
 
@@ -182,13 +195,11 @@ foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 		}
 		close(OUT2);
 		my $exit_stat = system ("needle -outfile temp_L_ALL_$organisms[0]_Ortho.needle -gapopen 10.0 -gapextend 0.5 -aformat markx3 $ens_id\_L_ALL_temp.fasta $ens_id\_ORTHO_L_ALL_temp.fasta");
-		system ("cat temp_L_ALL_$organisms[0]_Ortho.needle >> ALL_$organisms[0]_Ortho_all.needle");
-		if ($exit_stat != 0) {
-			print $ens_id."_L_ALL\t".$exit_stat."\n";
-		}
+		system ("cat temp_L_ALL_$organisms[0]_Ortho.needle");
+		# if ($exit_stat != 0) {
+		# 	print $ens_id."_L_ALL\t".$exit_stat."\n";
+		# }
 		system ("rm $ens_id\_L_ALL_temp.fasta $ens_id\_ORTHO_L_ALL_temp.fasta");
 	}
 }
 system ("rm ENS*");
-print "\nAlignment results saved to: $dir/ALL_$organisms[0]_Ortho.needle\n";
-

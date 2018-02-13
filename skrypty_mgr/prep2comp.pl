@@ -5,7 +5,7 @@ use Cwd;
 
 my $usage = <<EOF;
 
-USAGE: perl prep2comp.pl  ALL_organism_Ortho_(all/sp).needle <ortho_dataset.tsv> <organism_of_interest> <other_organisms>
+USAGE: perl prep2comp.pl ALL_organism_Ortho_(all/sp).needle <ortho_dataset.tsv> <organism_of_interest> <other_organisms>
 
 EOF
 

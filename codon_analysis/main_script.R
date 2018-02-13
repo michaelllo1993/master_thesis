@@ -12,7 +12,7 @@ for (k in 1:length(myFiles)) {
   prot_names[k] = strsplit(myFiles,"[.]")[[k]][1];
   proteins[[k]] = read.csv(myFiles[k],stringsAsFactors = F);
 }
-prot_names[k] = strsplit(myFiles,"[.]")[[k]][1];
+prot_names[k] = strsplit(myFiles,"[.]")[[k]][1];/home/mstolarczyk/meeting.txt
 names(proteins) = prot_names;
 
 setwd("~/Uczelnia/MGR/praca_magisterska/codon_analysis/mappers/");
