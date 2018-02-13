@@ -1,0 +1,1 @@
+perl 1prep_and_run_signalp.pl xenopus_tropicalis.txt > xenopus_tropicalis_sigp.out

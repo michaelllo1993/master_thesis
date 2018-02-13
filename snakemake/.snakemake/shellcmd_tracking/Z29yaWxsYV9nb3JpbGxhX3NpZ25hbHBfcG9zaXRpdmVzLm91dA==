@@ -1,0 +1,1 @@
+perl 2analyze_signalp.pl gorilla_gorilla_sigp.out > gorilla_gorilla_signalp_positives.out

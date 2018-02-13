@@ -1,0 +1,1 @@
+perl 1prep_and_run_signalp.pl bos_taurus.txt > bos_taurus_sigp.out

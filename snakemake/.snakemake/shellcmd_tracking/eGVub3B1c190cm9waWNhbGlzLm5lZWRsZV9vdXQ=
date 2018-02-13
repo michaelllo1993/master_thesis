@@ -1,0 +1,1 @@
+perl 6needle_wrapper.pl xenopus_tropicalis_run_needle.cfg xenopus_tropicalis_ids_mapper.csv > xenopus_tropicalis.needle_out

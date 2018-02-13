@@ -1,0 +1,1 @@
+perl 1prep_and_run_signalp.pl rattus_norvegicus.txt > rattus_norvegicus_sigp.out

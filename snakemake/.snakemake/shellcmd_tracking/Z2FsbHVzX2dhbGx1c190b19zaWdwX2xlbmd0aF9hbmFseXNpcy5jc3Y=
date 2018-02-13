@@ -1,0 +1,1 @@
+perl 7prep_length_analysis.pl gallus_gallus_length_analysis.cfg extracted_sigp_all.out gallus_gallus_ids_mapper.csv > gallus_gallus_to_sigp_length_analysis.csv

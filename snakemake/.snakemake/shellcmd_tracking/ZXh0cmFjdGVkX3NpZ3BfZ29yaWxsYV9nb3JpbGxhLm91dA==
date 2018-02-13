@@ -1,0 +1,1 @@
+perl 3extract_signalp.pl gorilla_gorilla_signalp_positives.out ensembl_parsed_gorilla_gorilla gorilla_gorilla_extract_signalp.cfg > extracted_sigp_gorilla_gorilla.out

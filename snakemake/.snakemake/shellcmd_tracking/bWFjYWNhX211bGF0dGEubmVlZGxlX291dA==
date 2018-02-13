@@ -1,0 +1,1 @@
+perl 6needle_wrapper.pl macaca_mulatta_run_needle.cfg macaca_mulatta_ids_mapper.csv > macaca_mulatta.needle_out

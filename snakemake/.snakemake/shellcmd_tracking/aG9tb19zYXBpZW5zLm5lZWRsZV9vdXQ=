@@ -1,0 +1,1 @@
+perl 6needle_wrapper.pl homo_sapiens_run_needle.cfg homo_sapiens_ids_mapper.csv > homo_sapiens.needle_out

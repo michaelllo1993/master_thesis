@@ -1,0 +1,1 @@
+perl 3extract_signalp.pl bos_taurus_signalp_positives.out ensembl_parsed_bos_taurus bos_taurus_extract_signalp.cfg > extracted_sigp_bos_taurus.out

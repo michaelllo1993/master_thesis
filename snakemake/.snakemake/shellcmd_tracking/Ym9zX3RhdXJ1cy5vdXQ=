@@ -1,0 +1,1 @@
+perl prep_needle.pl bos_taurus.txt > bos_taurus.out

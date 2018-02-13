@@ -1,0 +1,1 @@
+perl 9prepare_sequence_comparison.pl mus_musculus_prepare_sequence_comparison.cfg mus_musculus.needle_out mus_musculus_ids_mapper.csv > mus_musculus_prepared_sequence_comparison.csv

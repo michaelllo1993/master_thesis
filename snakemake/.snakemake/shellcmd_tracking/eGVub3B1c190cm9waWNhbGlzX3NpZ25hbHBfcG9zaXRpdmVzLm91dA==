@@ -1,0 +1,1 @@
+perl 2analyze_signalp.pl xenopus_tropicalis_sigp.out > xenopus_tropicalis_signalp_positives.out

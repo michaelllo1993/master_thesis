@@ -1,0 +1,1 @@
+perl 2analyze_signalp.pl mus_musculus_sigp.out > mus_musculus_signalp_positives.out

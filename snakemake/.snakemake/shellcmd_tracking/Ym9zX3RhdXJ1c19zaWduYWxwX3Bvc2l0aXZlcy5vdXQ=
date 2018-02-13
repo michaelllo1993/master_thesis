@@ -1,0 +1,1 @@
+perl 2analyze_signalp.pl bos_taurus_sigp.out > bos_taurus_signalp_positives.out

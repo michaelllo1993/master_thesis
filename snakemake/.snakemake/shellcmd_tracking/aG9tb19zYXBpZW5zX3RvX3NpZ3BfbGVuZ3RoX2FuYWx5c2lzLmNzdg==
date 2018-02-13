@@ -1,0 +1,1 @@
+perl 7prep_length_analysis.pl homo_sapiens_length_analysis.cfg extracted_sigp_all.out homo_sapiens_ids_mapper.csv > homo_sapiens_to_sigp_length_analysis.csv

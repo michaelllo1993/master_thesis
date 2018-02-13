@@ -1,0 +1,1 @@
+perl 3extract_signalp.pl pan_troglodytes_signalp_positives.out ensembl_parsed_pan_troglodytes pan_troglodytes_extract_signalp.cfg > extracted_sigp_pan_troglodytes.out
