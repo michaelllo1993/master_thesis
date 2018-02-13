@@ -143,8 +143,7 @@ codons_count_protein_fraction = matrix(NaN,
                                        ncol = length(leucine_codons))
 for (org in seq(1, length(codons_count_protein), 1)) {
   for (cod in seq(1, length(leucine_codons), 1)) {
-    codons_count_protein_fraction[org, cod] = sum(codons_count_protein[[org]][, cod], na.rm = T) /
-      sum(codons_count_protein[[org]], na.rm = T)
+    codons_count_protein_fraction[org, cod] = sum(codons_count_protein[[org]][, cod], na.rm = T) /       sum(codons_count_protein[[org]], na.rm = T)
   }
 }
 rownames(codons_count_protein_fraction) = prot_names
@@ -153,7 +152,6 @@ rownames(codons_count_lsaar_fraction) = prot_names
 colnames(codons_count_protein_fraction) = leucine_codons
 colnames(codons_count_sigp_fraction) = leucine_codons
 colnames(codons_count_lsaar_fraction) = leucine_codons
-
 
 # Codon usage visualization  ----------------------------------------------
 for (i in seq(1, dim(codons_count_lsaar_fraction)[1])) {
@@ -227,18 +225,18 @@ levenes_test_result = leveneTest(
     codons_count_protein_fraction[1:8, 6],
     codons_count_sigp_fraction[1:8, 6]
   ),
-  group = c(
+  group = as.factor(c(
     rep("lsaar", 8),
     rep("protein", 8),
     rep("sigp", 8)
-    ),
+    )),
   location = "mean"
 )
 
 # mean equality - W-ANOVA -> Welch one-way ANOVA
 library(userfriendlyscience)
 data=as.vector(c(codons_count_lsaar_fraction[1:8, 6],codons_count_sigp_fraction[1:8, 6],codons_count_protein_fraction[1:8, 6]))
-oneway(y=data ,x=as.factor(c(rep("LSAAR", 8),rep("sigP", 8),rep("protein", 8))),corrections = TRUE,posthoc = "games-howell")
+oneway(y=data ,x=as.factor(c(rep("LSAAR", 8),rep("sigP", 8),rep("protein", 8))),corrections = TRUE,posthoc = "games-howell",pvalueDigits=10,fullDescribe = T)
 
 
 

@@ -1,6 +1,7 @@
 require(gplots)
 require(seqinr)
 require(Biostrings)
+require(fmsb)
 # USAGE Rscript visualize_within_leucine_codon_changes.R <higher organism of interest(full latin name)> <lower organism of interest(full latin name)>
 # parameters --------------------------------------------------------------
 
@@ -30,7 +31,26 @@ for (RoI in regions){
   heatmap.2(dendrogram = "none",within_leucine,cexRow=1.1,cexCol=1.1, Rowv = NA,Colv = NA,scale = "row", key = T, key.xtickfun = NULL,density.info = "none",trace = "none",symkey = F,col=redblue,na.color = "red", colsep = c(1,2,3,4,5,6),sepwidth = c(0.021, 0.021),srtCol=90, offsetRow=0, offsetCol=1,rowsep = seq(1,dim(occurrences)[1],1),xlab = paste("Codons in",OoI),ylab = paste("Codons in",lower_OoI),cellnote = within_leucine,notecol="black",notecex=1.5, main = paste("Codon changes within leucine in all ",RoI,"s",sep = ""),keysize = 1)
   dev.off()
   
-  # slippage vs. point mutations --------------------------------------------
+  # Cohen's kappa estimation ------------------------------------------------
+  if(any(is.na(within_leucine))){
+    within_leucine[which(is.na(within_leucine))] = 0
+    to_kappa_est = within_leucine
+  } else{
+    to_kappa_est = within_leucine
+  }
+  kappa_result = Kappa.test(to_kappa_est)
+  string = paste(sep = ",",OoI, lower_OoI,RoI,round(kappa_result$Result$estimate,digits = 2),paste(sep = "",round(kappa_result$Result$conf.int[1],digits = 2)," - ",round(kappa_result$Result$conf.int[2],digits = 2)),kappa_result$Result$p.value)
+  if(file.exists("kappa_results.csv")){
+    write(string,file = "kappa_results.csv",append = T);
+  } else{
+    header = paste(sep=",","higher_organism","lower_organism","region","Kappa estimate","CI","p-value")
+    write(header,file = "kappa_results.csv",append = T);
+    write(string,file = "kappa_results.csv",append = T);
+  }
+  
+  print(paste(sep = "","Kappa results file written in: ","/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/codon_analysis/to_leucine_transformation/kappa_results.csv"))
+  
+    # slippage vs. point mutations --------------------------------------------
   
   output = matrix(data=NA,nrow = length(leucine_codons),ncol = 2)
   counter = 1
@@ -48,6 +68,9 @@ for (RoI in regions){
   print(paste(sep = "","Output file written in: ","/home/mstolarczyk/Uczelnia/MGR/praca_magisterska/codon_analysis/to_leucine_transformation/",OoI,"/",lower_OoI,"_",OoI,"_codon_changes_in_",RoI,".csv"))
   i=i+1
 }
+
+
+
 
 within_leucine_no_LSAAR = within_leucine_list[[1]] - within_leucine_list[[2]]
 within_leucine_no_LSAAR[which(within_leucine_no_LSAAR==0)] = NA
