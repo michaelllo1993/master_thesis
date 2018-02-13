@@ -1,0 +1,1 @@
+perl 2analyze_signalp.pl gallus_gallus_sigp.out > gallus_gallus_signalp_positives.out

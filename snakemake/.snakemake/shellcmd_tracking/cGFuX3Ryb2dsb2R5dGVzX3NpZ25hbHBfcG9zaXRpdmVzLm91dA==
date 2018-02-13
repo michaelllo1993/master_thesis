@@ -1,0 +1,1 @@
+perl 2analyze_signalp.pl pan_troglodytes_sigp.out > pan_troglodytes_signalp_positives.out

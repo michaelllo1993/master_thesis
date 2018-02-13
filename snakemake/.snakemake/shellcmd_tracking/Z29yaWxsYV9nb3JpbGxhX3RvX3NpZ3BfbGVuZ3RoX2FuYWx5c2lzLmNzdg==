@@ -1,0 +1,1 @@
+perl 7prep_length_analysis.pl gorilla_gorilla_length_analysis.cfg extracted_sigp_all.out gorilla_gorilla_ids_mapper.csv > gorilla_gorilla_to_sigp_length_analysis.csv

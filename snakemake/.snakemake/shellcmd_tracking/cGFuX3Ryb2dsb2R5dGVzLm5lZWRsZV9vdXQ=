@@ -1,0 +1,1 @@
+perl 6needle_wrapper.pl pan_troglodytes_run_needle.cfg pan_troglodytes_ids_mapper.csv > pan_troglodytes.needle_out

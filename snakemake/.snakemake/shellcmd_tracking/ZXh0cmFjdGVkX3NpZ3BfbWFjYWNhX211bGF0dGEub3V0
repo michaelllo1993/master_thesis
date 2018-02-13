@@ -1,0 +1,1 @@
+perl 3extract_signalp.pl macaca_mulatta_signalp_positives.out ensembl_parsed_macaca_mulatta macaca_mulatta_extract_signalp.cfg > extracted_sigp_macaca_mulatta.out

@@ -1,0 +1,1 @@
+perl 7prep_length_analysis.pl rattus_norvegicus_length_analysis.cfg extracted_sigp_all.out rattus_norvegicus_ids_mapper.csv > rattus_norvegicus_to_sigp_length_analysis.csv

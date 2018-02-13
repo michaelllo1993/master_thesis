@@ -1,0 +1,1 @@
+perl 6needle_wrapper.pl bos_taurus_run_needle.cfg bos_taurus_ids_mapper.csv > bos_taurus.needle_out

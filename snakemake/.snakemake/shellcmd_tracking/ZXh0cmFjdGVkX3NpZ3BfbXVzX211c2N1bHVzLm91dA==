@@ -1,0 +1,1 @@
+perl 3extract_signalp.pl mus_musculus_signalp_positives.out ensembl_parsed_mus_musculus mus_musculus_extract_signalp.cfg > extracted_sigp_mus_musculus.out

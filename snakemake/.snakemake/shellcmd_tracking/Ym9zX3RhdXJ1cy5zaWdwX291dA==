@@ -1,0 +1,1 @@
+perl 1test.pl bos_taurus.txt > bos_taurus.sigp_out

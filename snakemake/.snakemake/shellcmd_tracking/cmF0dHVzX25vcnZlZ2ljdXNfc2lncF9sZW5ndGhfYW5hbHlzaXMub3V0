@@ -1,0 +1,1 @@
+Rscript 8sigp_saar_length_analysis.R rattus_norvegicus_to_sigp_length_analysis.csv > rattus_norvegicus_sigp_length_analysis.out
