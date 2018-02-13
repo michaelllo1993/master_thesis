@@ -1,0 +1,91 @@
+########################################
+# Program: needle
+# Rundate: Tue 18 Jul 2017 14:27:17
+# Commandline: needle
+#    -outfile temp_L_ALL_pan_troglodytes_Ortho.needle
+#    -gapopen 10.0
+#    -gapextend 0.5
+#    -aformat markx3
+#    [-asequence] ENSPTRP00000061216_L_ALL_temp.fasta
+#    [-bsequence] ENSPTRP00000061216_ORTHO_L_ALL_temp.fasta
+# Align_format: markx3
+# Report_file: temp_L_ALL_pan_troglodytes_Ortho.needle
+########################################
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSPTRP00000061216
+# 2: ENSP00000399441
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 69
+# Identity:      69/69 (100.0%)
+# Similarity:    69/69 (100.0%)
+# Gaps:           0/69 ( 0.0%)
+# Score: 369.0
+# 
+#
+#=======================================
+
+>ENSPTRP00000061216 ..
+MCGLQFSLPCLRLFLVVTCYLLLLLHKEILGCSSVCQLCTGRQINCRNLG
+LSSIPKNFPESTVFLYLTG
+>ENSP00000399441 ..
+MCGLQFSLPCLRLFLVVTCYLLLLLHKEILGCSSVCQLCTGRQINCRNLG
+LSSIPKNFPESTVFLYLTG
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSPTRP00000061216
+# 2: ENSMMUP00000001645
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 69
+# Identity:      69/69 (100.0%)
+# Similarity:    69/69 (100.0%)
+# Gaps:           0/69 ( 0.0%)
+# Score: 369.0
+# 
+#
+#=======================================
+
+>ENSPTRP00000061216 ..
+MCGLQFSLPCLRLFLVVTCYLLLLLHKEILGCSSVCQLCTGRQINCRNLG
+LSSIPKNFPESTVFLYLTG
+>ENSMMUP00000001645 ..
+MCGLQFSLPCLRLFLVVTCYLLLLLHKEILGCSSVCQLCTGRQINCRNLG
+LSSIPKNFPESTVFLYLTG
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSPTRP00000061216
+# 2: ENSGGOP00000024673
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 69
+# Identity:      68/69 (98.6%)
+# Similarity:    68/69 (98.6%)
+# Gaps:           0/69 ( 0.0%)
+# Score: 360.0
+# 
+#
+#=======================================
+
+>ENSPTRP00000061216 ..
+MCGLQFSLPCLRLFLVVTCYLLLLLHKEILGCSSVCQLCTGRQINCRNLG
+LSSIPKNFPESTVFLYLTG
+>ENSGGOP00000024673 ..
+MCGLQFSLPCLRLFLVVTCYLLLLLHKEILGCSSVCQLCTGRQINCRNLG
+LSSIPKNFPESTVFLSLTG
+
+#---------------------------------------
+#---------------------------------------

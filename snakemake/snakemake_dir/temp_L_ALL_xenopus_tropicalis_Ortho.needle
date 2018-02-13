@@ -1,0 +1,128 @@
+########################################
+# Program: needle
+# Rundate: Tue 18 Jul 2017 15:01:46
+# Commandline: needle
+#    -outfile temp_L_ALL_xenopus_tropicalis_Ortho.needle
+#    -gapopen 10.0
+#    -gapextend 0.5
+#    -aformat markx3
+#    [-asequence] ENSXETP00000064128_L_ALL_temp.fasta
+#    [-bsequence] ENSXETP00000064128_ORTHO_L_ALL_temp.fasta
+# Align_format: markx3
+# Report_file: temp_L_ALL_xenopus_tropicalis_Ortho.needle
+########################################
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSXETP00000064128
+# 2: ENSP00000265441
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 80
+# Identity:      28/80 (35.0%)
+# Similarity:    38/80 (47.5%)
+# Gaps:          22/80 (27.5%)
+# Score: 128.0
+# 
+#
+#=======================================
+
+>ENSXETP00000064128 ..
+-----------FLLLLLLHTFSLQFEFRYMGAVVTSSSSSRVMCNNIPGL
+VTRQRQLCQRYPEIMQVIGLGAVEWTTECQ
+>ENSP00000265441 ..
+MNAPLGGIWLWLPLLLTWLTPEVNSSWWYMRA---TGGSSRVMCDNVPGL
+VSSQRQLCHRHPDVMRAISQGV--------
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSXETP00000064128
+# 2: ENSPTRP00000033593
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 363
+# Identity:      34/363 ( 9.4%)
+# Similarity:    44/363 (12.1%)
+# Gaps:         297/363 (81.8%)
+# Score: 168.0
+# 
+#
+#=======================================
+
+>ENSXETP00000064128 ..
+-----------FLLLLLLHTFSLQFEFRYMGAVVTSSSSSRVMCNNIPGL
+VTRQRQLCQRYPEIMQVIGLGAVEWTTECQ--------------------
+--------------------------------------------------
+--------------------------------------------------
+--------------------------------------------------
+--------------------------------------------------
+--------------------------------------------------
+-------------
+>ENSPTRP00000033593 ..
+MNAPLGGIWLWLPLLLTWLTPEVNSSWWYMRA---TGGSSRVMCDNVPGL
+VSSQRQLCHRHPDVMRAISQGVAEWTAECQHQFRQHRWNCNTLDRDHSLF
+GRVLLRSSRESAFVYAISSAGVVFAITRACSQGEVKSCSCDPKKMGSAKD
+SKGIFDWGGCSDNIDYGIKFARAFVDAKERKGKDARALMNLHNNRAGRKA
+VKRFLKQECKCHGVSGSCTLRTCWLAMADFRKTGDYLWRKYNGAIQVVMN
+QDGTGFTVANERFKKPTKNDLVYFENSPDYCIRDREAGSLGTAGRVCNLT
+SRGMDSCEVMCCGRGYDTSHVTRMTKCGCKFHWCCAVRCQDCLEALDVHT
+CKAPKNADWTTPT
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSXETP00000064128
+# 2: ENSGGOP00000009495
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 80
+# Identity:      28/80 (35.0%)
+# Similarity:    38/80 (47.5%)
+# Gaps:          22/80 (27.5%)
+# Score: 128.0
+# 
+#
+#=======================================
+
+>ENSXETP00000064128 ..
+-----------FLLLLLLHTFSLQFEFRYMGAVVTSSSSSRVMCNNIPGL
+VTRQRQLCQRYPEIMQVIGLGAVEWTTECQ
+>ENSGGOP00000009495 ..
+MNAPLGGIWLWLPLLLTWLTPEVNSSWWYMRA---TGGSSRVMCDNVPGL
+VSSQRQLCHRHPDVMRAISQGV--------
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSXETP00000064128
+# 2: ENSMUSP00000010941
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 80
+# Identity:      31/80 (38.8%)
+# Similarity:    41/80 (51.2%)
+# Gaps:          22/80 (27.5%)
+# Score: 146.0
+# 
+#
+#=======================================
+
+>ENSXETP00000064128 ..
+-----------FLLLLLLHTFSLQFEFRYMGAVVTSSSSSRVMCNNIPGL
+VTRQRQLCQRYPEIMQVIGLGAVEWTTECQ
+>ENSMUSP00000010941 ..
+MNVPLGGIWLWLPLLLTWLTPEVSSSWWYMRA---TGGSSRVMCDNVPGL
+VSRQRQLCHRHPDVMRAIGLGV--------
+
+#---------------------------------------
+#---------------------------------------

@@ -1,0 +1,230 @@
+########################################
+# Program: needle
+# Rundate: Tue 18 Jul 2017 14:36:28
+# Commandline: needle
+#    -outfile temp_L_ALL_rattus_norvegicus_Ortho.needle
+#    -gapopen 10.0
+#    -gapextend 0.5
+#    -aformat markx3
+#    [-asequence] ENSRNOP00000075600_L_ALL_temp.fasta
+#    [-bsequence] ENSRNOP00000075600_ORTHO_L_ALL_temp.fasta
+# Align_format: markx3
+# Report_file: temp_L_ALL_rattus_norvegicus_Ortho.needle
+########################################
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSRNOP00000075600
+# 2: ENSP00000470879
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 78
+# Identity:      39/78 (50.0%)
+# Similarity:    44/78 (56.4%)
+# Gaps:          18/78 (23.1%)
+# Score: 144.0
+# 
+#
+#=======================================
+
+>ENSRNOP00000075600 ..
+MAAVALP-----LLLLLASP--ATPTPARDPFSPQLGDTQRCQQRCRQRH
+PGLPPAQEVINWYPGRDELAPGVNTP--
+>ENSP00000470879 ..
+MAAVALMPPPLLLLLLLASPPAASAPSARDPFAPQLGDTQNCQLRCRDRD
+LGPQPSQAGLE---GASE------SPYD
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSRNOP00000075600
+# 2: ENSPTRP00000018280
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 353
+# Identity:      39/353 (11.0%)
+# Similarity:    44/353 (12.5%)
+# Gaps:         293/353 (83.0%)
+# Score: 142.0
+# 
+#
+#=======================================
+
+>ENSRNOP00000075600 ..
+MAAVAL----PLLLLL---ASPATPTP-ARDPFSPQLGDTQRCQQRCRQR
+HPGLPPAQEVINWYPGRDELAPGVNTP-----------------------
+--------------------------------------------------
+--------------------------------------------------
+--------------------------------------------------
+--------------------------------------------------
+--------------------------------------------------
+---
+>ENSPTRP00000018280 ..
+MAAVALMPPPPLLLLLLLASPPAASVPSARDPFAPQLGDTQNCQLRCRDR
+DLGPRPSQAGLE---GASE------SPYDRAVLISACERGCRLFSICRFV
+ARSSKPNATQTECEAACVEAYVKEAEQQACSHGCWSQPTEPEPEQKRKVL
+EAPSGALSLLDLFSTLCNDLVNSAQGFVSSTWTYYLQTDNGKVVVFQTQP
+IVESLGFQGDRLQRVEVTWRGSHPEALEVHVDPVGPLDKVRKAKIRVKTS
+SKAKVESEEPQDNDFLSCMSRRSGLPRWILACCLFLSVLVMLWLSCSTLV
+TAPGQHLKFQPLTLEQHKGFMIEPDWPLYPPPSHACEDSLPPYKLKLDLT
+KL*
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSRNOP00000075600
+# 2: ENSMMUP00000013069
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 78
+# Identity:      39/78 (50.0%)
+# Similarity:    44/78 (56.4%)
+# Gaps:          18/78 (23.1%)
+# Score: 143.0
+# 
+#
+#=======================================
+
+>ENSRNOP00000075600 ..
+MAAVALP-----LLLLLASP--ATPTPARDPFSPQLGDTQRCQQRCRQRH
+PGLPPAQEVINWYPGRDELAPGVNTP--
+>ENSMMUP00000013069 ..
+MAAVALMPLPLLLLLLLASPPAASAPSARDPFAPQLGDTQNCQLRCRDRD
+LGPRPSQAGLE---GASE------SPYD
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSRNOP00000075600
+# 2: ENSGGOP00000018691
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 78
+# Identity:      39/78 (50.0%)
+# Similarity:    44/78 (56.4%)
+# Gaps:          18/78 (23.1%)
+# Score: 143.0
+# 
+#
+#=======================================
+
+>ENSRNOP00000075600 ..
+MAAVALP-----LLLLLASP--ATPTPARDPFSPQLGDTQRCQQRCRQRH
+PGLPPAQEVINWYPGRDELAPGVNTP--
+>ENSGGOP00000018691 ..
+MAAVALMPPPLLLLLLLASPPAASAPSARDPFAPQLGDTQNCQLRCRDRD
+LGPRPSQAGLE---GASE------SPYD
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSRNOP00000075600
+# 2: ENSMUSP00000043659
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 82
+# Identity:      47/82 (57.3%)
+# Similarity:    48/82 (58.5%)
+# Gaps:          26/82 (31.7%)
+# Score: 230.0
+# 
+#
+#=======================================
+
+>ENSRNOP00000075600 ..
+MAAVALPLLLLLASPATPTPARDPFSPQLGDTQRCQQRCRQRHPGLPPAQ
+EVINWYPGRDELAPGVNTP-------------
+>ENSMUSP00000043659 ..
+MAAVALPLLLLLASLVTPTPARDPFAPQLGDTQRCQQRCRQHHPGSPPAQ
+-------------PEPEGPSESPNNKAILISA
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSRNOP00000075600
+# 2: ENSBTAP00000010124
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 74
+# Identity:      37/74 (50.0%)
+# Similarity:    42/74 (56.8%)
+# Gaps:          10/74 (13.5%)
+# Score: 142.0
+# 
+#
+#=======================================
+
+>ENSRNOP00000075600 ..
+MAAVAL-PLLLLL---ASPATPT-PARDPFSPQLGDTQRCQQRCRQRHPG
+LPPAQEVINWYPGRDELAPGVNTP
+>ENSBTAP00000010124 ..
+MDSVALMPLLLLLLLQPPPATPAPPVRDPFALQLGDTQNCQLRCRDRYPK
+PQLAQEELGEDPIQSRRAK-----
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSRNOP00000075600
+# 2: ENSGALP00000034392
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 104
+# Identity:      11/104 (10.6%)
+# Similarity:    15/104 (14.4%)
+# Gaps:          70/104 (67.3%)
+# Score: 11.5
+# 
+#
+#=======================================
+
+>ENSRNOP00000075600 ..
+MAAVALPLLLLLASPATPTPARDPFSPQLGDTQRCQQRCRQRHPGLPPAQ
+EVINWYPGRDELAPGVNTP-------------------------------
+----
+>ENSGALP00000034392 ..
+----------------------------MGVKRR--GRVPLRSPPL----
+-ALSSADGGDLAAPVPALPHVGAAGRNSDRGTKEDAVLSACYRGCRLFSI
+CHFV
+
+#=======================================
+#
+# Aligned_sequences: 2
+# 1: ENSRNOP00000075600
+# 2: ENSXETP00000024460
+# Matrix: EBLOSUM62
+# Gap_penalty: 10.0
+# Extend_penalty: 0.5
+#
+# Length: 82
+# Identity:      19/82 (23.2%)
+# Similarity:    26/82 (31.7%)
+# Gaps:          26/82 (31.7%)
+# Score: 52.5
+# 
+#
+#=======================================
+
+>ENSRNOP00000075600 ..
+MAA-----VALPLLLLLASPATPTPARDPFSPQLGDTQRCQQRCRQRHPG
+LPPAQEVI--------NWYPGRDELAPGVNTP
+>ENSXETP00000024460 ..
+MGAPEHWSCDLSLLLSLIVIVSAVSAADPFDSQLGDITSCSKQCQLIFQQ
+QSSAQDAVIAACSRGCRLF-------------
+
+#---------------------------------------
+#---------------------------------------
