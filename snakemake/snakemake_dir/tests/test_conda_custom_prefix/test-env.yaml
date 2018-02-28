@@ -1,4 +1,0 @@
-channels:
-  - bioconda
-dependencies:
-  - snakemake ==3.8.2

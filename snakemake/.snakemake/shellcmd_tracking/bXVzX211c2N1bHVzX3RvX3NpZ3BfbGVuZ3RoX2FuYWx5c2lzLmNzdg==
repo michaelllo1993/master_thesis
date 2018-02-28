@@ -1,1 +1,0 @@
-perl 7prep_length_analysis.pl mus_musculus_length_analysis.cfg extracted_sigp_all.out mus_musculus_ids_mapper.csv > mus_musculus_to_sigp_length_analysis.csv

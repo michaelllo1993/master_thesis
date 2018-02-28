@@ -1,1 +1,0 @@
-perl 7prep_length_analysis.pl xenopus_tropicalis_length_analysis.cfg extracted_sigp_all.out xenopus_tropicalis_ids_mapper.csv > xenopus_tropicalis_to_sigp_length_analysis.csv

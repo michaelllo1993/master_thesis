@@ -1,1 +1,0 @@
-perl 3test.pl bos_taurus_signalp_positives.out ensembl_parsed_bos_taurus > sigp_ALL_bos_taurus.out

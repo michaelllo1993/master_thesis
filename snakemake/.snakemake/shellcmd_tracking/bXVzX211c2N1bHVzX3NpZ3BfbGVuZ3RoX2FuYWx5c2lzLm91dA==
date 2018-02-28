@@ -1,1 +1,0 @@
-Rscript 8sigp_saar_length_analysis.R mus_musculus_to_sigp_length_analysis.csv > mus_musculus_sigp_length_analysis.out

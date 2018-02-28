@@ -1,5 +1,0 @@
-rule:
-    output: txt='file.txt'
-    run:
-        shell('touch {output.txt}')
-        os.stat(output.txt)

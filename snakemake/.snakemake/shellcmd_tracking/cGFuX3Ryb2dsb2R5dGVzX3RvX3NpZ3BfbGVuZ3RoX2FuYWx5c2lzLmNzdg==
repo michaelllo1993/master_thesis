@@ -1,1 +1,0 @@
-perl 7prep_length_analysis.pl pan_troglodytes_length_analysis.cfg extracted_sigp_all.out pan_troglodytes_ids_mapper.csv > pan_troglodytes_to_sigp_length_analysis.csv

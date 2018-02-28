@@ -1,1 +1,0 @@
-stringbar.in stringbar.txt stringbar.log

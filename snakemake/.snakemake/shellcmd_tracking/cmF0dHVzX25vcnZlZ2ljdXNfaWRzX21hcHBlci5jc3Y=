@@ -1,1 +1,0 @@
-perl 5create_ens_ids_mapper.pl rattus_norvegicus_ids_mapper.cfg rattus_norvegicus.tsv > rattus_norvegicus_ids_mapper.csv

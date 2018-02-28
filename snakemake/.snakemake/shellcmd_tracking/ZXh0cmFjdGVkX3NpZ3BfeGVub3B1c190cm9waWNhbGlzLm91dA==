@@ -1,1 +1,0 @@
-perl 3extract_signalp.pl xenopus_tropicalis_signalp_positives.out ensembl_parsed_xenopus_tropicalis xenopus_tropicalis_extract_signalp.cfg > extracted_sigp_xenopus_tropicalis.out

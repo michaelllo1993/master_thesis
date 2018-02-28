@@ -1,1 +1,0 @@
-perl 7prep_length_analysis.pl bos_taurus_length_analysis.cfg extracted_sigp_all.out bos_taurus_ids_mapper.csv > bos_taurus_to_sigp_length_analysis.csv

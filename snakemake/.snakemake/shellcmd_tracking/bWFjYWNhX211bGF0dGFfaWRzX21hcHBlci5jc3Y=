@@ -1,1 +1,0 @@
-perl 5create_ens_ids_mapper.pl macaca_mulatta_ids_mapper.cfg macaca_mulatta.tsv > macaca_mulatta_ids_mapper.csv

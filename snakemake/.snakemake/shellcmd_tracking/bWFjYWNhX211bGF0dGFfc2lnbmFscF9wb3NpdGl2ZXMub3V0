@@ -1,1 +1,0 @@
-perl 2analyze_signalp.pl macaca_mulatta_sigp.out > macaca_mulatta_signalp_positives.out

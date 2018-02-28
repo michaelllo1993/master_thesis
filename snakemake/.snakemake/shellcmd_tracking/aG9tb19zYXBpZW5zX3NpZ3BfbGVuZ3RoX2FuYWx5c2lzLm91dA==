@@ -1,1 +1,0 @@
-Rscript 8sigp_saar_length_analysis.R homo_sapiens_to_sigp_length_analysis.csv > homo_sapiens_sigp_length_analysis.out

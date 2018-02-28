@@ -1,9 +1,0 @@
-
-
-configfile: "test.yaml"
-
-rule:
-    output:
-        config["outfile"]
-    shell:
-        "touch {output}"

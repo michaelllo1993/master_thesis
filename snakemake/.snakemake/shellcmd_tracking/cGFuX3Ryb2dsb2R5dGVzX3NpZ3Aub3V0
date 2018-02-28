@@ -1,1 +1,0 @@
-perl 1prep_and_run_signalp.pl pan_troglodytes.txt > pan_troglodytes_sigp.out

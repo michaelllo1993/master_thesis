@@ -1,5 +1,0 @@
-rule a:
-    output:
-        config["out"]
-    shell:
-        "touch {output}"

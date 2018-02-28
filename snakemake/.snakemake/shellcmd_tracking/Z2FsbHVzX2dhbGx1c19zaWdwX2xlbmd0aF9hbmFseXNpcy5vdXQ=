@@ -1,1 +1,0 @@
-Rscript 8sigp_saar_length_analysis.R gallus_gallus_to_sigp_length_analysis.csv > gallus_gallus_sigp_length_analysis.out

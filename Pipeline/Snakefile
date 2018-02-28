@@ -1,0 +1,27 @@
+configfile: "config.yaml"
+rule prep_and_run_signalp:
+    input:
+        proteinSequences="{organism}.txt"
+    output:
+        sigpResults="{organism}_sigp.out",
+        parsedProteinSequences="ensembl_parsed_{organism}"
+    shell:
+        "perl 1prep_and_run_signalp.pl {input.proteinSequences} > {output.sigpResults}"
+
+rule analyze_signalp:
+    input:
+        sigpResults="{organism}_sigp.out"
+    output:
+        sigpPositives="{organism}_signalp_positives.out"
+    shell:
+        "perl 2analyze_signalp.pl {input} > {output}"
+
+rule extract_signalp:
+    input:
+        sigpPositives="{organism}_signalp_positives.out",
+        parsedProteinSequences="ensembl_parsed_{organism}",
+
+    output:
+        extractedSigp="extracted_sigp_{organism}.out"
+    shell:
+        "perl 3extract_signalp.pl {input.sigpPositives} {input.parsedProteinSequences} {config[repeatUnit]} {config[repeatThreshold]} > {output}"

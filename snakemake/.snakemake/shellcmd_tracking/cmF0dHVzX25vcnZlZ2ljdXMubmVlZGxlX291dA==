@@ -1,1 +1,0 @@
-perl 6needle_wrapper.pl rattus_norvegicus_run_needle.cfg rattus_norvegicus_ids_mapper.csv > rattus_norvegicus.needle_out

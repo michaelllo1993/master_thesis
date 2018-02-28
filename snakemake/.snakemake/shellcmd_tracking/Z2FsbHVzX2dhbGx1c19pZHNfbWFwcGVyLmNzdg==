@@ -1,1 +1,0 @@
-perl 5create_ens_ids_mapper.pl gallus_gallus_ids_mapper.cfg gallus_gallus.tsv > gallus_gallus_ids_mapper.csv

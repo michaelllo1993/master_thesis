@@ -1,1 +1,0 @@
-Rscript 8sigp_saar_length_analysis.R gorilla_gorilla_to_sigp_length_analysis.csv > gorilla_gorilla_sigp_length_analysis.out

@@ -1,1 +1,0 @@
-perl 5create_ens_ids_mapper.pl pan_troglodytes_ids_mapper.cfg pan_troglodytes.tsv > pan_troglodytes_ids_mapper.csv

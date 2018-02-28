@@ -1,1 +1,0 @@
-perl 2analyze_signalp.pl rattus_norvegicus_sigp.out > rattus_norvegicus_signalp_positives.out
