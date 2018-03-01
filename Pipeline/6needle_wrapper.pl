@@ -6,40 +6,20 @@ use List::MoreUtils 'first_index';
 
 my $usage = <<EOF;
 
-USAGE: 6needle_wrapper.pl <organism_run_needle.cfg> <organism_ids_mapper.csv>
+USAGE: 6needle_wrapper.pl <extracted_sigp_organism.out> <organism_ids_mapper.csv> <organisms in the right order> <region of intrest (SP/WHOLE)>
 
 EOF
 my $dir = getcwd;
 
-#Reading config file
-my $File = shift @ARGV;
-open (my $CONFIG, $File);
-
-my %User_Preferences;
-while (my $line = <$CONFIG>) {
-		chomp $line;
-		if ($line =~ /^(\w+)\s*=\s*(\w+\.*\w*)/){
-	    my $var = $1;
-			my $value = $2;
-	    $User_Preferences{$var} = $value;
-		}
-}
-close ($CONFIG);
-
-my @organisms;
-foreach my $key (sort(keys %User_Preferences)) {
-  if ($key =~ /^org/){
-    push @organisms, $User_Preferences{$key};
-  }
-}
+my $sigpL_ALL_FILE = shift @ARGV;
+system("sed -i 's/\"//g' $sigpL_ALL_FILE");
+my $ids_mapper = shift @ARGV;
+my $region = shift @ARGV;
+my @organisms = @ARGV;
 
 my %ids;
 my $i = 0;
-my $region = $User_Preferences{region};
-my $sigpL_ALL_FILE = $User_Preferences{file};
-system("sed -i 's/\"//g' $sigpL_ALL_FILE");
 
-my $ids_mapper = shift @ARGV;
 # Importing Ensemble ids mapper to hash of arrays
 open (IN0, "+<", $ids_mapper);
 my $j = 0;
@@ -84,6 +64,7 @@ for (my $j = 0; $j < scalar(@organisms); $j++) {
 	my $suffix = "";
 	if($region =~ /^SP$/){
 		$prefix = "ensembl_parsed_";
+		$suffix = ".txt";
 	} elsif ($region =~ /^WHOLE$/){
 		$suffix = ".txt";
 	}

@@ -1,13 +1,14 @@
 organisms:
-  homo_sapiens: "homo_sapiens"
-  pan_troglodytes: "pan_troglodytes"
-  gorilla_gorilla: "gorilla_gorilla"
-  macaca_mulatta: "macaca_mulatta"
-  mus_musculus: "mus_musculus"
-  rattus_norvegicus: "rattus_norvegicus"
-  bos_taurus: "bos_taurus"
-  gallus_gallus: "gallus_gallus"
-  xenopus_tropicalis: "xenopus_tropicalis"
+  homo_sapiens:
+  pan_troglodytes:
+  gorilla_gorilla:
+  macaca_mulatta:
+  mus_musculus:
+  rattus_norvegicus:
+  bos_taurus:
+  gallus_gallus:
+  xenopus_tropicalis:
 
 repeatUnit: "L"
 repeatThreshold: "5"
+region: "SP"

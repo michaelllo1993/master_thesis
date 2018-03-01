@@ -4,7 +4,7 @@ rule prep_and_run_signalp:
         proteinSequences="{organism}.txt"
     output:
         sigpResults="{organism}_sigp.out",
-        parsedProteinSequences="ensembl_parsed_{organism}"
+        parsedProteinSequences="ensembl_parsed_{organism}.txt"
     shell:
         "perl 1prep_and_run_signalp.pl {input.proteinSequences} > {output.sigpResults}"
 
@@ -19,9 +19,61 @@ rule analyze_signalp:
 rule extract_signalp:
     input:
         sigpPositives="{organism}_signalp_positives.out",
-        parsedProteinSequences="ensembl_parsed_{organism}",
-
+        parsedProteinSequences="ensembl_parsed_{organism}.txt",
+    params:
+        repeatUnit=config["repeatUnit"],
+        repeatThreshold=config["repeatThreshold"]
     output:
         extractedSigp="extracted_sigp_{organism}.out"
     shell:
-        "perl 3extract_signalp.pl {input.sigpPositives} {input.parsedProteinSequences} {config[repeatUnit]} {config[repeatThreshold]} > {output}"
+        "perl 3extract_signalp.pl {input.sigpPositives} {input.parsedProteinSequences} {params.repeatUnit} {params.repeatThreshold} > {output}"
+
+
+rule prep_data_for_wholeseq_needle:
+    input:
+        "{sample}.txt"
+    output:
+        "{sample}_wholeSequence.out"
+    shell:
+        "perl 4prep_needle.pl {input} > {output}"
+
+def orderOrganisms(wildcards):
+    orgs = sorted(config["organisms"])
+    orgs.remove(wildcards.sample)
+    orgs.insert(0,wildcards.sample)
+    return orgs
+
+rule create_ensembl_ids_mapper:
+    input:
+        ortho_dataset="{sample}.tsv"
+    params:
+        organisms=orderOrganisms
+    output:
+        "{sample}_ids_mapper.csv"
+    wildcard_constraints:
+        sample="\w+\_\w+"
+    shell:
+        "perl 5create_ens_ids_mapper.pl {input} {params.organisms} > {output}"
+
+def selectFile(wildcards):
+    if config["region"] == "SP":
+        selectedFile = "extracted_sigp_" + wildcards.sample + ".out"
+    elif config["region"] == "WHOLE":
+        selectedFile = wildcards.sample + "_wholeSequence.out"
+    else:
+        selectedFile = 0
+        print("Worng region selected. Use 'SP' or 'WHOLE'!")
+    return selectedFile
+
+rule run_needle:
+    input:
+        sequenceFile=selectFile,
+        mapper="{sample}_ids_mapper.csv",
+        parsedProteinSequences=expand("ensembl_parsed_{organism}.txt", organism=config["organisms"])
+    params:
+        organisms=orderOrganisms,
+        region=config["region"]
+    output:
+        "{sample}.needle_out"
+    shell:
+        "perl 6needle_wrapper.pl {input.sequenceFile} {input.mapper} {params.region} {params.organisms}  > {output}"

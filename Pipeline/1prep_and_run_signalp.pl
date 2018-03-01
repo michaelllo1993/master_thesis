@@ -51,5 +51,5 @@ for (my $no = 0; $no <= $num; $no++) {
 	system("/home/mstolarczyk/Programs/signalp-4.1/signalp -t euk -f summary -u 0.34 -U 0.34 $no$file");
 }
 
-system("cat *shortened_seq_$organism_name > ensembl_parsed_$organism_name");
+system("cat *shortened_seq_$organism_name > ensembl_parsed_$organism_name.txt");
 system("rm *shortened_seq_$organism_name");
