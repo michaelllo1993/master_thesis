@@ -119,11 +119,9 @@ rule prep_seq_comp:
 rule sequence_comp:
     input:
         "{sample}_prepared_sequence_comparison.csv",
+    params:
+        repeatUnit=config["repeatUnit"]
     output:
         "{sample}_amino_acids_on_test_position_vs_test.out"
-    wildcard_constraints:
-        sample="\w+\_\w+",
-        ortho="\w+",
-        saar="\w{1}"
     shell:
-        "Rscript 10sequence_comparison.R {input} > {output}"
+        "Rscript 10sequence_comparison.R {input} {params.repeatUnit} > {output}"
