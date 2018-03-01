@@ -5,34 +5,15 @@ use Cwd;
 
 my $usage = <<EOF;
 
-USAGE: perl 9prepare_sequence_comparison.pl organism_prepapre_sequence_comparison.cfg organism.needle_out organism_ids_mapper.csv
+USAGE: perl 9prepare_sequence_comparison.pl organism.needle_out organism_ids_mapper.csv <organisms in the right order>
 
 EOF
 
-#Reading config file
-my $File = shift @ARGV;
-open (my $CONFIG, $File);
 
-my %User_Preferences;
-while (my $line = <$CONFIG>) {
-		chomp $line;
-		if ($line =~ /^(\w+)\s*=\s*(\w+\.*\w*)/){
-	    my $var = $1;
-			my $value = $2;
-	    $User_Preferences{$var} = $value;
-		}
-}
-close ($CONFIG);
-
-my @organisms;
-foreach my $key (sort(keys %User_Preferences)) {
-  if ($key =~ /^org/){
-    push @organisms, $User_Preferences{$key};
-  }
-}
 my $file = shift @ARGV;
 my $ids_mapper = shift @ARGV;
-# Importing Ensemble ids mapper to hash of arrays
+my @organisms = @ARGV;
+
 open (IN0, "+<", $ids_mapper);
 my $j = 0;
 my %HoA;
