@@ -6,38 +6,17 @@ use Cwd;
 # the order of organisms in tsv file and in cfg file must be the same
 my $usage = <<EOF;
 
-USAGE: 5create_ens_ids_mapper.pl .cfg 
+USAGE: 5create_ens_ids_mapper.pl <ortho_dataset> <organisms in the same order as in the dataset - first organism of interest and then others in alphabetical order>
 
 EOF
 my $dir = getcwd;
-
-#Reading config file
-
-my $File = shift @ARGV;
-open (my $CONFIG, $File);
-
-my %User_Preferences;
-while (my $line = <$CONFIG>) {
-		chomp $line;
-		if ($line =~ /^(\w+)\s*=\s*(\w+)/){
-	    my $var = $1;
-			my $value = $2;
-	    $User_Preferences{$var} = $value;
-		}
-}
-close ($CONFIG);
-
-my @organisms;
-foreach my $key (sort(keys %User_Preferences)) {
-  if ($key =~ /^org/){
-    push @organisms, $User_Preferences{$key};
-  }
-}
 
 my %ids;
 my $i = 0;
 my $Ortho_data_set = shift(@ARGV);$Ortho_data_set = "$dir\/$Ortho_data_set";
 system("sed -i 's/\"//g' $Ortho_data_set");
+
+my @organisms = @ARGV;
 
 open (IN, "$Ortho_data_set") || die("Orthologues ids file missing.");
 my $ncols = scalar(@organisms);

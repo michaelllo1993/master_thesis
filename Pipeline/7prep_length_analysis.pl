@@ -9,53 +9,12 @@ USAGE: perl prep2spl_length_analysis.pl .cfg extracted_sigp_all.out organism_ids
 
 EOF
 
-#Reading config file
-my $File = shift @ARGV;
-open (my $CONFIG, $File);
-
-my %User_Preferences;
-while (my $line = <$CONFIG>) {
-		chomp $line;
-		if ($line =~ /^(\w+)\s*=\s*(\w+\.*\w*)/){
-	    my $var = $1;
-			my $value = $2;
-	    $User_Preferences{$var} = $value;
-		}
-}
-close ($CONFIG);
-
-my @orgs;
-foreach my $key (sort(keys %User_Preferences)) {
-  if ($key =~ /^org/){
-    push @orgs, $User_Preferences{$key};
-  }
-}
-
-# Improting Ensemble ids mapper to arrays
-my $file = shift(@ARGV) || die "sigp_ALL.out is missing";
-my $i = 0;
-
-# while (@ARGV){
-# 	my $element = shift(@ARGV);
-# 	push @organisms, $element;
-# }
-
-# my %mapper;
-# open (my $mapper_file, '<', $ens_ids_mapper) or die "Could not open '$ens_ids_mapper' $! \n";
-# while (my $line = <$mapper_file>) {
-# 	chomp $line;
-# 	my @fields = split(',',$line);
-# 	for (my $org = 0; $org < (scalar(@organisms)); $org++){
-# 		$mapper{$organisms[$org]}[$i] = $fields[$org+1] # in $fields[$org+1] the index is inceremented because first column in .csv is ID.
-# 	}
-# 	$i++;
-# }
-# close($mapper_file);
-
-my $ids_mapper = shift @ARGV;
-# Importing Ensemble ids mapper to hash of arrays
+my $file = shift @ARGV || die "sigp_ALL.out is missing";
+my $ids_mapper = shift @ARGV || die "organism_ids_mapper is missing";;
+my @orgs = @ARGV;
 open (IN0, "+<", $ids_mapper);
 my $j = 0;
+my $i = 0;
 my %HoA;
 while (my $line1 = <IN0>) {
 	chomp $line1;

@@ -77,3 +77,22 @@ rule run_needle:
         "{sample}.needle_out"
     shell:
         "perl 6needle_wrapper.pl {input.sequenceFile} {input.mapper} {params.region} {params.organisms}  > {output}"
+
+rule merge_all_extracted_sigps:
+    input:
+        expand("extracted_sigp_{organism}.out", organism=config["organisms"])
+    output:
+        "extracted_sigp_all.out"
+    shell:
+        "cat {input} >> {output}"
+
+rule prep_sigp_length_analysis:
+    input:
+        "extracted_sigp_all.out",
+        "{sample}_ids_mapper.csv"
+    params:
+        organisms=orderOrganisms
+    output:
+        "{sample}_to_sigp_length_analysis.csv"
+    shell:
+        "perl 7prep_length_analysis.pl {input} {params.organisms} > {output}"

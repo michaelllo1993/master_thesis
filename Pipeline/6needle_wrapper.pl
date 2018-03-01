@@ -68,7 +68,7 @@ for (my $j = 0; $j < scalar(@organisms); $j++) {
 	} elsif ($region =~ /^WHOLE$/){
 		$suffix = ".txt";
 	}
-	my $parsed_FILE = "$dir/data/$prefix$organisms[$j]$suffix" || die $usage;
+	my $parsed_FILE = "$dir/$prefix$organisms[$j]$suffix" || die $usage;
 	#fixing files - deleting lines with faulty characters i.e. "_" or entries without sequences
 	system("sed -i '/\_/d' $parsed_FILE");
 	system("sed -i '/>|/d' $parsed_FILE");
