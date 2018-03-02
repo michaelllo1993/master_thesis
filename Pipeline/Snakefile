@@ -82,6 +82,7 @@ rule merge_all_extracted_sigps:
     input:
         expand("extracted_sigp_{organism}.out", organism=config["organisms"])
     output:
+        expand("extracted_sigp_{organism}.out", organism=config["organisms"]),
         "extracted_sigp_all.out"
     shell:
         "cat {input} >> {output}"
@@ -149,3 +150,13 @@ rule build_protein_cDNA_mapper:
         "data/mappers/{sample}_mapper.csv"
     shell:
         "perl scripts/build_protein_cDNA_mapper.pl {input}"
+
+rule read_RData:
+    input:
+        expand("data/cDNAsequences/{organism}_cDNA.csv", organism=config["organisms"]),
+        expand("data/mappers/{organism}_mapper.csv", organism=config["organisms"]),
+        expand("data/proteinSequences/{organism}.csv", organism=config["organisms"])
+    output:
+        "data/readData.RData"
+    shell:
+        "Rscript scripts/readData.R"
