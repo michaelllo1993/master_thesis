@@ -118,10 +118,34 @@ rule prep_seq_comp:
 
 rule sequence_comp:
     input:
-        "{sample}_prepared_sequence_comparison.csv",
+        "{sample}_prepared_sequence_comparison.csv"
     params:
         repeatUnit=config["repeatUnit"]
     output:
-        "{sample}_amino_acids_on_test_position_vs_test.out"
+        "{sample}_orthoAAstats"
     shell:
-        "Rscript 10sequence_comparison.R {input} {params.repeatUnit} > {output}"
+        "mkdir -p {output}; Rscript 10sequence_comparison.R {input} {params.repeatUnit}"
+
+rule prepare_cDNA_sequences:
+    input:
+        "data/cDNAsequences/{sample}_cDNA.txt"
+    output:
+        "data/cDNAsequences/{sample}_cDNA.csv"
+    shell:
+        "perl scripts/seq2csv_cDNA.pl {input}"
+
+rule prepare_protein_sequences:
+    input:
+        "data/proteinSequences/{sample}.txt"
+    output:
+        "data/proteinSequences/{sample}.csv"
+    shell:
+        "perl scripts/seq2csv.pl {input}"
+
+rule build_protein_cDNA_mapper:
+    input:
+        "data/proteinSequences/{sample}.txt"
+    output:
+        "data/mappers/{sample}_mapper.csv"
+    shell:
+        "perl scripts/build_protein_cDNA_mapper.pl {input}"
