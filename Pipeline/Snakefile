@@ -160,3 +160,13 @@ rule read_RData:
         "data/readData.RData"
     shell:
         "Rscript scripts/readData.R"
+
+rule analyze_codon_frequency:
+    input:
+        "{sample}_ids_mapper.csv"
+    params:
+        organisms=orderOrganisms
+    output:
+
+    shell:
+        "Rscript scripts/codon_frequency.R {input} {params.organisms}"
