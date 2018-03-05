@@ -163,10 +163,11 @@ rule read_RData:
 
 rule analyze_codon_frequency:
     input:
-        "{sample}_ids_mapper.csv"
+        "{sample}_ids_mapper.csv",
+        expand("{organism}_signalp_positives.out", organism=config["organisms"])
     params:
         organisms=orderOrganisms
     output:
 
     shell:
-        "Rscript scripts/codon_frequency.R {input} {params.organisms}"
+        "Rscript scripts/codon_frequency.R {input} {params.repeatUnit} {params.organisms}"

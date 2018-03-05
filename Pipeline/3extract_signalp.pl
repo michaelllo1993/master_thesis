@@ -19,7 +19,7 @@ while(<IN>)
 {
 	chomp;									# delete the sign of the end of the line (like <ENTER>)
 	my @entry = split("\t", $_);						# divide each line (wherever you find a tab) into separate words
-	$signalp{$entry[0]}{cl_site} = $entry[3];				# assign second word from the B split (protid = key) to a value (cl_site)
+	$signalp{$entry[0]}{cl_site} = $entry[4];				# assign second word from the B split (protid = key) to a value (cl_site)
 	$signalp{$entry[0]}{decision} = 1;
 }
 close(IN);

@@ -1,5 +1,6 @@
 wd = getwd()
 require(seqinr);
+require(tidyverse)
 args = commandArgs(trailingOnly=TRUE)
 if (length(args)!=2){
   print("Wrong number of arguments passed!")
@@ -12,12 +13,12 @@ saar = args[2];
 #USAGE: RScprit name input_file_name SAARtyp
 # reading data
 data_orig=read.csv(filename, sep=",",header=FALSE);
-
+organismName=paste(strsplit(strsplit(filename,"/")[[1]][length(strsplit(filename,"/")[[1]])],"_")[[1]][c(1,2)][1],strsplit(strsplit(filename,"/")[[1]][length(strsplit(filename,"/")[[1]])],"_")[[1]][c(1,2)][2],sep = "_")
+dirOrganismName=paste(organismName,"_orthoAAstats",sep = "")
 unique_IDs=unique(sapply(data_orig[c(1:1000),3], function(x) gsub('[[:digit:]]+', '', x)))
 for(Ortho in unique_IDs){
   # extracting just the data of interest
   pattern = paste("^",Ortho,sep = "")
-  print(pattern)
   Ortho_rows = which(grepl(as.vector(data_orig[,3]),pattern = pattern,perl = T) == TRUE)
   data = data_orig[Ortho_rows,]
   OoI = strsplit(as.vector(data[1,1]),split = "0")[[1]][1]
@@ -40,9 +41,7 @@ for(Ortho in unique_IDs){
   df_results_percentage = as.data.frame(changes_table_percentage)
   df_results = as.data.frame(changes_table)
   df_results_binded = cbind(df_results,df_results_percentage)
-  #write.csv(df_results_binded,file = paste(wd,"/",OoI,"_",Ortho,"saar_sigp_aa_on_l_position.csv",sep = ""),row.names = F)
-  print(paste(saar,"-SAAR in Signal Peptide, amino acids on ", saar, " position"))
-  print(df_results_binded, quote = TRUE, row.names = FALSE)
+  write.csv(df_results_binded,file = paste(wd,"/",dirOrganismName,"/",OoI,"_",Ortho,"_saar_sigp_aa_on_",saar,"_position.csv",sep = ""),row.names = F)
   changes_all=c("");
   for (i in seq(2,length(data[,1]))) {
     dane=s2c(as.character(data[i,2]));
@@ -57,8 +56,6 @@ for(Ortho in unique_IDs){
   
   df_all_results_percentage = as.data.frame(all_changes_table_percentage)
   df_all_results = as.data.frame(all_changes_table)
-  df_all_results_binded = cbind(df_all_results,df_all_results_percentage)
-  #write.csv(df_all_results_binded,file = paste(wd,"/",OoI,"_",Ortho,"_aa_on_l_position.csv",sep = ""),row.names = F)
-  print(paste("Amino acids on", saar, " position"))
-  print(df_all_results_binded, quote = TRUE, row.names = FALSE)
+  df_all_results_binded = (cbind(df_all_results,df_all_results_percentage))
+  write.csv(df_all_results_binded,file = paste(wd,"/",dirOrganismName,"/",OoI,"_",Ortho,"_aa_on_",saar,"_position.csv",sep = ""),row.names = F)
 }

@@ -3,7 +3,8 @@ use warnings;
 use strict;
 
 my $sp_out = "$ARGV[0]";
-my $id;
+my $id_prot;
+my $id_cdna;
 my $from;
 my $to;
 my $decision;
@@ -23,12 +24,13 @@ while(<IN>)
 		$to = $2;
 		$decision = $3;
 	}
-	elsif ($_ =~ /Name=(\w+).*/)
+	elsif ($_ =~ /Name=(\w+)\|(\w+).*/)
 	{
-		$id = $1;
+		$id_prot = $1;
+		$id_cdna = $2;
 		if ($decision =~ /^YES/)
 		{
-			print $id."\tsp4\t".$from."\t".$to."\t".$TrainSet."\n";
+			print $id_prot."\t".$id_cdna."\tsp4\t".$from."\t".$to."\t".$TrainSet."\n";
 		}
 	}
 } 
