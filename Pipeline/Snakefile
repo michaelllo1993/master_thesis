@@ -163,16 +163,26 @@ rule read_RData:
     shell:
         "Rscript scripts/readData.R"
 
-rule analyze_codon_frequency:
+rule count_repeat_unit_codons:
     input:
-        "{sample}_ids_mapper.csv",
-        expand("{organism}_signalp_positives.out", organism=config["organisms"])
+        "{sample}_ids_mapper.csv"
     params:
-        organisms=orderOrganisms
+        repeatUnit = config["repeatUnit"],
+        organisms = orderOrganisms
     output:
-        expand("{organism}_codon_frequency_overall.csv", organism=config["organisms"]),
-        expand("{organism}_codon_frequency_excluding_SP.csv", organism=config["organisms"]),
-        expand("{organism}_codon_frequency_SAAR.csv", organism=config["organisms"]),
-        expand("{organism}_codon_frequency_SP.csv", organism=config["organisms"])
+        "codon_frequency/{sample}_orthologues"
     shell:
-        "Rscript scripts/count_codons.R {input} {params.repeatUnit} {params.organisms}"
+        "mkdir -p {output}; Rscript scripts/count_codons.R {input} {params.repeatUnit} {params.organisms}"
+
+# rule analyze_region_codon_frequencies:
+#     input:
+#         expand("codon_frequency/{sample}_orthologues/{organism}_codon_frequency_overall.csv", organism=config["organisms"]),
+#         expand("codon_frequency/{sample}_orthologues/{organism}_codon_frequency_excluding_SP.csv", organism=config["organisms"]),
+#         expand("codon_frequency/{sample}_orthologues/{organism}_codon_frequency_SAAR.csv", organism=config["organisms"]),
+#         expand("codon_frequency/{sample}_orthologues/{organism}_codon_frequency_SP.csv", organism=config["organisms"])
+#     params:
+#         organism_of_interest = "{sample}"
+#     output:
+#
+#     shell:
+#         "Rscript {params.organism_of_interest}"

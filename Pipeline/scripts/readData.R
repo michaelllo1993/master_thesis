@@ -80,7 +80,7 @@ SAAR_names = c()
 for (k in 1:length(myFiles4)) {
   SAAR_names[k] = strsplit(myFiles4, "[.]")[[k]][1]
   SAAR[[k]] = read.csv(myFiles4[k], stringsAsFactors = F,header = F)
-  SAAR[[k]] = SAAR[[k]][,-c(2:4)]
+  SAAR[[k]] = SAAR[[k]][,-c(3,4)]
   faultyRows=which(!grepl('ENS',SAAR[[k]][,1]))
   if(length(faultyRows)>0){
     SAAR[[k]] = SAAR[[k]][-c(which(!grepl('ENS',SAAR[[k]][,1]))),]
