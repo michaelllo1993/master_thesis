@@ -165,14 +165,15 @@ rule read_RData:
 
 rule count_repeat_unit_codons:
     input:
-        "{sample}_ids_mapper.csv"
+        mapper="{sample}_ids_mapper.csv",
+        data="data/readData.RData"
     params:
         repeatUnit = config["repeatUnit"],
         organisms = orderOrganisms
     output:
         "codon_frequency/{sample}_orthologues"
     shell:
-        "mkdir -p {output}; Rscript scripts/count_codons.R {input} {params.repeatUnit} {params.organisms}"
+        "mkdir -p {output}; Rscript scripts/count_codons.R {input.mapper} {params.repeatUnit} {params.organisms}"
 
 rule analyze_region_codon_frequencies:
     input:

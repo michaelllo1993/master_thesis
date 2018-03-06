@@ -48,7 +48,8 @@ colnames(orthologues) = organisms_names
 
 
 # The analysis overall ------------------------------------------------------------
-
+# Very important - order the cDNA list elements as they are in the orthologues mtx
+cDNA = cDNA[organisms_names]
 for (org in seq_len(ncol(orthologues))) {
   result = c()
   
