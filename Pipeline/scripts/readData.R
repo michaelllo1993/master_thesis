@@ -6,7 +6,7 @@ library(Biostrings)
 
 # Get the directory -------------------------------------------------------
 
-wd = getwd()
+wd = getwd()  
 
 # Read the protein sequences ----------------------------------------------
 

@@ -1,5 +1,7 @@
 
 
+
+
 # Load libraries ----------------------------------------------------------
 
 library(Biostrings)
@@ -13,7 +15,6 @@ wd = getwd()
 setwd(paste(wd, "/data", sep = ""))
 load("readData.RData")
 setwd("..")
-
 
 # Processing the input mapper file ----------------------------------------
 
@@ -94,23 +95,22 @@ for (org in seq_len(ncol(orthologues))) {
       }
     }
   }
-print(unique_codon_names)
-colnames(result) = unique_codon_names
-# Write the result to .csv file
-write.csv(
-  result,
-  file = paste(
-    sep = "",
-    getwd(),
-    "/codon_frequency/",
-    OoI,
-    "_orthologues/",
-    organisms_names[org],
-    "_codon_frequency_overall.csv"
-  ),
-  row.names = F
-)
-
+  colnames(result) = unique_codon_names
+  # Write the result to .csv file
+  write.csv(
+    result,
+    file = paste(
+      sep = "",
+      getwd(),
+      "/codon_frequency/",
+      OoI,
+      "_orthologues/",
+      organisms_names[org],
+      "_codon_frequency_overall.csv"
+    ),
+    row.names = F
+  )
+  
 }
 
 # Within signal peptides --------------------------------------------------
@@ -145,9 +145,14 @@ for (org in seq_len(ncol(orthologues))) {
         }
         # Get only the translated nucleotides
         translated = cdna[vec]
-        
         # Trim the sequence to the preticted length of signal peptide * 3
-        translated = translated[1:(sp_length * 3 - 1)]
+        translated = translated[1:(sp_length * 3)]
+        saar_start = SAAR[[org]][which(SAAR[[org]][, 2] == cdna_id), 4]
+        saar_length = SAAR[[org]][which(SAAR[[org]][, 2] == cdna_id), 3]
+        if (length(saar_start) > 0 && saar_start > 0) {
+          translated = translated[c(seq(1, (saar_start * 3), 1), seq((saar_start * 3 + 1) + (saar_length * 3), sp_length *
+                                                                       3))]
+        }
         # In case of faulty ("N") nucleotide - replace it with a random one
         translated[which(translated == "N")] = nucleotides[sample(1:4, 1)]
         # Sequence to codons and get the frequencies
@@ -168,7 +173,6 @@ for (org in seq_len(ncol(orthologues))) {
       }
     }
   }
-  print(unique_codon_names)
   colnames(result) = unique_codon_names
   # Write the result to .csv file
   write.csv(
@@ -204,53 +208,51 @@ for (org in seq_len(ncol(orthologues))) {
       cdna = s2c(cDNA[[org]]$SEQUENCE[which_cDNA])
       cdna_id = cDNA[[org]]$cDNA_ID[which_cDNA]
       # Get the predicted length of signal peptide and check if it exists
+      # Get the starting and stopping positions of the translated sequence
+      codon_start = c()
+      codon_start = cDNA[[org]]$START[which_cDNA][[1]]
+      codon_stop = c()
+      codon_stop = cDNA[[org]]$STOP[which_cDNA][[1]]
+      vec = c()
+      # Concatenate all translated region
+      for (j in seq_len(length(codon_start))) {
+        vec = append(x = vec,
+                     values = seq(codon_start[j], codon_stop[j], by = 1))
+        
+      }
+      # Get only the translated nucleotides
+      translated = cdna[vec]
       sp_length = SP[[org]][which(SP[[org]][, 2] == cdna_id), 3]
       if (length(sp_length) > 0) {
-        # Get the starting and stopping positions of the translated sequence
-        codon_start = c()
-        codon_start = cDNA[[org]]$START[which_cDNA][[1]]
-        codon_stop = c()
-        codon_stop = cDNA[[org]]$STOP[which_cDNA][[1]]
-        vec = c()
-        # Concatenate all translated region
-        for (j in seq_len(length(codon_start))) {
-          vec = append(x = vec,
-                       values = seq(codon_start[j], codon_stop[j], by = 1))
-          
-        }
-        # Get only the translated nucleotides
-        translated = cdna[vec]
-        
         # Cut the signal peptide from the sequence
         translated = translated[(1 + 3 * sp_length):length(translated)]
-        # In case of faulty ("N") nucleotide - replace it with a random one
-        translated[which(translated == "N")] = nucleotides[sample(1:4, 1)]
-        # Sequence to codons and get the frequencies
-        codons_freq = table(as.character(codons(DNAString(
-          c2s(translated)
-        ))))
-        
-        # Just unit of interest codons codons
-        avail_unit_codons_freq = codons_freq[unit_codons]
-        
-        # Combine results into a matrix
-        result[i, ] = append(cDNA[[org]]$cDNA_ID[which_cDNA], as.vector(avail_unit_codons_freq))
-        test = names(avail_unit_codons_freq)
-        test = test[which(!is.na(test))]
-        if (length(test) == length(unit_codons)) {
-          unique_codon_names = append("cDNA_ID", test)
-        }
+      }
+      # In case of faulty ("N") nucleotide - replace it with a random one
+      translated[which(translated == "N")] = nucleotides[sample(1:4, 1)]
+      # Sequence to codons and get the frequencies
+      codons_freq = table(as.character(codons(DNAString(
+        c2s(translated)
+      ))))
+      
+      # Just unit of interest codons codons
+      avail_unit_codons_freq = codons_freq[unit_codons]
+      
+      # Combine results into a matrix
+      result[i, ] = append(cDNA[[org]]$cDNA_ID[which_cDNA], as.vector(avail_unit_codons_freq))
+      test = names(avail_unit_codons_freq)
+      test = test[which(!is.na(test))]
+      if (length(test) == length(unit_codons)) {
+        unique_codon_names = append("cDNA_ID", test)
       }
     }
   }
-  print(unique_codon_names)
   colnames(result) = unique_codon_names
   # Write the result to .csv file
   write.csv(
     result,
     file = paste(
       sep = "",
-      getwd(),
+      wd,
       "/codon_frequency/",
       OoI,
       "_orthologues/",
@@ -296,11 +298,11 @@ for (org in seq_len(ncol(orthologues))) {
         }
         # Get only the translated nucleotides
         translated = cdna[vec]
-        
         # Cut the signal peptide from the sequence
         translated = translated[(3 * saar_start + 1):(3 * saar_start + 1 + (saar_length * 3 - 1))]
         # In case of faulty ("N") nucleotide - replace it with a random one
         translated[which(translated == "N")] = nucleotides[sample(1:4, 1)]
+        
         # Sequence to codons and get the frequencies
         codons_freq = table(as.character(codons(DNAString(
           c2s(translated)
@@ -319,7 +321,6 @@ for (org in seq_len(ncol(orthologues))) {
       }
     }
   }
-  print(unique_codon_names)
   colnames(result) = unique_codon_names
   # Write the result to .csv file
   write.csv(
@@ -337,3 +338,5 @@ for (org in seq_len(ncol(orthologues))) {
   )
   
 }
+
+gc()

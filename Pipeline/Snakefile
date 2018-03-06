@@ -174,15 +174,13 @@ rule count_repeat_unit_codons:
     shell:
         "mkdir -p {output}; Rscript scripts/count_codons.R {input} {params.repeatUnit} {params.organisms}"
 
-# rule analyze_region_codon_frequencies:
-#     input:
-#         expand("codon_frequency/{sample}_orthologues/{organism}_codon_frequency_overall.csv", organism=config["organisms"]),
-#         expand("codon_frequency/{sample}_orthologues/{organism}_codon_frequency_excluding_SP.csv", organism=config["organisms"]),
-#         expand("codon_frequency/{sample}_orthologues/{organism}_codon_frequency_SAAR.csv", organism=config["organisms"]),
-#         expand("codon_frequency/{sample}_orthologues/{organism}_codon_frequency_SP.csv", organism=config["organisms"])
-#     params:
-#         organism_of_interest = "{sample}"
-#     output:
-#
-#     shell:
-#         "Rscript {params.organism_of_interest}"
+rule analyze_region_codon_frequencies:
+    input:
+        "codon_frequency/{sample}_orthologues"
+    params:
+        organism_of_interest = "{sample}",
+        repeatUnit = config["repeatUnit"]
+    output:
+        "codon_frequency/{sample}_orthologues/codon_frequency_plots_{sample}_orthologues"
+    shell:
+        "mkdir -p {output}; Rscript scripts/region_codon_frequencies.R {params.organism_of_interest} {params.repeatUnit}"
