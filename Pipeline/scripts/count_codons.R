@@ -46,10 +46,17 @@ system(command)
 orthologues = read.csv(common_mapper_name, header = F)[, -1]
 colnames(orthologues) = organisms_names
 
-
-# The analysis overall ------------------------------------------------------------
 # Very important - order the cDNA list elements as they are in the orthologues mtx
 cDNA = cDNA[organisms_names]
+SP = SP[paste(organisms_names,"_signalp_positives",sep = "")]
+SAAR = SAAR[paste("extracted_sigp_",organisms_names,sep = "")]
+print(paste("org names",organisms_names))
+print(names(cDNA))
+print(names(SP))
+print(names(SAAR))
+
+# The analysis overall ------------------------------------------------------------
+
 for (org in seq_len(ncol(orthologues))) {
   result = c()
   
