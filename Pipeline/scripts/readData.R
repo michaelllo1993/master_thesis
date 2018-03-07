@@ -5,7 +5,7 @@
 library(Biostrings)
 
 # Get the directory -------------------------------------------------------
-
+cd
 wd = getwd()  
 
 # Read the protein sequences ----------------------------------------------
@@ -43,7 +43,6 @@ for (k in 1:length(myFiles2)) {
   cDNA_names[k] = strsplit(myFiles, "[.]")[[k]][1]
   cDNA[[k]] = read.csv(myFiles2[k], stringsAsFactors = F)
 }
-cDNA_names[k] = strsplit(myFiles2, "[.]")[[k]][1]
 names(cDNA) = cDNA_names
 
 ########### Split START and STOP values ##########
@@ -68,7 +67,7 @@ for (k in 1:length(myFiles3)) {
   SP[[k]] = read.table(myFiles3[k], stringsAsFactors = F)
   SP[[k]] = SP[[k]][,c(1,2,5)]
 }
-SP_names[k] = strsplit(myFiles3, "[.]")[[k]][1]
+
 names(SP) = SP_names
 
 # Read SAAR data within signal peptides -----------------------------------
