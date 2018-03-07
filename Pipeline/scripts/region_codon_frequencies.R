@@ -8,33 +8,32 @@ args = commandArgs(trailingOnly = TRUE)
 wd = getwd()
 OoI = args[1]
 repeat_unit = args[2]
-setwd(paste("codon_frequency/", OoI, "_orthologues", sep = ""))
-
+setwd(paste(wd,"/codon_frequency/", OoI, "_orthologues", sep = ""))
 
 # Get the files names -----------------------------------------------------
 
-myFiles_overall <- list.files(pattern = "*overall.csv")
+#myFiles_overall <- list.files(pattern = "*overall.csv")
 myFiles_overall_noSP <- list.files(pattern = "*excluding_SP.csv")
 myFiles_withinSP <- list.files(pattern = "*frequency_SP.csv")
 myFiles_withinSAAR <- list.files(pattern = "*SAAR.csv")
 
 # Read the data into matrices and preprocess them -------------------------
 # Overall codon usage
-overall = list()
-overall_names = c()
-for (k in 1:length(myFiles_overall)) {
-  overall_names[k] = paste(strsplit(myFiles_overall[k], "_")[[1]][1],
-                           strsplit(myFiles_overall[k], "_")[[1]][2],
-                           sep = "_")
-  overall[[k]] = read.csv(myFiles_overall[k],
-                          stringsAsFactors = F,
-                          header = T)
-  overall[[k]] = unique(overall[[k]])
-  overall[[k]] = overall[[k]][which(overall[[k]]$cDNA_ID != ""), ]
-  overall[[k]][is.na(overall[[k]])] = 0
-}
-names(overall) = overall_names
-
+# overall = list()
+# overall_names = c()
+# for (k in 1:length(myFiles_overall)) {
+#   overall_names[k] = paste(strsplit(myFiles_overall[k], "_")[[1]][1],
+#                            strsplit(myFiles_overall[k], "_")[[1]][2],
+#                            sep = "_")
+#   overall[[k]] = read.csv(myFiles_overall[k],
+#                           stringsAsFactors = F,
+#                           header = T)
+#   overall[[k]] = unique(overall[[k]])
+#   overall[[k]] = overall[[k]][which(overall[[k]]$cDNA_ID != ""), ]
+#   overall[[k]][is.na(overall[[k]])] = 0
+# }
+# names(overall) = overall_names
+# print("DONE")
 #Overall\SP
 overall_noSP = list()
 overall_noSP_names = c()
@@ -53,7 +52,7 @@ for (k in 1:length(myFiles_overall_noSP)) {
   overall_noSP[[k]][is.na(overall_noSP[[k]])] = 0
 }
 names(overall_noSP) = overall_noSP_names
-
+print("DONE")
 # Within SP
 withinSP = list()
 withinSP_names = c()
@@ -69,7 +68,7 @@ for (k in 1:length(myFiles_withinSP)) {
   withinSP[[k]][is.na(withinSP[[k]])] = 0
 }
 names(withinSP) = withinSP_names
-
+print("DONE")
 # Within SAAR
 withinSAAR = list()
 withinSAAR_names = c()
@@ -85,8 +84,7 @@ for (k in 1:length(myFiles_withinSAAR)) {
   withinSAAR[[k]][is.na(withinSAAR[[k]])] = 0
 }
 names(withinSAAR) = withinSAAR_names
-s"         "extracted_sigp_gallus_gallus"     
-[4] "extracted_sigp_gorilla_gorilla"    "extracted_sigp_macaca
+print("DONE")
 
 # Analyze the data --------------------------------------------------------
 
@@ -131,15 +129,26 @@ rownames(codons_SAAR_fraction) = names(withinSAAR)
 
 
 # Visualize the results ---------------------------------------------------
-
+print(paste(
+  wd,
+  "/codon_frequency/",
+  OoI,
+  "_orthologues",
+  "/plots_",
+  OoI,
+  "_orthologues/",
+  rownames(codons_SAAR_fraction)[1],
+  "_codon_usage_region.svg",
+  sep = ""
+))
 for (i in seq(1, dim(codons_SAAR_fraction)[1])) {
   svg(
     filename = paste(
       wd,
       "/codon_frequency/",
       OoI,
-      "_orthologues/",
-      "/plots_",
+      "_orthologues",
+      "/codon_frequency_plots_",
       OoI,
       "_orthologues/",
       rownames(codons_SAAR_fraction)[i],
