@@ -159,14 +159,16 @@ rule read_RData:
         expand("extracted_sigp_{organism}.out", organism=config["organisms"]),
         expand("{organism}_signalp_positives.out", organism=config["organisms"])
     output:
-        "data/readData.RData"
+        "data/readData"
     shell:
-        "Rscript scripts/readData.R"
+        "mkdir -p {output}; Rscript scripts/readData.R"
 
 rule count_repeat_unit_codons:
     input:
         mapper="{sample}_ids_mapper.csv",
-        data="data/readData.RData"
+        data_cDNA="data/readData_cDNA.rds",
+        data_SP="data/readData_SP.rds",
+        data_SAAR="data/readData_SAAR.rds"
     params:
         repeatUnit = config["repeatUnit"],
         organisms = orderOrganisms
@@ -185,3 +187,13 @@ rule analyze_region_codon_frequencies:
         "codon_frequency/{sample}_orthologues/codon_frequency_plots_{sample}_orthologues"
     shell:
         "mkdir -p {output}; Rscript scripts/region_codon_frequencies.R {params.organism_of_interest} {params.repeatUnit}"
+
+rule prepare_revtrans:
+    input:
+        data_cDNA="data/readData_cDNA.rds"
+    params:
+        organisms=orderOrganisms
+    output:
+        "revtrans_ready"
+    shell:
+        "mkdir -p {output}; Rscript scripts/prep2revtrans.R {params.organisms}"

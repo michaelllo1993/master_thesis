@@ -5,7 +5,6 @@
 library(Biostrings)
 
 # Get the directory -------------------------------------------------------
-cd
 wd = getwd()  
 
 # Read the protein sequences ----------------------------------------------
@@ -21,6 +20,9 @@ for (k in 1:length(myFiles)) {
 prot_names[k] = strsplit(myFiles, "[.]")[[k]][1]
 names(proteins) = prot_names
 
+setwd(paste(wd,"/data/readData",sep = ""))
+saveRDS(proteins, file = "readData_proteins.rds")
+
 # Read the mappers --------------------------------------------------------
 
 setwd(paste(wd, "/data/mappers/", sep = ""))
@@ -33,6 +35,9 @@ for (k in 1:length(myFiles1)) {
 }
 names(mapper) = map_names
 
+setwd(paste(wd,"/data/readData",sep = ""))
+saveRDS(mapper, file = "readData_mapper.rds")
+
 # Read the cDNA sequences -------------------------------------------------
 
 setwd(paste(wd, "/data/cDNAsequences/", sep = ""))
@@ -43,7 +48,7 @@ for (k in 1:length(myFiles2)) {
   cDNA_names[k] = strsplit(myFiles, "[.]")[[k]][1]
   cDNA[[k]] = read.csv(myFiles2[k], stringsAsFactors = F)
 }
-names(cDNA) = cDNA_names
+names(cDNA) = sapply(strsplit(cDNA_names,"_"), function(x) paste(x[1],x[2],sep = "_"))
 
 ########### Split START and STOP values ##########
 
@@ -55,6 +60,9 @@ for (org in seq(1, length(cDNA), by = 1)) {
     sort(as.numeric(strsplit(x, ";")[[1]])))
   #split by semicolon
 }
+
+setwd(paste(wd,"/data/readData",sep = ""))
+saveRDS(cDNA, file = "readData_cDNA.rds")
 
 # Read the predicted signal peptide cleavage sites ------------------------
 
@@ -69,6 +77,9 @@ for (k in 1:length(myFiles3)) {
 }
 
 names(SP) = SP_names
+
+setwd(paste(wd,"/data/readData",sep = ""))
+saveRDS(SP, file = "readData_SP.rds")
 
 # Read SAAR data within signal peptides -----------------------------------
 
@@ -88,8 +99,5 @@ for (k in 1:length(myFiles4)) {
 SAAR_names[k] = strsplit(myFiles4, "[.]")[[k]][1]
 names(SAAR) = SAAR_names
 
-
-# Save environment --------------------------------------------------------
-
-setwd(paste(wd, "/data/", sep = ""))
-save.image(file = "readData.RData")
+setwd(paste(wd,"/data/readData",sep = ""))
+saveRDS(SAAR, file = "readData_SAAR.rds")

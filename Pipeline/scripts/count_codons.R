@@ -12,8 +12,10 @@ library(seqinr)
 args = commandArgs(trailingOnly = TRUE)
 
 wd = getwd()
-setwd(paste(wd, "/data", sep = ""))
-load("readData.RData")
+setwd(paste(wd, "/data/readData", sep = ""))
+cDNA = readRDS("readData_cDNA.RData")
+SP = readRDS("readData_SP.RData")
+SAAR = readRDS("readData_SAAR.RData")
 setwd("..")
 
 # Processing the input mapper file ----------------------------------------
