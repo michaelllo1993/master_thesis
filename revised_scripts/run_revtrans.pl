@@ -5,6 +5,8 @@ use Cwd;
 use Data::Dumper;
 use List::MoreUtils 'first_index';
 
+#This script performs the cDNA sequences alignment based on the aligned protein sequences
+
 my $usage = <<EOF;
 
 USAGE: run_revtrans.pl <organism of interest Latin name> <organism exclusive ENS code>
@@ -18,6 +20,7 @@ my $output_file_csv1 = "$dir/$ARGV[0]_revtrans1.csv";
 my $output_file_csv2 = "$dir/$ARGV[0]_revtrans2.csv";
 my $output_file_csv = "$dir/$ARGV[0]_revtrans.csv";
 
+#prep2comp - Aligned protein sequences
 my $prep2comp_file = "$dir/prep2comp_$ARGV[0]_all.csv";
 print "\n\nStarting analysis in: " . $dir . "\n\n";
 
