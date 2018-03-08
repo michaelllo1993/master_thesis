@@ -45,8 +45,9 @@ myFiles2 <- list.files(pattern = "*.csv")
 cDNA = list()
 cDNA_names = c()
 for (k in 1:length(myFiles2)) {
-  cDNA_names[k] = strsplit(myFiles, "[.]")[[k]][1]
+  cDNA_names[k] = strsplit(myFiles2, "[.]")[[k]][1]
   cDNA[[k]] = read.csv(myFiles2[k], stringsAsFactors = F)
+  cDNA[[k]] = cDNA[[k]][!(cDNA[[k]][,1])=="",]
 }
 names(cDNA) = sapply(strsplit(cDNA_names,"_"), function(x) paste(x[1],x[2],sep = "_"))
 

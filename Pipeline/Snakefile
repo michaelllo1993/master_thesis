@@ -166,9 +166,9 @@ rule read_RData:
 rule count_repeat_unit_codons:
     input:
         mapper="{sample}_ids_mapper.csv",
-        data_cDNA="data/readData_cDNA.rds",
-        data_SP="data/readData_SP.rds",
-        data_SAAR="data/readData_SAAR.rds"
+        data_cDNA="data/readData/readData_cDNA.rds",
+        data_SP="data/readData/readData_SP.rds",
+        data_SAAR="data/readData/readData_SAAR.rds"
     params:
         repeatUnit = config["repeatUnit"],
         organisms = orderOrganisms
@@ -190,10 +190,8 @@ rule analyze_region_codon_frequencies:
 
 rule prepare_revtrans:
     input:
-        data_cDNA="data/readData_cDNA.rds"
-    params:
-        organisms=orderOrganisms
+        data_cDNA="data/readData/readData_cDNA.rds"
     output:
         "revtrans_ready"
     shell:
-        "mkdir -p {output}; Rscript scripts/prep2revtrans.R {params.organisms}"
+        "mkdir -p {output}; Rscript scripts/prep2revtrans.R"
