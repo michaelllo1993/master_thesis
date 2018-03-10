@@ -59,9 +59,6 @@ rule make_ENS_IDs_dict:
             w.writerow(codes.keys())
             w.writerow(codes.values())
 
-
-
-
 rule create_ensembl_ids_mapper:
     input:
         ortho_dataset="{sample}.tsv"
@@ -237,3 +234,14 @@ rule run_revtrans:
         "{sample}_revtrans.csv"
     shell:
         "perl scripts/run_revtrans.pl {params.organism} {params.organism_code} {input}"
+
+rule analyze_codon_changes_within_repeatUnit:
+    input:
+        codes_dict="ENS_IDs_dict_for_{sample}.csv",
+    params:
+        organism_of_interest="{sample}"
+        repeatUnit=config["repeatUnit"]
+    output:
+        "{sample}_changes_within_repeatUnit"
+    shell:
+        "mkdir -p {output}; Rscript scripts/codon_changes_within_repeat_unit.R {input} {params}"
