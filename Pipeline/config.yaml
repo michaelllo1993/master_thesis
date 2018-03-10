@@ -11,4 +11,4 @@ organisms:
 
 repeatUnit: "L"
 repeatThreshold: "5"
-region: "SP"
+region: "WHOLE"

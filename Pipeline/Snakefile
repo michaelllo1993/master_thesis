@@ -65,11 +65,22 @@ def selectFile(wildcards):
         print("Wrong region selected. Use 'SP' or 'WHOLE'!")
     return selectedFile
 
+def selectNeedleInput(wildcards):
+    if config["region"] == "SP":
+        selectedNeedleInput = expand("ensembl_parsed_{organism}.txt", organism=config["organisms"])
+    elif config["region"] == "WHOLE":
+        selectedNeedleInput = expand("{organism}.txt", organism=config["organisms"])
+    else:
+        selectedNeedleInput = 0
+        print("Wrong region selected. Use 'SP' or 'WHOLE'!")
+    return selectedNeedleInput
+
+
 rule run_needle:
     input:
         sequenceFile=selectFile,
         mapper="{sample}_ids_mapper.csv",
-        parsedProteinSequences=expand("ensembl_parsed_{organism}.txt", organism=config["organisms"])
+        parsedProteinSequences=selectNeedleInput
     params:
         organisms=orderOrganisms,
         region=config["region"]
@@ -195,3 +206,15 @@ rule prepare_revtrans:
         "revtrans_ready"
     shell:
         "mkdir -p {output}; Rscript scripts/prep2revtrans.R"
+
+rule run_revtrans:
+    input:
+        files_protein = "{sample}_prepared_sequence_comparison.csv",
+        files_cDNA=expand("revtrans_ready/prep2revtrans_full_{organism}.csv", organism=config["organisms"])
+    params:
+        organism="{sample}",
+        organism_code="ENSBTAP"
+    output:
+        "{sample}_revtrans.csv"
+    shell:
+        "perl scripts/run_revtrans.pl {params.organism} {params.organism_code} {input}"

@@ -19,7 +19,7 @@ my $ids = "";
 my $out_name="shortened_seq_$organism_name";
 my $counter = 0;
 my $num = 0;
-open(my $raw_data, '<', $file_name) or die "Could not open '$file_name' $! \n";
+open(my $raw_data, '<', $file_name) or die "Could not open	 '$file_name' $! \n";
 open (OUT, ">$num$out_name");
 while (my $line = <$raw_data>){
 	chomp $line;
@@ -50,6 +50,6 @@ system("cat *shortened_seq_$organism_name > ensembl_parsed_$organism_name.txt");
 my $file = $out_name;
 
 for (my $no = 0; $no <= $num; $no++) {
-	system("/home/mstolarczyk/Programs/signalp-4.1/signalp -t euk -f summary -u 0.34 -U 0.34 $no$file");
+	system("./software/signalp-4.1/signalp -t euk -f summary -u 0.34 -U 0.34 $no$file");
 	system("rm $no$file");
 }
