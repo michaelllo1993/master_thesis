@@ -237,9 +237,10 @@ rule run_revtrans:
 
 rule analyze_codon_changes_within_repeatUnit:
     input:
-        codes_dict="ENS_IDs_dict_for_{sample}.csv",
+        revtrans_file="{sample}_revtrans.csv",
+        codes_dict="ENS_IDs_dict_for_{sample}.csv"
     params:
-        organism_of_interest="{sample}"
+        organism_of_interest="{sample}",
         repeatUnit=config["repeatUnit"]
     output:
         "{sample}_changes_within_repeatUnit"
