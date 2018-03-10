@@ -1,4 +1,5 @@
 configfile: "config.yaml"
+
 rule prep_and_run_signalp:
     input:
         proteinSequences="{organism}.txt"
@@ -42,6 +43,24 @@ def orderOrganisms(wildcards):
     orgs.remove(wildcards.sample)
     orgs.insert(0,wildcards.sample)
     return orgs
+
+rule make_ENS_IDs_dict:
+    output:
+        "ENS_IDs_dict_for_{sample}.csv"
+    run:
+        import csv
+        codes={}
+        for org in config["organisms"]:
+            f=open(org+".txt","r")
+            line=f.readline()
+            codes[org] = re.match(r">([A-Z]+)([0-9]+)",line).groups()[0]
+        with open(output[0], 'w') as f:
+            w = csv.writer(f)
+            w.writerow(codes.keys())
+            w.writerow(codes.values())
+
+
+
 
 rule create_ensembl_ids_mapper:
     input:
