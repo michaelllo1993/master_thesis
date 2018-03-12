@@ -1,128 +1,219 @@
+
+
+# Loading libraries -------------------------------------------------------
+
 require(seqinr)
 require(Biostrings)
 
-options(warn=-1)
-wd = getwd()
-args = commandArgs(trailingOnly=TRUE)
+# Getting the command line arguments ------------------------------------------
 
+options(warn = -1)
+wd = getwd()
+args = commandArgs(trailingOnly = TRUE)
+
+#read the arguments
 revtrans_file = args[1]
-codes_dict=read.csv(args[2],stringsAsFactors = F)
+codes_dict = read.csv(args[2], stringsAsFactors = F)
 organism_of_interest_name = args[3]
 repeat_unit = args[4]
 
-
+#get all codons vector
+all_codon_names = append("---", sort(names(GENETIC_CODE)))
+#get the codons encoding the repeat forming AA
 unit_codons = names(which(GENETIC_CODE == repeat_unit))
-organism_of_interest_code=as.character(codes_dict[organism_of_interest_name])
+#get the ENSEMBL code of the organism of interest
+organism_of_interest_code = as.character(codes_dict[organism_of_interest_name])
+#get the organisms in the analysis
 organisms = colnames(codes_dict)
+#exclude the organism of interest
 tmp_organisms = organisms[-which(organisms == organism_of_interest_name)]
+#get the ENSEMBL code of the organism of all the organisms
 ensembl_exclusive_codes = as.character(codes_dict)
+#exclude the organism of interest
 tmp_codes = ensembl_exclusive_codes[-which(ensembl_exclusive_codes == organism_of_interest_code)]
 
-# Reading the data (output from run_revtrans.pl) --------------------------
-revtrans_data = as.matrix(read.csv(file = revtrans_file,header = F))
-organism_of_interest = lapply(1:length(tmp_codes),function(x) matrix(NaN,nrow = dim(revtrans_data)[1],ncol = dim(revtrans_data)[2]));
-for (org in seq(1,length(tmp_codes),by = 1)){
-  reg_ex = paste(tmp_codes[org],"[0-9]+",sep = "");
-  organism_of_interest[[org]] = revtrans_data[grep(pattern = reg_ex ,revtrans_data[,3],perl = T),]
+# Reading the data in --------------------------
+#read the file
+revtrans_data = as.matrix(read.csv(file = revtrans_file, header = F))
+#create an empty list that will store the data in an easily accessbile way
+organism_of_interest = lapply(1:length(tmp_codes), function(x)
+  matrix(
+    NaN,
+    nrow = dim(revtrans_data)[1],
+    ncol = dim(revtrans_data)[2]
+  ))
+
+for (org in seq(1, length(tmp_codes), by = 1)) {
+  reg_ex = paste(tmp_codes[org], "[0-9]+", sep = "")
+  
+  #filter just the rows with organism in loop
+  organism_of_interest[[org]] = revtrans_data[grep(pattern = reg_ex , revtrans_data[, 3], perl = T), ]
 }
+#name the list elements appropriately
 names(organism_of_interest) = tmp_organisms
 
 # Loop constructing thee lists with codons on leucine codons positions in organism of interest cDNA sequences --------
-OoI = lapply(1:length(organism_of_interest), function(x) lapply(1:length(unit_codons), function(x) NaN))
-OoI_SAAR = lapply(1:length(organism_of_interest), function(x) lapply(1:length(unit_codons), function(x) NaN))
-other_codons = c();
-other_codons_SAAR = c();
-for (org in seq(1,length(tmp_codes),by = 1)){
-  print(paste("Processing orgsnism: ",sep = "", tmp_organisms[org]))
-  for (l in seq(1, length(unit_codons),by = 1)){
-    for (i in seq(1, dim(organism_of_interest[[org]])[1],by = 1)){
-      check_for_ns = s2c(organism_of_interest[[org]][i,2]);
+#create an empty list that will store the data in an easily accessbile way
+OoI = lapply(1:length(organism_of_interest), function(x)
+  lapply(1:length(unit_codons), function(x)
+    NaN))
+#create an empty list that will store the data in an easily accessbile way
+OoI_SAAR = lapply(1:length(organism_of_interest), function(x)
+  lapply(1:length(unit_codons), function(x)
+    NaN))
+
+other_codons = c()
+other_codons_SAAR = c()
+
+for (org in seq(1, length(tmp_codes), by = 1)) {
+  for (l in seq(1, length(unit_codons), by = 1)) {
+    for (i in seq(1, dim(organism_of_interest[[org]])[1], by = 1)) {
+      #replace faulty "N" characters with "C"
+      check_for_ns = s2c(organism_of_interest[[org]][i, 2])
       check_for_ns[which(check_for_ns == "N")] = "C"
-      organism_of_interest[[org]][i,2] = c2s(check_for_ns)
-      organism_of_interest_codons = strsplit(organism_of_interest[[org]][i,2], "(?<=.{3})", perl = TRUE)[[1]]
+      organism_of_interest[[org]][i, 2] = c2s(check_for_ns)
+      #split the organism of interest cDNA sequence into codons (3 letter characters)
+      organism_of_interest_codons = strsplit(organism_of_interest[[org]][i, 2], "(?<=.{3})", perl = TRUE)[[1]]
+      #get the indices of codon forming repeats that is being analyzed in the iteration
       organism_of_interest_repeat_unit_indices = which(organism_of_interest_codons == unit_codons[l])
-      organism_of_interest_codons[which(organism_of_interest_codons == "---")] = "TGG"
-      other_codons_tmp = strsplit(organism_of_interest[[org]][i,4], "(?<=.{3})", perl = TRUE)[[1]][organism_of_interest_repeat_unit_indices]
-      other_codons = append(other_codons,other_codons_tmp)
-      # SAAR check and analysis
-      test = s2c(organism_of_interest[[org]][i,2])
-      test[s2c(organism_of_interest[[org]][i,2])=="-"] = "A"
-      aas = s2c(as.vector(translate(DNAStringSet(c2s(test)))))
-      index=grepRaw(c2s(rep(repeat_unit,5)),(c2s(aas)))
-      if (length(index) >= 1){
-        a=rle(aas)
-        run_length=a$lengths[which(a$values==repeat_unit)][which.max(a$lengths[which(a$values==repeat_unit)])]#run length
-        organism_of_interest_SAAR_indices = seq(from = index,to = (index+run_length-1),by = 1)
-        other_codons_SAAR_tmp1 = strsplit(organism_of_interest[[org]][i,2], "(?<=.{3})", perl = TRUE)[[1]][organism_of_interest_SAAR_indices]
+      #split the other organism cDNA sequence into codons (3 letter characters)
+      other_codons_tmp = strsplit(organism_of_interest[[org]][i, 4], "(?<=.{3})", perl = TRUE)[[1]][organism_of_interest_repeat_unit_indices]
+      #append to the resulting vector
+      other_codons = append(other_codons, other_codons_tmp)
+      #convert the gaps to "A" in order to use the translate function
+      test = s2c(organism_of_interest[[org]][i, 2])
+      test[s2c(organism_of_interest[[org]][i, 2]) == "-"] = "A"
+      #translate the cDNA to AAs to search for the SAARs
+      aas = s2c(as.vector(translate(DNAStringSet(c2s(
+        test
+      )))))
+      index = grepRaw(c2s(rep(repeat_unit, 5)), (c2s(aas)))
+      #execute the following block of code if there is any SAAR
+      if (length(index) >= 1) {
+        #search for consecutive AAs
+        a = rle(aas)
+        #get the length of the longest one
+        run_length = a$lengths[which(a$values == repeat_unit)][which.max(a$lengths[which(a$values ==
+                                                                                           repeat_unit)])]
+        #get the indices of the AAs forming SAAR
+        organism_of_interest_SAAR_indices = seq(
+          from = index,
+          to = (index + run_length - 1),
+          by = 1
+        )
+        #get the codons encoding the SAAR
+        other_codons_SAAR_tmp1 = strsplit(organism_of_interest[[org]][i, 2], "(?<=.{3})", perl = TRUE)[[1]][organism_of_interest_SAAR_indices]
+        #get only the one that is analyzed in the current iteration
         which_lcodon_analyzed = which(other_codons_SAAR_tmp1 == unit_codons[l])
         proper_indices = (index + which_lcodon_analyzed)  - 1
-        other_codons_SAAR_tmp = strsplit(organism_of_interest[[org]][i,4], "(?<=.{3})", perl = TRUE)[[1]][proper_indices]
-        other_codons_SAAR = append(other_codons_SAAR,other_codons_SAAR_tmp)
+        other_codons_SAAR_tmp = strsplit(organism_of_interest[[org]][i, 4], "(?<=.{3})", perl = TRUE)[[1]][proper_indices]
+        #append to the resulting vector
+        other_codons_SAAR = append(other_codons_SAAR, other_codons_SAAR_tmp)
       }
     }
-    OoI[[org]][[l]] = sort(table(other_codons),decreasing = T)
-    other_codons = c();
-    OoI_SAAR[[org]][[l]] = sort(table(other_codons_SAAR),decreasing = T)
-    other_codons_SAAR = c();
+    #copy the counted codons into the list
+    OoI[[org]][[l]] = sort(table(other_codons), decreasing = T)
+    other_codons = c()
+    #copy the counted codons into the list
+    OoI_SAAR[[org]][[l]] = sort(table(other_codons_SAAR), decreasing = T)
+    other_codons_SAAR = c()
+    
   }
 }
+#name the lists approprotely
 names(OoI) = tmp_organisms
-for (org in seq(1,length(OoI),by = 1)){
+for (org in seq(1, length(OoI), by = 1)) {
   names(OoI[[org]]) = unit_codons
 }
 
 names(OoI_SAAR) = tmp_organisms
-for (org in seq(1,length(OoI_SAAR),by = 1)){
+for (org in seq(1, length(OoI_SAAR), by = 1)) {
   names(OoI_SAAR[[org]]) = unit_codons
 }
 
 # results saving -------------------------------------------------------------
-all_codon_names = append("---",sort(names(GENETIC_CODE)))
+
 nms = names(OoI)
-for (org in seq(1,length(OoI),by = 1)){
-  output=matrix(data=NA,nrow = length(all_codon_names),ncol = 1)
+for (org in seq(1, length(OoI), by = 1)) {
+  #create an empty matrix for the results
+  output = matrix(data = NA,
+                  nrow = length(all_codon_names),
+                  ncol = 1)
+  #set the rownames to all codons possible
   rownames(output) = all_codon_names
-  for (l in seq(1,length(unit_codons),by = 1)){
+  for (l in seq(1, length(unit_codons), by = 1)) {
+    #create a matrix for temporary results
     tmp = as.matrix(OoI[[org]][[l]])
-    if(any(grep("N",rownames(tmp),perl = T))){
-      rows_to_delete = grep("N",rownames(tmp),perl = T)
-      tmp = tmp[-rows_to_delete,]
+    #search for faulty "N" nucleotides and delete the codons that consist of these
+    if (any(grep("N", rownames(tmp), perl = T))) {
+      rows_to_delete = grep("N", rownames(tmp), perl = T)
+      tmp = tmp[-rows_to_delete, ]
       tmp = as.matrix(tmp)
     }
-    if(any(grep('[a-z]',rownames(tmp),perl = T))){
-      rows_to_delete = grep('[a-z]',rownames(tmp),perl = T)
-      tmp = tmp[-rows_to_delete,]
+    #search for faulty lowercase nucleotides and delete the codons that consist of these
+    if (any(grep('[a-z]', rownames(tmp), perl = T))) {
+      rows_to_delete = grep('[a-z]', rownames(tmp), perl = T)
+      tmp = tmp[-rows_to_delete, ]
       tmp = as.matrix(tmp)
     }
-    output=merge(output,tmp,by="row.names",all=T)
-    output=as.matrix(output[,-1])
+    #merge the temporary and overall results by rownames an keep all results
+    output = merge(output, tmp, by = "row.names", all = T)
+    output = as.matrix(output[, -1])
     rownames(output) = all_codon_names
   }
-  output=output[,-1]
-  output[which(is.na(output))] = 0;
+  output = output[, -1]
+  #convert NAs to 0 - since that's what they mean
+  output[which(is.na(output))] = 0
+  #write the reslts into CSV file
   colnames(output) = unit_codons
-  write.csv(x = output,file = paste(wd,"/",organism_of_interest_name,"_changes_within_repeatUnit/codon_changes_within_repeat_unit_",nms[org],".csv",sep = ""),row.names = T)
+  write.csv(
+    x = output,
+    file = paste(
+      wd,
+      "/",
+      organism_of_interest_name,
+      "_changes_within_repeatUnit/codon_changes_within_repeat_unit_",
+      nms[org],
+      ".csv",
+      sep = ""
+    ),
+    row.names = T
+  )
 }
 
 # results saving L-SAARs --------------------------------------------------
 
 nms = names(OoI_SAAR)
-for (org in seq(1,length(OoI_SAAR),by = 1)){
-  output=matrix(data=NA,nrow = length(all_codon_names),ncol = 1)
+for (org in seq(1, length(OoI_SAAR), by = 1)) {
+  output = matrix(data = NA,
+                  nrow = length(all_codon_names),
+                  ncol = 1)
   rownames(output) = all_codon_names
-  for (l in seq(1,length(unit_codons),by = 1)){
+  for (l in seq(1, length(unit_codons), by = 1)) {
     tmp = as.matrix(OoI_SAAR[[org]][[l]])
-    if(any(grep("N",rownames(tmp),perl = T))){
-      rows_to_delete = grep("N",rownames(tmp),perl = T)
-      tmp = tmp[-rows_to_delete,]
+    if (any(grep("N", rownames(tmp), perl = T))) {
+      rows_to_delete = grep("N", rownames(tmp), perl = T)
+      tmp = tmp[-rows_to_delete, ]
     }
-    output=merge(output,tmp,by="row.names",all=T)
-    output=as.matrix(output[,-1])
+    output = merge(output, tmp, by = "row.names", all = T)
+    output = as.matrix(output[, -1])
     rownames(output) = all_codon_names
   }
-  output=output[,-1]
-  output[which(is.na(output))] = 0;
+  output = output[, -1]
+  output[which(is.na(output))] = 0
+  
   colnames(output) = unit_codons
-  write.csv(x = output,file = paste(wd,"/",organism_of_interest_name,"_changes_within_repeatUnit/codon_changes_within_SAAR_",nms[org],".csv",sep = ""),row.names = T)
+  write.csv(
+    x = output,
+    file = paste(
+      wd,
+      "/",
+      organism_of_interest_name,
+      "_changes_within_repeatUnit/codon_changes_within_SAAR_",
+      nms[org],
+      ".csv",
+      sep = ""
+    ),
+    row.names = T
+  )
 }
-
