@@ -245,4 +245,4 @@ rule analyze_codon_changes_within_repeatUnit:
     output:
         "{sample}_changes_within_repeatUnit"
     shell:
-        "mkdir -p {output}; Rscript scripts/codon_changes_within_repeat_unit.R {input} {params}"
+        "mkdir -p {output}; Rscript scripts/codon_changes_within_repeat_unit.R {input.revtrans_file} {input.codes_dict} {params.organism_of_interest} {params.repeatUnit}"
