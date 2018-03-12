@@ -246,3 +246,23 @@ rule analyze_codon_changes_within_repeatUnit:
         "{sample}_changes_within_repeatUnit"
     shell:
         "mkdir -p {output}; Rscript scripts/codon_changes_within_repeat_unit.R {input.revtrans_file} {input.codes_dict} {params.organism_of_interest} {params.repeatUnit}"
+
+def organismsNoSampleExpand(wildcards):
+    orgs = sorted(config["organisms"])
+    orgs.remove(wildcards.sample)
+    str1 = expand("{sampl}_changes_within_repeatUnit/codon_changes_within_repeat_unit_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str2 = expand("{sampl}_changes_within_repeatUnit/codon_changes_within_SAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    # str3 = expand("{sample}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sample="{sample}")
+    organisms = str1 + str2#+ str3
+    return organisms
+
+rule visualize_codon_changes_within_repeatUnit:
+    input:
+        files = organismsNoSampleExpand
+    params:
+        repeatUnit=config["repeatUnit"],
+        organism_of_interest="{sample}"
+    output:
+        "{sample}_changes_within_repeatUnit/visualization_{sample}"
+    shell:
+        "mkdir -p {output}; Rscript scripts/visualize_within_repeat_unit_codon_changes.R {input.files} {params.organism_of_interest} {params.repeatUnit}"
