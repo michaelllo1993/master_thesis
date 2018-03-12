@@ -217,3 +217,41 @@ for (org in seq(1, length(OoI_SAAR), by = 1)) {
     row.names = T
   )
 }
+
+
+# (repeat unit)\SAAR - calculate the differences and write files ----------------------------
+
+setwd(paste(
+  organism_of_interest_name,
+  "_changes_within_repeatUnit",
+  sep = ""
+))
+for (org in seq_len(length(nms))) {
+  myFiles1 <- list.files(pattern = paste("_unit_",nms[org], ".csv", sep = ""))
+  myFiles2 <- list.files(pattern = paste("_SAAR_",nms[org], ".csv", sep = ""))
+  X = read.csv(myFiles1)[, 1]
+  repeat_unit_data = read.csv(myFiles1)[, -1]
+  SAAR_data = read.csv(myFiles2)[, -1]
+  print(dim(repeat_unit_data))
+  print(dim(SAAR_data))
+  if (all(dim(repeat_unit_data) == dim(SAAR_data))) {
+    repeat_unit_no_SAAR_data = repeat_unit_data - SAAR_data
+    repeat_unit_no_SAAR_data = cbind(X, repeat_unit_no_SAAR_data)
+    write.csv(
+      x = repeat_unit_no_SAAR_data,
+      file = paste(
+        wd,
+        "/",
+        organism_of_interest_name,
+        "_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_",
+        nms[org],
+        ".csv",
+        sep = ""
+      ),
+      row.names = T
+    )
+  } else{
+    stop("The dimentions of the files are not equal!")
+  }
+}
+
