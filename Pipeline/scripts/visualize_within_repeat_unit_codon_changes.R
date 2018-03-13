@@ -38,12 +38,10 @@ for (file_name in codon_changes_files){
   other_OoI = gsub(".csv","",file_name)
   splitted=strsplit(other_OoI,"_")[[1]]
   other_OoI=paste(splitted[seq(length(splitted)-1,length(splitted))],collapse = "_")
-  print(other_OoI)
   #get the name of the region of interest which matches to input file name 
   RoI = names(which(sapply(regions, function(x) grepl(x,file_name))))
   #construct the name of the output image
   image_name = gsub(".csv",".svg",basename(file_name))
-  print(image_name)
   #read the data in
   occurrences=data.matrix(read.csv(file_name,header = T,sep = ",",row.names = all_codon_names))[,-1]
   #change 0 to NAs
