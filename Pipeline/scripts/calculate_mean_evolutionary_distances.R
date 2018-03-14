@@ -1,6 +1,7 @@
 library(seqinr)
+options(warn=-1)
 # args = commandArgs(trailingOnly = TRUE)
-setwd("~/Uczelnia/MGR/master_thesis/Pipeline/")
+# setwd("~/Uczelnia/MGR/master_thesis/Pipeline/")
 wd = getwd()
 
 test <- function(x) {
@@ -13,7 +14,8 @@ proteins = readRDS(paste(wd, "/data/readData/readData_proteins.rds", sep = ""))
 mapper = as.matrix(read.csv("bos_taurus_ids_mapper_common.csv", header = T)[,-1])
 no_of_proteins = dim(mapper)[1]
 list_distances = list()
-for (rep in seq_len(10)) {
+system("rm toAlignMEGA.fasta Alignment* Distance*")
+for (rep in seq_len(100)) {
   row_number = sample(1:no_of_proteins, 1)
   ids = mapper[row_number,]
   ids_names = names(ids)
@@ -40,7 +42,7 @@ for (rep in seq_len(10)) {
   
   system("megacc -a clustal_align_protein.mao -d toAlignMEGA.fasta -o Alignment -n -s",wait = T)
   system(
-    "megacc -a distance_estimation_pairwise_protein.mao -d Alignment.meg -o Distance -n -s",wait = T
+    "megacc -a distance_estimation_pairwise_protein.mao -d Alignment.meg -o Distance",wait = T
   )
   system("grep '^\\[[0-9]\\]\\s#' Distance.meg  > Distance_names.meg",wait = T)
   system("grep '^\\[[0-9]\\]\\  [0-9]' Distance.meg  > Distance_values.meg",wait = T)
@@ -76,9 +78,14 @@ for (rep in seq_len(10)) {
   list_distances[[rep]] = distances
   system("rm toAlignMEGA.fasta Alignment* Distance*")
 }
+summed = list_distances[[1]]
+summed[length(summed) > 0] = 0
+for(e in seq_len(length(list_distances))){
+  summed = list_distances[[e]] + summed
+}
+
+averaged=summed/length(list_distances)
+
+write.csv(x = averaged,file = paste(wd,"/mean_pairwise_evolutionary_distances.csv",sep = ""),row.names = T,col.names = T)
 
 
-
-# a=read.table("~/Uczelnia/MGR/master_thesis/test_EvolutionaryDistance/test_corrected.meg",sep = "\t",comment.char = "!",)
-# gsub(" ","\t",x = a)
-# grepl("\[1\]",a[1],perl = T)

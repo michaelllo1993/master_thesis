@@ -41,7 +41,10 @@ while (my $line = <IN>) {
 
 # Creating Ensemble ids mapper
 my @keys = keys %ids;
-my $iter = 0;
+my $iter = 1;
+print "0,";
+print join(',', @organisms );
+print "\n";
 for (my $l = 1; $l <= scalar(@keys); $l++) {
 	print "$iter";
 	my $norg = scalar(@organisms);

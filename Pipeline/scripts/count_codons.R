@@ -45,7 +45,7 @@ command = paste("grep -Ev 'NULL' ",
                 sep = "")
 system(command)
 # Read corrected file
-orthologues = read.csv(common_mapper_name, header = F)[, -1]
+orthologues = read.csv(common_mapper_name, header = F,skip = 1)[, -1]
 colnames(orthologues) = organisms_names
 
 # Very important - order the cDNA list elements as they are in the orthologues mtx
