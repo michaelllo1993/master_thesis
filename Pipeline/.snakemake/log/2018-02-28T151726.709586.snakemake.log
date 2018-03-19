@@ -1,5 +1,0 @@
-Building DAG of jobs...
-MissingInputException in line 19 of /home/mstolarczyk/Uczelnia/MGR/master_thesis/Pipeline/Snakefile:
-Missing input files for rule extract_signalp:
-5
-L

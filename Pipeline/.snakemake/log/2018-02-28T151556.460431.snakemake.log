@@ -1,4 +1,0 @@
-Building DAG of jobs...
-MissingInputException in line 2 of /home/mstolarczyk/Uczelnia/MGR/master_thesis/Pipeline/Snakefile:
-Missing input files for rule prep_and_run_signalp:
-bos_taurus.txt
