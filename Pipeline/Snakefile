@@ -2,7 +2,7 @@ configfile: "config.yaml"
 
 rule prep_and_run_signalp:
     input:
-        proteinSequences="{organism}.txt"
+        proteinSequences="data/proteinSequences/{organism}.txt"
     output:
         sigpResults="{organism}_sigp.out",
         parsedProteinSequences="ensembl_parsed_{organism}.txt"
@@ -66,8 +66,6 @@ rule create_ensembl_ids_mapper:
         organisms=orderOrganisms
     output:
         "{sample}_ids_mapper.csv"
-    wildcard_constraints:
-        sample="\w+\_\w+"
     shell:
         "perl 5create_ens_ids_mapper.pl {input} {params.organisms} > {output}"
 
