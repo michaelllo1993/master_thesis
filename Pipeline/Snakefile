@@ -126,12 +126,12 @@ rule prep_sigp_length_analysis:
         "perl 7prep_length_analysis.pl {input} {params.organisms} > {output}"
 
 rule sigp_length_analysis:
-	input:
-		"{sample}_to_sigp_length_analysis.csv"
-	output:
-		"{sample}_sigp_length_analysis.out"
-	shell:
-		"Rscript 8sigp_saar_length_analysis.R {input} > {output}"
+		input:
+			"{sample}_to_sigp_length_analysis.csv"
+		output:
+			"{sample}_sigp_length_analysis.out"
+		shell:
+			"Rscript 8sigp_saar_length_analysis.R {input} > {output}"
 
 rule prep_seq_comp:
     input:
@@ -189,6 +189,14 @@ rule read_RData:
         "data/readData"
     shell:
         "mkdir -p {output}; Rscript scripts/readData.R"
+
+rule download_data:
+    input:
+        organisms = orderOrganisms
+    output:
+        "data/downloaded_data"
+    shell:
+        "mkdir -p {output}; Rscript scripts/download_mapper_biomart.R; Rscript scripts/download_sequences_biomart.R"
 
 rule count_repeat_unit_codons:
     input:
@@ -252,7 +260,7 @@ def organismsNoSampleExpand(wildcards):
     orgs.remove(wildcards.sample)
     str1 = expand("{sampl}_changes_within_repeatUnit/codon_changes_within_repeat_unit_{organism}.csv",organism=orgs,sampl=wildcards.sample)
     str2 = expand("{sampl}_changes_within_repeatUnit/codon_changes_within_SAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
-    str3 = expand("{sample}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sample="{sample}")
+    str3 = expand("{sampl}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
     organisms = str1 + str2 + str3
     return organisms
 
