@@ -6,30 +6,27 @@ library(ape)
 require(svglite)
 require(msa)
 
+args = commandArgs(trailingOnly = TRUE)
+
 #suppress printing warning messages (which are caused by cbind in this case)
 options(warn=-1)
 #get command line arguments
-OoI = args
+OoI = args[1]
+algorithm = args[2]
+no_samples = as.numeric(args[3])
 #get working directory
 wd = getwd()
-#define function to be used using apply
-test <- function(x) {
-  row = strsplit(x, " ")[[1]]
-  row = as.numeric(row)
-  return(row)
-}
 #read protein sequences
 proteins = readRDS(paste(wd, "/data/readData/readData_proteins.rds", sep = ""))
 #read mapper with common orthologoues protein IDs
 mapper = as.matrix(read.csv(paste(OoI,"_ids_mapper_common.csv",sep = ""), header = T)[,-1])
 #get number of rows of the mapper 
-
 no_of_proteins = dim(mapper)[1]
 #prepare an empty list for final results
 list_distances = list()
 row_number=c()
 #main loop - 100 iteration = 100 random protein samples
-for (rep in seq_len(1000)) {
+for (rep in seq_len(no_samples)) {
   #draw row number
   row_number[rep] = sample(1:no_of_proteins, 1)
   #get the orthologous IDs
@@ -54,11 +51,12 @@ for (rep in seq_len(1000)) {
   }
   
   names(sequences) = ids_names
-  
+  #convert output vector with sequences to AAStringSet object with names
   sequences_converted = AAStringSet(sequences,use.names = T)
-  alignment = msa(sequences_converted,method = "Muscle")
+  #align the sequences
+  alignment = msa(sequences_converted,method = algorithm)
+  #calculate pairwise distances from the alignment 
   list_distances[[rep]] = dist.alignment(msaConvert(alignment,type = "seqinr::alignment"))
-  print(rep)
 }
 
 #average the results obtained from all iterations
@@ -74,12 +72,12 @@ for(e in seq_len(length(list_distances))){
 averaged=summed/length(list_distances)
 
 #write the averaged distance matrix to CSV file
-write.csv(x = as.matrix(averaged),file = paste(wd,"/mean_pairwise_evolutionary_distances.csv",sep = ""),row.names = T,col.names = T)
+write.csv(x = as.matrix(averaged),file = paste(wd,"/",OoI,"_mean_pairwise_evolutionary_distances.csv",sep = ""),row.names = T,col.names = T)
 #generate a phylogenetic tree based on averged pairwise distances 
 svglite(file="phylogenetic_tree.svg",
         width=40, 
         height=30, 
         pointsize=50)
 plot(as.phylo(hclust((averaged),method = "ward.D2")), cex = 1, label.offset = 0.01,main = "Phylogenetic tree; hierarchical clusetring using UPGMA metod",sub = 
-       paste("Based on alignment of", rep ,"randomly selected protein sequences"),edge.width = 3)
+       paste("Based on alignment of", rep ,"randomly selected protein sequences using",algorithm,"algorithm"),edge.width = 3)
 dev.off()

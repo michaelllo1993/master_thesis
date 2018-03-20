@@ -12,3 +12,5 @@ organisms:
 repeatUnit: "L"
 repeatThreshold: "5"
 region: "WHOLE"
+MSAseqNumber: "100"
+MSAalgorithm: "Muscle"
