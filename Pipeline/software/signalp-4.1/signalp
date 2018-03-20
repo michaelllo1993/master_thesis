@@ -10,11 +10,11 @@
 
 # full path to the signalp-4.1 directory on your system (mandatory)
 BEGIN {
-    $ENV{SIGNALP} = '/home/mstolarczyk/Programs/signalp-4.1';
+    $ENV{SIGNALP} = '/SAARpipeline/Pipeline';
 }
 
 # determine where to store temporary files (must be writable to all users)
-my $outputDir = "/var/tmp";
+my $outputDir = "./var/tmp";
 
 # max number of sequences per run (any number can be handled)
 my $MAX_ALLOWED_ENTRIES=10000;

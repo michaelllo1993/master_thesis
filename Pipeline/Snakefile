@@ -20,7 +20,7 @@ rule analyze_signalp:
 rule extract_signalp:
     input:
         sigpPositives="results/SP/{organism}_signalp_positives.out",
-        parsedProteinSequences="results/SP/ensembl_parsed_{organism}.txt",
+        parsedProteinSequences="results/SP/ensembl_parsed_{organism}.txt"
     params:
         repeatUnit=config["repeatUnit"],
         repeatThreshold=config["repeatThreshold"]
@@ -125,12 +125,12 @@ rule prep_sigp_length_analysis:
         "mkdir -p results/SP; perl scripts/7prep_length_analysis.pl {input} {params.organisms} > {output}"
 
 rule sigp_length_analysis:
-	input:
-		"results/SP/{sample}_to_sigp_length_analysis.csv"
-	output:
-		"results/SP/{sample}_sigp_length_analysis.out"
-	shell:
-		"mkdir -p results/SP; Rscript scripts/8sigp_saar_length_analysis.R {input} > {output}"
+    input:
+        "results/SP/{sample}_to_sigp_length_analysis.csv"
+    output:
+        "results/SP/{sample}_sigp_length_analysis.out"
+    shell:
+        "mkdir -p results/SP; Rscript scripts/8sigp_saar_length_analysis.R {input} > {output}"
 
 rule prep_seq_comp:
     input:
@@ -185,9 +185,13 @@ rule read_RData:
         expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"]),
         expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"])
     output:
-        "data/readData"
+        directory="data/readData",
+        data_cDNA="data/readData/readData_cDNA.rds",
+        data_SP="data/readData/readData_SP.rds",
+        data_SAAR="data/readData/readData_SAAR.rds",
+	data_mapper="data/readData/readData_mapper.rds"
     shell:
-        "mkdir -p {output}; Rscript scripts/readData.R"
+        "mkdir -p {output.directory}; Rscript scripts/readData.R"
 
 rule download_data:
     input:
@@ -204,20 +208,20 @@ rule count_repeat_unit_codons:
         data_SP="data/readData/readData_SP.rds",
         data_SAAR="data/readData/readData_SAAR.rds"
     params:
-        repeatUnit = config["repeatUnit"],
-        organisms = orderOrganisms
+        repeatUnit=config["repeatUnit"],
+        organisms=orderOrganisms
     output:
-        output_dir="results/codon_frequency/{sample}_orthologues",
-        "data/orthoMappers/{sample}_ids_mapper_common.csv"
+        directory="results/codon_frequency/{sample}_orthologues",
+        mapper="data/orthoMappers/{sample}_ids_mapper_common.csv"
     shell:
-        "mkdir -p {output.output_dir}; Rscript scripts/count_codons.R {input.mapper} {params.repeatUnit} {params.organisms}"
+        "mkdir -p {output.directory}; Rscript scripts/count_codons.R {input.mapper} {params.repeatUnit} {params.organisms}"
 
 rule analyze_region_codon_frequencies:
     input:
         "results/codon_frequency/{sample}_orthologues"
     params:
-        organism_of_interest = "{sample}",
-        repeatUnit = config["repeatUnit"]
+        organism_of_interest="{sample}",
+        repeatUnit=config["repeatUnit"]
     output:
         "results/codon_frequency/{sample}_orthologues/codon_frequency_plots_{sample}_orthologues"
     shell:
