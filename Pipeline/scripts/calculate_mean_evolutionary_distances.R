@@ -72,9 +72,9 @@ for(e in seq_len(length(list_distances))){
 averaged=summed/length(list_distances)
 
 #write the averaged distance matrix to CSV file
-write.csv(x = as.matrix(averaged),file = paste(wd,"/",OoI,"_mean_pairwise_evolutionary_distances.csv",sep = ""),row.names = T,col.names = T)
+write.csv(x = as.matrix(averaged),file = paste(wd,"/results/",OoI,"_mean_pairwise_evolutionary_distances.csv",sep = ""),row.names = T,col.names = T)
 #generate a phylogenetic tree based on averged pairwise distances 
-svglite(file="phylogenetic_tree.svg",
+svglite(file="results/phylogenetic_tree.svg",
         width=40, 
         height=30, 
         pointsize=50)

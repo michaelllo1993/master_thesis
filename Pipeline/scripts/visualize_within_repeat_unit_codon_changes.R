@@ -70,7 +70,7 @@ for (file_name in codon_changes_files){
   if(file.exists(paste(dir,"/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""))){
     write(string,file = paste(dir,"/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
   } else{
-    header = paste(sep=",","higher_organism","lower_organism","region","Kappa estimate","CI","p-value")
+    header = paste(sep=",","organism_of_interest","other_organism","region","Kappa estimate","CI","p-value")
     write(header,file = paste(dir,"/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
     write(string,file = paste(dir,"/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
   }

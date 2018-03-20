@@ -4,39 +4,39 @@ rule prep_and_run_signalp:
     input:
         proteinSequences="data/proteinSequences/{organism}.txt"
     output:
-        sigpResults="{organism}_sigp.out",
-        parsedProteinSequences="ensembl_parsed_{organism}.txt"
+        sigpResults="results/SP/{organism}_sigp.out",
+        parsedProteinSequences="results/SP/ensembl_parsed_{organism}.txt"
     shell:
-        "perl 1prep_and_run_signalp.pl {input.proteinSequences} > {output.sigpResults}"
+        "mkdir -p results/SP; perl scripts/1prep_and_run_signalp.pl {input.proteinSequences} > {output.sigpResults}"
 
 rule analyze_signalp:
     input:
-        sigpResults="{organism}_sigp.out"
+        sigpResults="results/SP/{organism}_sigp.out"
     output:
-        sigpPositives="{organism}_signalp_positives.out"
+        sigpPositives="results/SP/{organism}_signalp_positives.out"
     shell:
-        "perl 2analyze_signalp.pl {input} > {output}"
+        "mkdir -p results/SP; perl scripts/2analyze_signalp.pl {input} > {output}"
 
 rule extract_signalp:
     input:
-        sigpPositives="{organism}_signalp_positives.out",
-        parsedProteinSequences="ensembl_parsed_{organism}.txt",
+        sigpPositives="results/SP/{organism}_signalp_positives.out",
+        parsedProteinSequences="results/SP/ensembl_parsed_{organism}.txt",
     params:
         repeatUnit=config["repeatUnit"],
         repeatThreshold=config["repeatThreshold"]
     output:
-        extractedSigp="extracted_sigp_{organism}.out"
+        extractedSigp="results/SP/extracted_sigp_{organism}.out"
     shell:
-        "perl 3extract_signalp.pl {input.sigpPositives} {input.parsedProteinSequences} {params.repeatUnit} {params.repeatThreshold} > {output}"
+        "mkdir -p results/SP; perl scripts/3extract_signalp.pl {input.sigpPositives} {input.parsedProteinSequences} {params.repeatUnit} {params.repeatThreshold} > {output}"
 
 
 rule prep_data_for_wholeseq_needle:
     input:
-        "{sample}.txt"
+        "data/proteinSequences/{organism}.txt"
     output:
-        "{sample}_wholeSequence.out"
+        "results/needle/{sample}_wholeSequence.out"
     shell:
-        "perl 4prep_needle.pl {input} > {output}"
+        "mkdir -p results/needle; perl scripts/4prep_needle.pl {input} > {output}"
 
 def orderOrganisms(wildcards):
     orgs = sorted(config["organisms"])
@@ -45,13 +45,15 @@ def orderOrganisms(wildcards):
     return orgs
 
 rule make_ENS_IDs_dict:
+    input:
+        files=expand("data/proteinSequences/{organism}.txt",organism=config["organisms"])
     output:
         "ENS_IDs_dict_for_{sample}.csv"
     run:
         import csv
         codes={}
         for org in config["organisms"]:
-            f=open(org+".txt","r")
+            f=open("data/proteinSequences/"+org+".txt","r")
             line=f.readline()
             codes[org] = re.match(r">([A-Z]+)([0-9]+)",line).groups()[0]
         with open(output[0], 'w') as f:
@@ -61,19 +63,19 @@ rule make_ENS_IDs_dict:
 
 rule create_ensembl_ids_mapper:
     input:
-        ortho_dataset="{sample}.tsv"
+        ortho_dataset="data/orthoMappers/{sample}.tsv"
     params:
         organisms=orderOrganisms
     output:
-        "{sample}_ids_mapper.csv"
+        "data/orthoMappers/{sample}_ids_mapper.csv"
     shell:
-        "perl 5create_ens_ids_mapper.pl {input} {params.organisms} > {output}"
+        "mkdir -p data/orthoMappers; perl scripts/5create_ens_ids_mapper.pl {input} {params.organisms} > {output}"
 
 def selectFile(wildcards):
     if config["region"] == "SP":
-        selectedFile = "extracted_sigp_" + wildcards.sample + ".out"
+        selectedFile = "results/SP/extracted_sigp_" + wildcards.sample + ".out"
     elif config["region"] == "WHOLE":
-        selectedFile = wildcards.sample + "_wholeSequence.out"
+        selectedFile = "results/needle/" + wildcards.sample + "_wholeSequence.out"
     else:
         selectedFile = 0
         print("Wrong region selected. Use 'SP' or 'WHOLE'!")
@@ -81,9 +83,9 @@ def selectFile(wildcards):
 
 def selectNeedleInput(wildcards):
     if config["region"] == "SP":
-        selectedNeedleInput = expand("ensembl_parsed_{organism}.txt", organism=config["organisms"])
+        selectedNeedleInput = expand("results/SP/ensembl_parsed_{organism}.txt", organism=config["organisms"])
     elif config["region"] == "WHOLE":
-        selectedNeedleInput = expand("{organism}.txt", organism=config["organisms"])
+        selectedNeedleInput = expand("data/proteinSequences/{organism}.txt", organism=config["organisms"])
     else:
         selectedNeedleInput = 0
         print("Wrong region selected. Use 'SP' or 'WHOLE'!")
@@ -93,64 +95,63 @@ def selectNeedleInput(wildcards):
 rule run_needle:
     input:
         sequenceFile=selectFile,
-        mapper="{sample}_ids_mapper.csv",
+        mapper="data/orthoMappers/{sample}_ids_mapper.csv",
         parsedProteinSequences=selectNeedleInput
     params:
         organisms=orderOrganisms,
         region=config["region"]
     output:
-        "{sample}.needle_out"
+        "results/needle/{sample}.needle_out"
     shell:
-        "perl 6needle_wrapper.pl {input.sequenceFile} {input.mapper} {params.region} {params.organisms}  > {output}"
+        "mkdir -p results/needle; perl scripts/6needle_wrapper.pl {input.sequenceFile} {input.mapper} {params.region} {params.organisms}  > {output}"
 
 rule merge_all_extracted_sigps:
     input:
-        expand("extracted_sigp_{organism}.out", organism=config["organisms"])
+        expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"])
     output:
-        expand("extracted_sigp_{organism}.out", organism=config["organisms"]),
-        "extracted_sigp_all.out"
+        "results/SP/extracted_sigp_all.out"
     shell:
-        "cat {input} >> {output}"
+        "mkdir -p results/SP; cat {input} >> {output}"
 
 rule prep_sigp_length_analysis:
     input:
-        "extracted_sigp_all.out",
-        "{sample}_ids_mapper.csv"
+        "results/SP/extracted_sigp_all.out",
+        "data/orthoMappers/{sample}_ids_mapper.csv"
     params:
         organisms=orderOrganisms
     output:
-        "{sample}_to_sigp_length_analysis.csv"
+        "results/SP/{sample}_to_sigp_length_analysis.csv"
     shell:
-        "perl 7prep_length_analysis.pl {input} {params.organisms} > {output}"
+        "mkdir -p results/SP; perl scripts/7prep_length_analysis.pl {input} {params.organisms} > {output}"
 
 rule sigp_length_analysis:
-		input:
-			"{sample}_to_sigp_length_analysis.csv"
-		output:
-			"{sample}_sigp_length_analysis.out"
-		shell:
-			"Rscript 8sigp_saar_length_analysis.R {input} > {output}"
+	input:
+		"results/SP/{sample}_to_sigp_length_analysis.csv"
+	output:
+		"results/SP/{sample}_sigp_length_analysis.out"
+	shell:
+		"mkdir -p results/SP; Rscript scripts/8sigp_saar_length_analysis.R {input} > {output}"
 
 rule prep_seq_comp:
     input:
-        "{sample}.needle_out",
-        "{sample}_ids_mapper.csv"
+        "results/needle/{sample}.needle_out",
+        "data/orthoMappers/{sample}_ids_mapper.csv"
     params:
         organisms=orderOrganisms
     output:
-        "{sample}_prepared_sequence_comparison.csv"
+        "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv"
     shell:
-        "perl 9prepare_sequence_comparison.pl {input} {params.organisms} > {output}"
+        "perl scripts/9prepare_sequence_comparison.pl {input} {params.organisms} > {output}"
 
 rule sequence_comp:
     input:
-        "{sample}_prepared_sequence_comparison.csv"
+        "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv"
     params:
         repeatUnit=config["repeatUnit"]
     output:
-        "{sample}_orthoAAstats"
+        "results/sequenceComparison/{sample}_orthoAAstats"
     shell:
-        "mkdir -p {output}; Rscript 10sequence_comparison.R {input} {params.repeatUnit}"
+        "mkdir -p {output}; Rscript scripts/10sequence_comparison.R {input} {params.repeatUnit}"
 
 rule prepare_cDNA_sequences:
     input:
@@ -181,8 +182,8 @@ rule read_RData:
         expand("data/cDNAsequences/{organism}_cDNA.csv", organism=config["organisms"]),
         expand("data/mappers/{organism}_mapper.csv", organism=config["organisms"]),
         expand("data/proteinSequences/{organism}.csv", organism=config["organisms"]),
-        expand("extracted_sigp_{organism}.out", organism=config["organisms"]),
-        expand("{organism}_signalp_positives.out", organism=config["organisms"])
+        expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"]),
+        expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"])
     output:
         "data/readData"
     shell:
@@ -198,7 +199,7 @@ rule download_data:
 
 rule count_repeat_unit_codons:
     input:
-        mapper="{sample}_ids_mapper.csv",
+        mapper="data/orthoMappers/{sample}_ids_mapper.csv",
         data_cDNA="data/readData/readData_cDNA.rds",
         data_SP="data/readData/readData_SP.rds",
         data_SAAR="data/readData/readData_SAAR.rds"
@@ -206,19 +207,19 @@ rule count_repeat_unit_codons:
         repeatUnit = config["repeatUnit"],
         organisms = orderOrganisms
     output:
-        "codon_frequency/{sample}_orthologues",
-        "{sample}_ids_mapper_common.csv"
+        output_dir="results/codon_frequency/{sample}_orthologues",
+        "data/orthoMappers/{sample}_ids_mapper_common.csv"
     shell:
-        "mkdir -p {output}; Rscript scripts/count_codons.R {input.mapper} {params.repeatUnit} {params.organisms}"
+        "mkdir -p {output.output_dir}; Rscript scripts/count_codons.R {input.mapper} {params.repeatUnit} {params.organisms}"
 
 rule analyze_region_codon_frequencies:
     input:
-        "codon_frequency/{sample}_orthologues"
+        "results/codon_frequency/{sample}_orthologues"
     params:
         organism_of_interest = "{sample}",
         repeatUnit = config["repeatUnit"]
     output:
-        "codon_frequency/{sample}_orthologues/codon_frequency_plots_{sample}_orthologues"
+        "results/codon_frequency/{sample}_orthologues/codon_frequency_plots_{sample}_orthologues"
     shell:
         "mkdir -p {output}; Rscript scripts/region_codon_frequencies.R {params.organism_of_interest} {params.repeatUnit}"
 
@@ -226,40 +227,40 @@ rule prepare_revtrans:
     input:
         data_cDNA="data/readData/readData_cDNA.rds"
     output:
-        "revtrans_ready"
+        "results/revtrans"
     shell:
         "mkdir -p {output}; Rscript scripts/prep2revtrans.R"
 
 rule run_revtrans:
     input:
-        files_protein = "{sample}_prepared_sequence_comparison.csv",
-        files_cDNA=expand("revtrans_ready/prep2revtrans_full_{organism}.csv", organism=config["organisms"])
+        files_protein = "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv",
+        files_cDNA=expand("results/revtrans/prep2revtrans_full_{organism}.csv", organism=config["organisms"])
     params:
         organism="{sample}",
         organism_code="ENSBTAP"
     output:
-        "{sample}_revtrans.csv"
+        "results/revtrans/{sample}_revtrans.csv"
     shell:
         "perl scripts/run_revtrans.pl {params.organism} {params.organism_code} {input}"
 
 rule analyze_codon_changes_within_repeatUnit:
     input:
-        revtrans_file="{sample}_revtrans.csv",
+        revtrans_file="results/revtrans/{sample}_revtrans.csv",
         codes_dict="ENS_IDs_dict_for_{sample}.csv"
     params:
         organism_of_interest="{sample}",
         repeatUnit=config["repeatUnit"]
     output:
-        "{sample}_changes_within_repeatUnit"
+        "results/revtrans/{sample}_changes_within_repeatUnit"
     shell:
         "mkdir -p {output}; Rscript scripts/codon_changes_within_repeat_unit.R {input.revtrans_file} {input.codes_dict} {params.organism_of_interest} {params.repeatUnit}"
 
 def organismsNoSampleExpand(wildcards):
     orgs = sorted(config["organisms"])
     orgs.remove(wildcards.sample)
-    str1 = expand("{sampl}_changes_within_repeatUnit/codon_changes_within_repeat_unit_{organism}.csv",organism=orgs,sampl=wildcards.sample)
-    str2 = expand("{sampl}_changes_within_repeatUnit/codon_changes_within_SAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
-    str3 = expand("{sampl}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str1 = expand("results/revtrans/{sampl}_changes_within_repeatUnit/codon_changes_within_repeat_unit_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str2 = expand("results/revtrans/{sampl}_changes_within_repeatUnit/codon_changes_within_SAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str3 = expand("results/revtrans/{sampl}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
     organisms = str1 + str2 + str3
     return organisms
 
@@ -270,19 +271,19 @@ rule visualize_codon_changes_within_repeatUnit:
         repeatUnit=config["repeatUnit"],
         organism_of_interest="{sample}"
     output:
-        "{sample}_changes_within_repeatUnit/visualization_{sample}"
+        "results/revtrans/{sample}_changes_within_repeatUnit/visualization_{sample}"
     shell:
         "mkdir -p {output}; Rscript scripts/visualize_within_repeat_unit_codon_changes.R {input.files} {params.organism_of_interest} {params.repeatUnit}"
 
 rule calculate_mean_pairwise_evolutionary_distances:
     input:
         data_proteins="data/readData/readData_proteins.rds",
-        mapper_common="{sample}_ids_mapper_common.csv",
+        mapper_common="data/orthoMappers/{sample}_ids_mapper_common.csv",
     params:
         organism_of_interest="{sample}",
         algorithm = config["MSAalgorithm"],
         no_sequences = config["MSAseqNumber"]
     output:
-        "{sample}_mean_pairwise_evolutionary_distances.csv"
+        "results/{sample}_mean_pairwise_evolutionary_distances.csv"
     shell:
         "Rscript scripts/calculate_mean_evolutionary_distances.R {params.organism_of_interest} {params.algorithm} {params.no_sequences}"

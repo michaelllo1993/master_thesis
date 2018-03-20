@@ -176,7 +176,7 @@ for (org in seq_len(ncol(orthologues))) {
     file = paste(
       sep = "",
       getwd(),
-      "/codon_frequency/",
+      "/results/codon_frequency/",
       OoI,
       "_orthologues/",
       organisms_names[org],
@@ -244,7 +244,7 @@ for (org in seq_len(ncol(orthologues))) {
     file = paste(
       sep = "",
       wd,
-      "/codon_frequency/",
+      "/results/codon_frequency/",
       OoI,
       "_orthologues/",
       organisms_names[org],
@@ -314,7 +314,7 @@ for (org in seq_len(ncol(orthologues))) {
     file = paste(
       sep = "",
       getwd(),
-      "/codon_frequency/",
+      "/results/codon_frequency/",
       OoI,
       "_orthologues/",
       organisms_names[org],
