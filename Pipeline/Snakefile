@@ -32,7 +32,7 @@ rule extract_signalp:
 
 rule prep_data_for_wholeseq_needle:
     input:
-        "data/proteinSequences/{organism}.txt"
+        "data/proteinSequences/{sample}.txt"
     output:
         "results/needle/{sample}_wholeSequence.out"
     shell:
@@ -52,14 +52,17 @@ rule make_ENS_IDs_dict:
     run:
         import csv
         codes={}
-        for org in config["organisms"]:
-            f=open("data/proteinSequences/"+org+".txt","r")
-            line=f.readline()
-            codes[org] = re.match(r">([A-Z]+)([0-9]+)",line).groups()[0]
+        orgs = sorted(config["organisms"])
+        orgs.remove(wildcards.sample)
+        orgs.insert(0,wildcards.sample)
         with open(output[0], 'w') as f:
             w = csv.writer(f)
-            w.writerow(codes.keys())
-            w.writerow(codes.values())
+            for org in orgs:
+                f=open("data/proteinSequences/"+org+".txt","r")
+                line=f.readline()
+                codes[org] = re.match(r">([A-Z]+)([0-9]+)",line).groups()[0]
+                w.writerow([org]+[codes[org]])
+
 
 rule create_ensembl_ids_mapper:
     input:
@@ -96,6 +99,7 @@ rule run_needle:
     input:
         sequenceFile=selectFile,
         mapper="data/orthoMappers/{sample}_ids_mapper.csv",
+        codes_mapper="ENS_IDs_dict_for_{sample}.csv",
         parsedProteinSequences=selectNeedleInput
     params:
         organisms=orderOrganisms,
@@ -103,7 +107,7 @@ rule run_needle:
     output:
         "results/needle/{sample}.needle_out"
     shell:
-        "mkdir -p results/needle; perl scripts/6needle_wrapper.pl {input.sequenceFile} {input.mapper} {params.region} {params.organisms}  > {output}"
+        "mkdir -p results/needle; perl scripts/6needle_wrapper.pl {input.sequenceFile} {input.mapper} {input.codes_mapper} {params.region} {params.organisms}  > {output}"
 
 rule merge_all_extracted_sigps:
     input:

@@ -6,7 +6,7 @@ use List::MoreUtils 'first_index';
 
 my $usage = <<EOF;
 
-USAGE: 6needle_wrapper.pl <extracted_sigp_organism.out> <organism_ids_mapper.csv> <organisms in the right order> <region of intrest (SP/WHOLE)>
+USAGE: 6needle_wrapper.pl <extracted_sigp_organism.out> <organism_ids_mapper.csv> <codes_mapper> <organisms in the right order> <region of intrest (SP/WHOLE)>
 
 EOF
 my $dir = getcwd;
@@ -14,6 +14,7 @@ my $dir = getcwd;
 my $sigpL_ALL_FILE = shift @ARGV;
 system("sed -i 's/\"//g' $sigpL_ALL_FILE");
 my $ids_mapper = shift @ARGV;
+my $codes_mapper = shift @ARGV;
 my $region = shift @ARGV;
 my @organisms = @ARGV;
 
@@ -35,23 +36,15 @@ close(IN0);
 
 
 # Get letter codes of all analyzed organisms
-my $remember = $i;
+open (IN, "+<", $codes_mapper);
 my @string;
-my $multiplier = 1;
-for(my $i = 0; $i < scalar(@organisms); $i++){
-	my $rnd = int(rand($remember));
-	if(${$HoA{$organisms[$i]}}[$rnd] eq "NULL"){
-		until(${$HoA{$organisms[$i]}}[$rnd] ne "NULL"){
-                        $multiplier++;
-			$rnd = int((rand($remember))*$multiplier);
-		}
-		$string[$i] = ${$HoA{$organisms[$i]}}[$rnd];
+while (my $line = <IN>) {
+	chomp $line;
+	my @fields = split "," , $line;
+		$string[$fields[0]] = $fields[1];
 	}
-	else {
-		$string[$i] = ${$HoA{$organisms[$i]}}[$rnd];
-	}
-	$string[$i] =~ s/[0-9]//g;
 }
+close(IN);
 
 # Reading FASTA files into hash
 my %fasta;
@@ -63,9 +56,10 @@ for (my $j = 0; $j < scalar(@organisms); $j++) {
 	my $prefix = "";
 	my $suffix = "";
 	if($region =~ /^SP$/){
-		$prefix = "ensembl_parsed_";
+		$prefix = "results/SP/ensembl_parsed_";
 		$suffix = ".txt";
 	} elsif ($region =~ /^WHOLE$/){
+		$prefix = "data/proteinSequences/";
 		$suffix = ".txt";
 	}
 	my $parsed_FILE = "$dir/$prefix$organisms[$j]$suffix" || die $usage;
@@ -142,4 +136,4 @@ foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 	}
 }
 system ("rm ENS*");
-system ("tm temp*");
+system ("rm temp*");

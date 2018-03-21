@@ -13,7 +13,9 @@ args = commandArgs(trailingOnly = TRUE)
 
 #read the arguments
 revtrans_file = args[1]
-codes_dict = read.csv(args[2], stringsAsFactors = F)
+codes_dict = t(read.csv(args[2], stringsAsFactors = F,header = F))
+colnames(codes_dict) = codes_dict[1,]
+codes_dict = codes_dict[-1,]
 organism_of_interest_name = args[3]
 repeat_unit = args[4]
 
@@ -24,7 +26,7 @@ unit_codons = names(which(GENETIC_CODE == repeat_unit))
 #get the ENSEMBL code of the organism of interest
 organism_of_interest_code = as.character(codes_dict[organism_of_interest_name])
 #get the organisms in the analysis
-organisms = colnames(codes_dict)
+organisms = names(codes_dict)
 #exclude the organism of interest
 tmp_organisms = organisms[-which(organisms == organism_of_interest_name)]
 #get the ENSEMBL code of the organism of all the organisms
