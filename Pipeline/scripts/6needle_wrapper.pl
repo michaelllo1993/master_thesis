@@ -112,17 +112,11 @@ my $id_o;
 my $index;
 
 foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
-	#my $ens_idc = "" . $ens_id;
-	#print "ENSID ".$ens_idc . "\n";
-	#my $search_var = "" . $string[0];
-	#print $search_var. "\n";
-	#if ($ens_idc =~ /^$search_var\d+/) {
-		print "IN!\n";
-		open (OUT, ">","$ens_id\_L_ALL_temp.fasta") || die("File missing.");
+		open (OUT, ">","tmp/$ens_id\_L_ALL_temp.fasta") || die("File missing.");
 		print OUT ">".$ens_id."\n".$sigpL_ALL_L{$ens_id}{seq};
 		close (OUT);
 		my $l_seq_sigp = length($sigpL_ALL_L{$ens_id}{seq});
-		open (OUT2, ">","$ens_id\_ORTHO_L_ALL_temp.fasta") || die("File missing.");
+		open (OUT2, ">","tmp/$ens_id\_ORTHO_L_ALL_temp.fasta") || die("File missing.");
 		$index = first_index {$_ eq $ens_id} @{$HoA{$organisms[0]}};
 		for (my $on = 1; $on < scalar(@organisms); $on++) { #starts from 1 because first oraganism ($organism[0]) is the organism of interest (from first column of .tsv file)
 			$id_o = $HoA{$organisms[$on]}[$index];
@@ -133,13 +127,9 @@ foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 			}
 		}
 		close(OUT2);
-		my $exit_stat = system ("needle -outfile temp_L_ALL_$organisms[0]_Ortho.needle -gapopen 10.0 -gapextend 0.5 -aformat markx3 $ens_id\_L_ALL_temp.fasta $ens_id\_ORTHO_L_ALL_temp.fasta");
+		my $exit_stat = system ("needle -outfile temp_L_ALL_$organisms[0]_Ortho.needle -gapopen 10.0 -gapextend 0.5 -aformat markx3 tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
 		system ("cat temp_L_ALL_$organisms[0]_Ortho.needle");
-		# if ($exit_stat != 0) {
-		# 	print $ens_id."_L_ALL\t".$exit_stat."\n";
-		# }
-		system ("rm $ens_id\_L_ALL_temp.fasta $ens_id\_ORTHO_L_ALL_temp.fasta");
-	#}
+		system ("rm tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
 }
 #system ("rm ENS*");
-system ("rm temp*");
+system ("rm tmp/temp*");
