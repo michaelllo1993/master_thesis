@@ -13,7 +13,7 @@ RUN apt-get -y update
 RUN apt-get -y dist-upgrade
 
 #Install system requirements for the software packages below
-RUN apt-get install -y build-essential libssl-dev libffi-dev python-dev libcurl4-openssl-dev libxml2-dev wget libx11-dev
+RUN apt-get install -y build-essential libssl-dev libffi-dev python-dev libcurl4-openssl-dev libxml2-dev wget libx11-dev libcairo2-dev cpanminus
 RUN apt -y install python3-pip
 
 #Install snakemake 
@@ -27,10 +27,13 @@ RUN Rscript -e "install.packages('RCurl')"
 RUN Rscript -e "install.packages('httr')"
 RUN Rscript -e "install.packages('XML')"
 RUN Rscript -e "install.packages('seqinr')"
+RUN Rscript -e "install.packages('svglite')"
 RUN Rscript -e "install.packages('ape')"
+RUN Rscript -e "install.packages('ggplot2')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('Biostrings')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('biomaRt')"
-
+#Install require Perl modules
+RUN cpanm List::MoreUtils
 #Install git
 RUN apt-get install -y git
 #Clone the git repository
@@ -44,8 +47,11 @@ WORKDIR SAARpipeline/Pipeline
 RUN wget ftp://emboss.open-bio.org/pub/EMBOSS/EMBOSS-6.6.0.tar.gz
 RUN gunzip EMBOSS-6.6.0.tar.gz 
 RUN tar xvf EMBOSS-6.6.0.tar
-WORKDIR EMBOSS-6.6.0
+RUN rm EMBOSS-6.6.0.tar
+RUN mv EMBOSS-6.6.0 software
+WORKDIR software/EMBOSS-6.6.0
 RUN ./configure
 RUN make
-WORKDIR ..
-RUN rm EMBOSS-6.6.0.tar
+WORKDIR ../..
+RUN mkdir tmp
+

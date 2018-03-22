@@ -47,7 +47,7 @@ $seq = substr $seq, 0, 69;
 print OUT "$seq\n";
 close (OUT);
 
-system("cat tmp/shortened_seq_$organism_name* > ensembl_parsed_$organism_name.txt");
+system("cat tmp/shortened_seq_$organism_name* > results/SP/ensembl_parsed_$organism_name.txt");
 
 my $file = $out_name;
 

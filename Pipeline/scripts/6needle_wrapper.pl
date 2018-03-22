@@ -22,7 +22,7 @@ my %ids;
 my $i = 0;
 
 # Importing Ensemble ids mapper to hash of arrays
-open (IN0, "+<", $ids_mapper);
+open (IN0, "<", $ids_mapper);
 my $j = 0;
 my %HoA;
 while (my $line1 = <IN0>) {
@@ -36,13 +36,14 @@ close(IN0);
 
 
 # Get letter codes of all analyzed organisms
-open (IN, "+<", $codes_mapper);
+open (IN, "<", $codes_mapper);
 my @string;
+my $k = 0;
 while (my $line = <IN>) {
 	chomp $line;
 	my @fields = split "," , $line;
-		$string[$fields[0]] = $fields[1];
-	}
+		$string[$k]= $fields[1];
+$k++;
 }
 close(IN);
 
@@ -111,7 +112,12 @@ my $id_o;
 my $index;
 
 foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
-	if ($ens_id =~ /^$string[0]\d/) {
+	#my $ens_idc = "" . $ens_id;
+	#print "ENSID ".$ens_idc . "\n";
+	#my $search_var = "" . $string[0];
+	#print $search_var. "\n";
+	#if ($ens_idc =~ /^$search_var\d+/) {
+		print "IN!\n";
 		open (OUT, ">","$ens_id\_L_ALL_temp.fasta") || die("File missing.");
 		print OUT ">".$ens_id."\n".$sigpL_ALL_L{$ens_id}{seq};
 		close (OUT);
@@ -133,7 +139,7 @@ foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 		# 	print $ens_id."_L_ALL\t".$exit_stat."\n";
 		# }
 		system ("rm $ens_id\_L_ALL_temp.fasta $ens_id\_ORTHO_L_ALL_temp.fasta");
-	}
+	#}
 }
-system ("rm ENS*");
+#system ("rm ENS*");
 system ("rm temp*");
