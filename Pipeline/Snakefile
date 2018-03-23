@@ -1,5 +1,25 @@
 configfile: "config.yaml"
 
+if config["downloadInputData"] == "YES":
+	rule download_sequence_data:
+		input:
+
+		output:
+			directory="data/readData",
+			data_cDNA="data/readData/readData_cDNA.rds",
+			data_proteins="data/readData/readData_proteins.rds",
+		shell:
+			"mkdir -p {output.directory}; Rscript scripts/download_sequences_biomart.R":
+	rule download_mapper_data:
+		input:
+
+		output:
+			directory="data/readData",
+			data_mapper="data/readData/readData_mapper.rds"
+		shell:
+			"mkdir -p {output.directory}; Rscript scripts/download_mapper_biomart.R":
+			
+
 rule prep_and_run_signalp:
     input:
         proteinSequences="data/proteinSequences/{organism}.txt"
