@@ -1,35 +1,53 @@
 library(biomaRt)
 library(seqinr)
+library(dplyr)
+
 wd = getwd()
-
-args = c("homo_sapiens",       "pan_troglodytes"  ,  "gorilla_gorilla",    "macaca_mulatta"   ,  "mus_musculus"       ,"rattus_norvegicus", "bos_taurus"        , "gallus_gallus"   ,   "xenopus_tropicalis")
-
-organisms = args
+args = commandArgs(trailingOnly = TRUE)
+# args = c("homo_sapiens",       "pan_troglodytes"  ,  "gorilla_gorilla",    "macaca_mulatta"   ,  "mus_musculus"       ,"rattus_norvegicus", "bos_taurus"        , "gallus_gallus"   ,   "xenopus_tropicalis")
+orgs=args
+organisms = orgs
 organisms = as.vector(sapply(organisms, function(x) paste(s2c(strsplit(x,split = "_")[[1]][1])[1],strsplit(x,split = "_")[[1]][2],sep = "")))
 
-protein=list()
-for(organism in seq_len(length(organisms))){
-  mart_name <- useEnsembl(biomart = "ensembl",dataset = paste(organisms[organism],"_gene_ensembl",sep = ""),version = 91)
-  protein[[organism]] = as.matrix(getBM(
-    attributes = c("ensembl_peptide_id","peptide"),
-    mart = mart_name
-  ))
-}
+# read cDNA sequences ----------------------------------------------------------
 
 cDNA=list()
 for(organism in seq_len(length(organisms))){
-  mart_name <- useMart("ensembl", paste(organisms[organism],"_gene_ensembl",sep = ""))
-  cDNA[[organism]] = (getBM(
-    attributes = c("ensembl_transcript_id","cdna_coding_start","cdna_coding_end","cdna"),
-    mart = mart_name
-  ))
+  mart <- useEnsembl(biomart = "ensembl",dataset = paste(organisms[organism],"_gene_ensembl",sep = ""))
+  # vector of all gene IDs (only used to improve processing later)
+  genes <- getBM(attributes = "ensembl_gene_id", mart = mart)
+  # first table with CDNA start/end values
+  transcripts <- getBM(values = genes$ensembl_gene_id, filters = "ensembl_gene_id", attributes = c("ensembl_transcript_id","ensembl_peptide_id","cdna_coding_start","cdna_coding_end"), mart = mart)
+  # process the dataframe: collapse entries with the same transcript ID
+  transcripts_mod = transcripts %>% group_by(ensembl_transcript_id) %>% summarise(START = paste(cdna_coding_start,collapse = ","), STOP = paste(cdna_coding_end,collapse = ","))
+  rm(transcripts)
+  # second table with sequences
+  transcripts2 <- getBM(values = genes$ensembl_gene_id, filters = "ensembl_gene_id", attributes = c("ensembl_transcript_id","cdna"),mart = mart)
+  rm(mart,genes)
+  # merge the data.frames
+  merged = inner_join(transcripts2,transcripts_mod)
+  rm(transcripts2,transcripts_mod)
+  # assign to the output var
+  cDNA[[organism]] = merged
+  rm(merged)
 }
+names(cDNA) = orgs
+saveRDS(cDNA,paste(wd,"data/readData/readData_cDNA.rds",sep = ""))
 
-mart <- useEnsembl(biomart = "ensembl",dataset = "ggallus_gene_ensembl",mirror = "useast",verbose = T)
-mart_name <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",dataset = "ensembl", paste(OoI,"_gene_ensembl",sep = ""),host = "www.ensembl.org")
 
+# read protein sequences -------------------------------------------------------
 
-test = (getBM(
-  attributes = c("ensembl_transcript_id","cdna_coding_start","cdna_coding_end","cdna"),
-  mart = mart
-))
+protein=list()
+for(organism in seq_len(length(organisms))){
+  mart <- useEnsembl(biomart = "ensembl",dataset = paste(organisms[organism],"_gene_ensembl",sep = ""))
+  # vector of all gene IDs (only used to improve processing later)
+  genes <- getBM(attributes = "ensembl_gene_id", mart = mart)
+  # first table with CDNA start/end values
+  peptides <- getBM(values = genes$ensembl_gene_id, filters = "ensembl_gene_id", attributes = c("ensembl_peptide_id","peptide"), mart = mart)
+  # assign to the output var 
+  protein[[organism]] = peptides
+  rm(peptides,genes,mart)
+}
+names(protein) = orgs
+
+saveRDS(protein,paste(wd,"data/readData/readData_proteins.rds",sep = ""))
