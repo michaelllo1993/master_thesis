@@ -66,6 +66,6 @@ column_names = colnames(mapper)
 column_names[1] = "ensembl_peptide_id"
 colnames(mapper) = column_names
 #write mappers to the file
-write.table(mapper,file = paste(wd,"/",organisms_names[1],".tsv",sep=""),sep = "\t",row.names = F)
+write.table(mapper,file = paste(wd,"/data/orthoMappers/",organisms_names[1],".tsv",sep=""),sep = "\t",row.names = F)
 
 

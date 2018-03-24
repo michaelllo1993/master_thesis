@@ -1,24 +1,119 @@
 configfile: "config.yaml"
 
-if config["downloadInputData"] == "YES":
-	rule download_sequence_data:
-		input:
+#Data preparation
 
-		output:
-			directory="data/readData",
-			data_cDNA="data/readData/readData_cDNA.rds",
-			data_proteins="data/readData/readData_proteins.rds",
-		shell:
-			"mkdir -p {output.directory}; Rscript scripts/download_sequences_biomart.R":
-	rule download_mapper_data:
-		input:
+def orderOrganisms(wildcards):
+    orgs = sorted(config["organisms"])
+    orgs.remove(wildcards.sample)
+    orgs.insert(0,wildcards.sample)
+    return orgs
 
-		output:
-			directory="data/readData",
-			data_mapper="data/readData/readData_mapper.rds"
-		shell:
-			"mkdir -p {output.directory}; Rscript scripts/download_mapper_biomart.R":
-			
+
+rule make_ENS_IDs_dict:
+    input:
+        files=expand("data/proteinSequences/{organism}.txt",organism=config["organisms"])
+    output:
+        "ENS_IDs_dict_for_{sample}.csv"
+    run:
+        import csv
+        codes={}
+        orgs = sorted(config["organisms"])
+        orgs.remove(wildcards.sample)
+        orgs.insert(0,wildcards.sample)
+        with open(output[0], 'w') as f:
+            w = csv.writer(f)
+            for org in orgs:
+                f=open("data/proteinSequences/"+org+".txt","r")
+                line=f.readline()
+                codes[org] = re.match(r">([A-Z]+)([0-9]+)",line).groups()[0]
+                w.writerow([org]+[codes[org]])
+
+rule create_ensembl_ids_mapper:
+    input:
+        ortho_dataset="data/orthoMappers/{sample}.tsv"
+    params:
+        organisms=orderOrganisms
+    output:
+        "data/orthoMappers/{sample}_ids_mapper.csv"
+    shell:
+        "mkdir -p data/orthoMappers; perl scripts/5create_ens_ids_mapper.pl {input} {params.organisms} > {output}"
+
+def selectFile(wildcards):
+    if config["region"] == "SP":
+        selectedFile = "results/SP/extracted_sigp_" + wildcards.sample + ".out"
+    elif config["region"] == "WHOLE":
+        selectedFile = "results/needle/" + wildcards.sample + "_wholeSequence.out"
+    else:
+        selectedFile = 0
+        print("Wrong region selected. Use 'SP' or 'WHOLE'!")
+    return selectedFile
+
+def selectNeedleInput(wildcards):
+    if config["region"] == "SP":
+        selectedNeedleInput = expand("results/SP/ensembl_parsed_{organism}.txt", organism=config["organisms"])
+    elif config["region"] == "WHOLE":
+        selectedNeedleInput = expand("data/proteinSequences/{organism}.txt", organism=config["organisms"])
+    else:
+        selectedNeedleInput = 0
+        print("Wrong region selected. Specify 'SP' or 'WHOLE' in the config file!")
+    return selectedNeedleInput
+
+rule prepare_cDNA_sequences:
+    input:
+        "data/cDNAsequences/{sample}_cDNA.txt"
+    output:
+        "data/cDNAsequences/{sample}_cDNA.csv"
+    shell:
+        "perl scripts/seq2csv_cDNA.pl {input}"
+
+rule prepare_protein_sequences:
+    input:
+        "data/proteinSequences/{sample}.txt"
+    output:
+        "data/proteinSequences/{sample}.csv"
+    shell:
+        "perl scripts/seq2csv.pl {input}"
+
+rule build_protein_cDNA_mapper:
+    input:
+        "data/proteinSequences/{sample}.txt"
+    output:
+        "data/mappers/{sample}_mapper.csv"
+    shell:
+        "perl scripts/build_protein_cDNA_mapper.pl {input}"
+
+rule read_RData:
+    input:
+        expand("data/cDNAsequences/{organism}_cDNA.csv", organism=config["organisms"]),
+        expand("data/mappers/{organism}_mapper.csv", organism=config["organisms"]),
+        expand("data/proteinSequences/{organism}.csv", organism=config["organisms"]),
+        expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"]),
+        expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"])
+    output:
+        directory="data/readData",
+        data_cDNA="data/readData/readData_cDNA.rds",
+        data_SP="data/readData/readData_SP.rds",
+        data_SAAR="data/readData/readData_SAAR.rds",
+	data_mapper="data/readData/readData_mapper.rds"
+    shell:
+        "mkdir -p {output.directory}; Rscript scripts/readData.R"
+
+
+# rule download_sequence_data:
+# 	params:
+# 		organisms=orderOrganisms
+# 	output:
+# 		directory="data/readData",
+# 		data_cDNA="data/readData/readData_cDNA.rds",
+# 		data_proteins="data/readData/readData_proteins.rds",
+# 		data_fasta_proteins=expand("data/proteinSequences/{organism}.txt", organism=config["organisms"]),
+# 		data_fasta_cDNA=expand("data/cDNAsequences/{organism}_cDNA.txt", organism=config["organisms"]),
+# 		data_mapper="data/orthoMappers/{sample}.tsv"
+# 	run:
+# 		import os
+# 		if config["downloadInputData"] == "YES":
+# 			os.system("mkdir -p " + str(output.directory) + "; Rscript scripts/download_sequences_biomart.R " + str(params.organisms) + "; Rscript scripts/download_mapper_biomart.R " + str(params.organisms))
+
 
 rule prep_and_run_signalp:
     input:
@@ -58,61 +153,6 @@ rule prep_data_for_wholeseq_needle:
     shell:
         "mkdir -p results/needle; perl scripts/4prep_needle.pl {input} > {output}"
 
-def orderOrganisms(wildcards):
-    orgs = sorted(config["organisms"])
-    orgs.remove(wildcards.sample)
-    orgs.insert(0,wildcards.sample)
-    return orgs
-
-rule make_ENS_IDs_dict:
-    input:
-        files=expand("data/proteinSequences/{organism}.txt",organism=config["organisms"])
-    output:
-        "ENS_IDs_dict_for_{sample}.csv"
-    run:
-        import csv
-        codes={}
-        orgs = sorted(config["organisms"])
-        orgs.remove(wildcards.sample)
-        orgs.insert(0,wildcards.sample)
-        with open(output[0], 'w') as f:
-            w = csv.writer(f)
-            for org in orgs:
-                f=open("data/proteinSequences/"+org+".txt","r")
-                line=f.readline()
-                codes[org] = re.match(r">([A-Z]+)([0-9]+)",line).groups()[0]
-                w.writerow([org]+[codes[org]])
-
-
-rule create_ensembl_ids_mapper:
-    input:
-        ortho_dataset="data/orthoMappers/{sample}.tsv"
-    params:
-        organisms=orderOrganisms
-    output:
-        "data/orthoMappers/{sample}_ids_mapper.csv"
-    shell:
-        "mkdir -p data/orthoMappers; perl scripts/5create_ens_ids_mapper.pl {input} {params.organisms} > {output}"
-
-def selectFile(wildcards):
-    if config["region"] == "SP":
-        selectedFile = "results/SP/extracted_sigp_" + wildcards.sample + ".out"
-    elif config["region"] == "WHOLE":
-        selectedFile = "results/needle/" + wildcards.sample + "_wholeSequence.out"
-    else:
-        selectedFile = 0
-        print("Wrong region selected. Use 'SP' or 'WHOLE'!")
-    return selectedFile
-
-def selectNeedleInput(wildcards):
-    if config["region"] == "SP":
-        selectedNeedleInput = expand("results/SP/ensembl_parsed_{organism}.txt", organism=config["organisms"])
-    elif config["region"] == "WHOLE":
-        selectedNeedleInput = expand("data/proteinSequences/{organism}.txt", organism=config["organisms"])
-    else:
-        selectedNeedleInput = 0
-        print("Wrong region selected. Use 'SP' or 'WHOLE'!")
-    return selectedNeedleInput
 
 
 rule run_needle:
@@ -177,53 +217,7 @@ rule sequence_comp:
     shell:
         "mkdir -p {output}; Rscript scripts/10sequence_comparison.R {input} {params.repeatUnit}"
 
-rule prepare_cDNA_sequences:
-    input:
-        "data/cDNAsequences/{sample}_cDNA.txt"
-    output:
-        "data/cDNAsequences/{sample}_cDNA.csv"
-    shell:
-        "perl scripts/seq2csv_cDNA.pl {input}"
 
-rule prepare_protein_sequences:
-    input:
-        "data/proteinSequences/{sample}.txt"
-    output:
-        "data/proteinSequences/{sample}.csv"
-    shell:
-        "perl scripts/seq2csv.pl {input}"
-
-rule build_protein_cDNA_mapper:
-    input:
-        "data/proteinSequences/{sample}.txt"
-    output:
-        "data/mappers/{sample}_mapper.csv"
-    shell:
-        "perl scripts/build_protein_cDNA_mapper.pl {input}"
-
-rule read_RData:
-    input:
-        expand("data/cDNAsequences/{organism}_cDNA.csv", organism=config["organisms"]),
-        expand("data/mappers/{organism}_mapper.csv", organism=config["organisms"]),
-        expand("data/proteinSequences/{organism}.csv", organism=config["organisms"]),
-        expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"]),
-        expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"])
-    output:
-        directory="data/readData",
-        data_cDNA="data/readData/readData_cDNA.rds",
-        data_SP="data/readData/readData_SP.rds",
-        data_SAAR="data/readData/readData_SAAR.rds",
-	data_mapper="data/readData/readData_mapper.rds"
-    shell:
-        "mkdir -p {output.directory}; Rscript scripts/readData.R"
-
-rule download_data:
-    input:
-        organisms = orderOrganisms
-    output:
-        "data/downloaded_data"
-    shell:
-        "mkdir -p {output}; Rscript scripts/download_mapper_biomart.R; Rscript scripts/download_sequences_biomart.R"
 
 rule count_repeat_unit_codons:
     input:
