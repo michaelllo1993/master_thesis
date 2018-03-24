@@ -28,12 +28,14 @@ for(organism in seq_len(length(organisms))){
   merged = inner_join(transcripts2,transcripts_mod)
   headers=c()
   for(i in seq_len(nrow(merged))){
-    headers[i] = paste(merged$ensembl_transcript_id[i],merged$ensembl_peptide_id[i],gsub(pattern = ",",replacement = ";",merged$START[i]),gsub(pattern = ",",replacement = ";",merged$STOP[i]),sep = "|")
+    starts=gsub(pattern = "NA,",replacement = "",merged$START[i])
+    stops=gsub(pattern = "NA,",replacement = "",merged$STOP[i])
+    headers[i] = paste(merged$ensembl_transcript_id[i],merged$ensembl_peptide_id[i],gsub(pattern = ",",replacement = ";",starts),gsub(pattern = ",",replacement = ";",stops),sep = "|")
   }
   rm(transcripts2,transcripts_mod)
   # assign to the output var
   cDNA[[organism]] = merged
-  write.fasta(as.list(merged$cdna),names = headers,file.out = paste(wd,"/data/cDNAsequences/test/",orgs[organism],"_cDNA.txt",sep = ""),nbchar = 50)
+  write.fasta(as.list(merged$cdna),names = headers,file.out = paste(wd,"/data/cDNAsequences/",orgs[organism],"_cDNA.txt",sep = ""))
 }
 names(cDNA) = orgs
 saveRDS(cDNA,paste(wd,"data/readData/readData_cDNA.rds",sep = ""))
