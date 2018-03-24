@@ -8,7 +8,7 @@ orgs = args
 orgs = as.vector(sapply(orgs, function(x) paste(s2c(strsplit(x,split = "_")[[1]][1])[1],strsplit(x,split = "_")[[1]][2],sep = "")))
 #get the organism of interest - first one 
 OoI = orgs[1]
-organisms= orgs[-1]
+organisms= sort(orgs[-1])
 
 #set the biomart to be used
 mart_name <- useMart(biomart = "ensembl", paste(OoI,"_gene_ensembl",sep = ""),host = "www.ensembl.org")

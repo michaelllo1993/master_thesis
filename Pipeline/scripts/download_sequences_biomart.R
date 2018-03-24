@@ -44,6 +44,7 @@ for(organism in seq_len(length(organisms))){
   genes <- getBM(attributes = "ensembl_gene_id", mart = mart)
   # first table with CDNA start/end values
   peptides <- getBM(values = genes$ensembl_gene_id, filters = "ensembl_gene_id", attributes = c("ensembl_peptide_id","peptide"), mart = mart)
+  write.fasta(sequences = as.list(peptides$peptide),names = peptides$ensembl_peptide_id,as.string = T,file.out = paste(wd,"/data/proteinSequences/test/",orgs[organism],".txt",sep = ""))
   # assign to the output var 
   protein[[organism]] = peptides
   rm(peptides,genes,mart)
