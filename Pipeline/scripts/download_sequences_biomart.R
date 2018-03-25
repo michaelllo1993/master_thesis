@@ -13,7 +13,7 @@ organisms = as.vector(sapply(organisms, function(x) paste(s2c(strsplit(x,split =
 
 cDNA=list()
 for(organism in seq_len(length(organisms))){
-  mart <- useEnsembl(biomart = "ensembl",dataset = paste(organisms[organism],"_gene_ensembl",sep = ""))
+  mart <- useEnsembl(biomart = "ensembl",dataset = paste(organisms[organism],"_gene_ensembl",sep = ""),host = "useast.ensembl.org")
   # vector of all gene IDs (only used to improve processing later)
   genes <- getBM(attributes = "ensembl_gene_id", mart = mart)
   # first table with CDNA start/end values
@@ -38,7 +38,7 @@ for(organism in seq_len(length(organisms))){
   write.fasta(as.list(merged$cdna),names = headers,file.out = paste(wd,"/data/cDNAsequences/",orgs[organism],"_cDNA.txt",sep = ""))
 }
 names(cDNA) = orgs
-saveRDS(cDNA,paste(wd,"data/readData/readData_cDNA.rds",sep = ""))
+saveRDS(cDNA,paste(wd,"/data/readData/readData_cDNA.rds",sep = ""))
 
 
 # read protein sequences -------------------------------------------------------

@@ -11,7 +11,7 @@ OoI = orgs[1]
 organisms= sort(orgs[-1])
 
 #set the biomart to be used
-mart_name <- useMart(biomart = "ensembl", paste(OoI,"_gene_ensembl",sep = ""),host = "www.ensembl.org")
+mart_name <- useMart(biomart = "ensembl", paste(OoI,"_gene_ensembl",sep = ""),host = "useast.ensembl.org")
 
 mappers = list()
 batch_size = 2
