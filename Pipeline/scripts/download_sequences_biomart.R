@@ -51,4 +51,4 @@ protein[[1]] = peptides
 rm(peptides,genes,mart)
 names(protein) = organism_full
 
-saveRDS(protein,paste(wd,"/data/readData/readData_proteins",organism_full,".rds",sep = ""))
+saveRDS(protein,paste(wd,"/data/readData/readData_proteins_",organism_full,".rds",sep = ""))

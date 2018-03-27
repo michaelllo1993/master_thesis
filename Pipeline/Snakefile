@@ -87,7 +87,7 @@ if config["downloadInputData"] == "NO":
         input:
             expand("data/cDNAsequences/{organism}_cDNA.csv", organism=config["organisms"]),
             expand("data/mappers/{organism}_mapper.csv", organism=config["organisms"]),
-            expand("data/proteinSequences/{organism}.csv", organism=config["organisms"]),
+            expand("data/proteinSequences/{organism}.csv", organism=config["organisms"])
         output:
             directory="data/readData",
             data_cDNA="data/readData/readData_cDNA.rds",
@@ -96,7 +96,7 @@ if config["downloadInputData"] == "NO":
         shell:
             "mkdir -p {output.directory}; Rscript scripts/readData_input.R"
 
-rule read_input_RData:
+rule read_other_RData:
     input:
         expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"]),
         expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"])

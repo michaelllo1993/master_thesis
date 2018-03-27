@@ -2,12 +2,6 @@
 use warnings;
 use strict;
 
-my $usage = <<EOF;
-
-USAGE: prep2Needle_development.pl input_file_name
-
-EOF
-
 my $input_file = $ARGV[0];
 open(my $file, '<', $input_file) or die "Could not open '$input_file' $! \n";
 
