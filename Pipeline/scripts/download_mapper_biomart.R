@@ -1,6 +1,7 @@
 library(biomaRt)
 library(seqinr)
 wd = getwd()
+args = commandArgs(trailingOnly = TRUE)
 
 organisms_names = args
 orgs = args

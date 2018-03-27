@@ -82,38 +82,46 @@ rule build_protein_cDNA_mapper:
     shell:
         "perl scripts/build_protein_cDNA_mapper.pl {input}"
 
-rule read_RData:
+if config["downloadInputData"] == "NO":
+    rule read_input_RData:
+        input:
+            expand("data/cDNAsequences/{organism}_cDNA.csv", organism=config["organisms"]),
+            expand("data/mappers/{organism}_mapper.csv", organism=config["organisms"]),
+            expand("data/proteinSequences/{organism}.csv", organism=config["organisms"]),
+        output:
+            directory="data/readData",
+            data_cDNA="data/readData/readData_cDNA.rds",
+            data_proteins="data/readData/readData_proteins.rds",
+            data_mapper="data/readData/readData_mapper.rds"
+        shell:
+            "mkdir -p {output.directory}; Rscript scripts/readData_input.R"
+
+rule read_input_RData:
     input:
-        expand("data/cDNAsequences/{organism}_cDNA.csv", organism=config["organisms"]),
-        expand("data/mappers/{organism}_mapper.csv", organism=config["organisms"]),
-        expand("data/proteinSequences/{organism}.csv", organism=config["organisms"]),
         expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"]),
         expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"])
     output:
         directory="data/readData",
-        data_cDNA="data/readData/readData_cDNA.rds",
-        data_SP="data/readData/readData_SP.rds",
         data_SAAR="data/readData/readData_SAAR.rds",
-	data_mapper="data/readData/readData_mapper.rds"
+        data_mapper="data/readData/readData_mapper.rds"
     shell:
-        "mkdir -p {output.directory}; Rscript scripts/readData.R"
+        "mkdir -p {output.directory}; Rscript scripts/readData_other.R"
 
-
-rule download_sequence_data:
-	params:
-		organisms=orderOrganisms
-	output:
-		directory="data/readData",
-		data_cDNA="data/readData/readData_cDNA.rds",
-		data_proteins="data/readData/readData_proteins.rds",
-		data_fasta_proteins=expand("data/proteinSequences/{organism}.txt", organism=config["organisms"]),
-		data_fasta_cDNA=expand("data/cDNAsequences/{organism}_cDNA.txt", organism=config["organisms"]),
-		data_mapper="data/orthoMappers/{sample}.tsv"
-	run:
-		import os
-		if config["downloadInputData"] == "YES":
-			os.system("mkdir -p " + str(output.directory) + "; Rscript scripts/download_sequences_biomart.R " + str(params.organisms) + "; Rscript scripts/download_mapper_biomart.R " + str(params.organisms))
-
+if config["downloadInputData"] == "YES":
+    rule download_sequence_data:
+        params:
+            organism="{sample}",
+            organisms=orderOrganisms
+        output:
+            data_cDNA="data/readData/readData_cDNA_{sample}.rds",
+            data_proteins="data/readData/readData_proteins_{sample}.rds",
+            data_fasta_proteins="data/proteinSequences/{sample}.txt",
+            data_fasta_cDNA="data/cDNAsequences/{sample}_cDNA.txt",
+            data_mapper="data/orthoMappers/{sample}.tsv"
+        run:
+            shell("mkdir -p data/readData"),
+            shell("Rscript scripts/download_mapper_biomart.R {params.organisms}"),
+            shell("Rscript scripts/download_sequences_biomart.R {params.organism}")
 
 rule prep_and_run_signalp:
     input:
