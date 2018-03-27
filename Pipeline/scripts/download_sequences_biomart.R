@@ -44,8 +44,12 @@ mart <- useEnsembl(biomart = "ensembl",dataset = paste(organisms,"_gene_ensembl"
 # vector of all gene IDs (only used to improve processing later)
 genes <- getBM(attributes = "ensembl_gene_id", mart = mart)
 # first table with CDNA start/end values
-peptides <- getBM(values = genes$ensembl_gene_id, filters = "ensembl_gene_id", attributes = c("ensembl_peptide_id","peptide"), mart = mart)
-write.fasta(sequences = as.list(peptides$peptide),names = peptides$ensembl_peptide_id,as.string = T,file.out = paste(wd,"/data/proteinSequences/",organism_full,".txt",sep = ""))
+peptides <- getBM(values = genes$ensembl_gene_id, filters = "ensembl_gene_id", attributes = c("ensembl_peptide_id","ensembl_transcript_id","peptide"), mart = mart)
+headers=c()
+for(i in seq_len(nrow(peptides))){
+  headers[i] = paste(peptides$ensembl_peptide_id[i],peptides$ensembl_transcript_id[i],sep = "|")
+}
+write.fasta(sequences = as.list(peptides$peptide),names = headers,as.string = T,file.out = paste(wd,"/data/proteinSequences/",organism_full,".txt",sep = ""))
 # assign to the output var 
 protein[[1]] = peptides
 rm(peptides,genes,mart)

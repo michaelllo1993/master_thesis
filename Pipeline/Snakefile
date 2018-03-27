@@ -1,3 +1,6 @@
+wildcard_constraints:
+    sample="\w+\_{1}\w+"
+
 configfile: "config.yaml"
 
 #Data preparation
@@ -230,7 +233,7 @@ rule sequence_comp:
 rule count_repeat_unit_codons:
     input:
         mapper="data/orthoMappers/{sample}_ids_mapper.csv",
-        data_cDNA="data/readData/readData_cDNA.rds",
+        data_cDNA=expand("data/readData/readData_cDNA_{organism}.rds",organism=config["organisms"]),
         data_SP="data/readData/readData_SP.rds",
         data_SAAR="data/readData/readData_SAAR.rds"
     params:

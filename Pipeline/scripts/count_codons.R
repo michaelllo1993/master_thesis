@@ -11,21 +11,24 @@ library(seqinr)
 
 args = commandArgs(trailingOnly = TRUE)
 
-wd = getwd()
-setwd(paste(wd, "/data/readData", sep = ""))
-cDNA = readRDS("readData_cDNA.RData")
-SP = readRDS("readData_SP.RData")
-SAAR = readRDS("readData_SAAR.RData")
-setwd("..")
-
-# Processing the input mapper file ----------------------------------------
-
 # Filtering only for rows with all available orthologues
 original_mapper_name = args[1]
 repeat_unit = args[2]
 organisms_names = args[c(-1, -2)]
 OoI = organisms_names[1]
 unit_codons = names(which(GENETIC_CODE == repeat_unit))
+
+
+wd = getwd()
+setwd(paste(wd, "/data/readData", sep = ""))
+for(i in seq_len(length(organisms_names))){
+  cDNA[[i]] = readRDS("readData_cDNA_",organisms_names[i],".rds")
+}
+names(cDNA) = organisms_names
+SP = readRDS("readData_SP.rds")
+SAAR = readRDS("readData_SAAR.rds")
+setwd("..")
+
 
 nucleotides = c("A", "T", "G", "C")
 unique_codon_names = c()
