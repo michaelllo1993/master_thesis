@@ -105,8 +105,7 @@ rule read_other_RData:
         expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"])
     output:
         directory="data/readData",
-        data_SAAR="data/readData/readData_SAAR.rds",
-        data_mapper="data/readData/readData_mapper.rds"
+        data_SAAR="data/readData/readData_SAAR.rds"
     shell:
         "mkdir -p {output.directory}; Rscript scripts/readData_other.R"
 

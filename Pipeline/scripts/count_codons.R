@@ -8,7 +8,7 @@ library(Biostrings)
 library(seqinr)
 
 # Load data ---------------------------------------------------------------
-
+wd = getwd()
 args = commandArgs(trailingOnly = TRUE)
 
 # Filtering only for rows with all available orthologues
@@ -18,16 +18,16 @@ organisms_names = args[c(-1, -2)]
 OoI = organisms_names[1]
 unit_codons = names(which(GENETIC_CODE == repeat_unit))
 
+cDNA=list()
 
-wd = getwd()
 setwd(paste(wd, "/data/readData", sep = ""))
 for(i in seq_len(length(organisms_names))){
-  cDNA[[i]] = readRDS("readData_cDNA_",organisms_names[i],".rds")
+  cDNA[[i]] = readRDS(paste("readData_cDNA_",organisms_names[i],".rds",sep = ""))[[1]]
 }
 names(cDNA) = organisms_names
 SP = readRDS("readData_SP.rds")
 SAAR = readRDS("readData_SAAR.rds")
-setwd("..")
+setwd(wd)
 
 
 nucleotides = c("A", "T", "G", "C")

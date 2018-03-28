@@ -23,10 +23,14 @@ transcripts2 <- getBM(values = genes$ensembl_gene_id, filters = "ensembl_gene_id
 rm(mart,genes)
 # merge the data.frames
 merged = inner_join(transcripts2,transcripts_mod)
+#delete the sequences that do not have the peptide counterpart
+merged = merged[-which(merged$ensembl_peptide_id == ""),]
 headers=c()
 for(i in seq_len(nrow(merged))){
   starts=gsub(pattern = "NA,",replacement = "",merged$START[i])
+  merged$START[i] = starts
   stops=gsub(pattern = "NA,",replacement = "",merged$STOP[i])
+  merged$STOP[i] = stops
   headers[i] = paste(merged$ensembl_transcript_id[i],merged$ensembl_peptide_id[i],gsub(pattern = ",",replacement = ";",starts),gsub(pattern = ",",replacement = ";",stops),sep = "|")
 }
 rm(transcripts2,transcripts_mod)

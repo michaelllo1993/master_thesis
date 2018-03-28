@@ -9,7 +9,7 @@ wd = getwd()
 
 # Read the predicted signal peptide cleavage sites ------------------------
 
-setwd(wd)
+setwd(paste(wd, "/results/SP", sep = ""))
 myFiles3 <- list.files(pattern = "*signalp_positives.out")
 SP = list()
 SP_names = c()
@@ -26,7 +26,7 @@ saveRDS(SP, file = "readData_SP.rds")
 
 # Read SAAR data within signal peptides -----------------------------------
 
-setwd(wd)
+setwd(paste(wd, "/results/SP", sep = ""))
 myFiles4 <- list.files(pattern = "extracted_sigp_*")
 SAAR = list()
 SAAR_names = c()

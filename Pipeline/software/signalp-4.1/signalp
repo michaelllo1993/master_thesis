@@ -10,7 +10,7 @@
 
 # full path to the signalp-4.1 directory on your system (mandatory)
 BEGIN {
-    $ENV{SIGNALP} = '/SAARpipeline/Pipeline';
+    $ENV{SIGNALP} = '/home/mstolarczyk/Uczelnia/MGR/master_thesis/Pipeline/software/signalp-4.1';
 }
 
 # determine where to store temporary files (must be writable to all users)
