@@ -38,6 +38,16 @@ rm(transcripts2,transcripts_mod)
 cDNA[[1]] = merged
 write.fasta(as.list(merged$cdna),names = headers,file.out = paste(wd,"/data/cDNAsequences/",organism_full,"_cDNA.txt",sep = ""))
 names(cDNA) = organism_full
+
+for (org in seq(1, length(cDNA), by = 1)) {
+  cDNA[[org]]$START = lapply(cDNA[[org]]$START, function(x)
+    sort(as.numeric(strsplit(x, ",")[[1]])))
+  #split by semicolon
+  cDNA[[org]]$STOP = lapply(cDNA[[org]]$STOP, function(x)
+    sort(as.numeric(strsplit(x, ",")[[1]])))
+  #split by semicolon
+}
+
 saveRDS(cDNA,paste(wd,"/data/readData/readData_cDNA_",organism_full,".rds",sep = ""))
 
 

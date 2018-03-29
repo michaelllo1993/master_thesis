@@ -66,10 +66,10 @@ SAAR = SAAR[paste("extracted_sigp_",organisms_names,sep = "")]
 #   
 #   for (i in seq_len(nrow(orthologues))) {
 #     # Find cDNA of interest
-#     which_cDNA = which(cDNA[[org]]$ID == orthologues[i, org])
+#     which_cDNA = which(cDNA[[org]]$ensembl_peptide_id == orthologues[i, org])
 #     if (length(which_cDNA) > 0) {
 #       # Get the sequence
-#       cdna = s2c(cDNA[[org]]$SEQUENCE[which_cDNA])
+#       cdna = s2c(cDNA[[org]]$cdna[which_cDNA])
 #       # Get the starting and stopping positions of the translated sequence
 #       codon_start = c()
 #       codon_start = cDNA[[org]]$START[which_cDNA][[1]]
@@ -96,7 +96,7 @@ SAAR = SAAR[paste("extracted_sigp_",organisms_names,sep = "")]
 #       avail_unit_codons_freq = codons_freq[unit_codons]
 #       
 #       # Combine results into a matrix
-#       result[i, ] = append(cDNA[[org]]$cDNA_ID[which_cDNA], as.vector(avail_unit_codons_freq))
+#       result[i, ] = append(cDNA[[org]]$ensembl_transcript_id[which_cDNA], as.vector(avail_unit_codons_freq))
 #     }
 #   }
 #   colnames(result) = append("cDNA_ID",unit_codons)
@@ -127,11 +127,11 @@ for (org in seq_len(ncol(orthologues))) {
   
   for (i in seq_len(nrow(orthologues))) {
     # Find cDNA of interest
-    which_cDNA = which(cDNA[[org]]$ID == orthologues[i, org])
+    which_cDNA = which(cDNA[[org]]$ens == orthologues[i, org])
     if (length(which_cDNA) > 0) {
       # Get the sequence
-      cdna = s2c(cDNA[[org]]$SEQUENCE[which_cDNA])
-      cdna_id = cDNA[[org]]$cDNA_ID[which_cDNA]
+      cdna = s2c(cDNA[[org]]$cdna[which_cDNA])
+      cdna_id = cDNA[[org]]$ensembl_transcript_id[which_cDNA]
       # Get the predicted length of signal peptide and check if it exists
       sp_length = SP[[org]][which(SP[[org]][, 2] == cdna_id), 3]
       if (length(sp_length) > 0) {
@@ -168,7 +168,7 @@ for (org in seq_len(ncol(orthologues))) {
         avail_unit_codons_freq = codons_freq[unit_codons]
         
         # Combine results into a matrix
-        result[i, ] = append(cDNA[[org]]$cDNA_ID[which_cDNA], as.vector(avail_unit_codons_freq))
+        result[i, ] = append(cDNA[[org]]$ensembl_transcript_id[which_cDNA], as.vector(avail_unit_codons_freq))
       }
     }
   }
@@ -201,11 +201,11 @@ for (org in seq_len(ncol(orthologues))) {
   
   for (i in seq_len(nrow(orthologues))) {
     # Find cDNA of interest
-    which_cDNA = which(cDNA[[org]]$ID == orthologues[i, org])
+    which_cDNA = which(cDNA[[org]]$ensembl_peptide_id == orthologues[i, org])
     if (length(which_cDNA) > 0) {
       # Get the sequence
-      cdna = s2c(cDNA[[org]]$SEQUENCE[which_cDNA])
-      cdna_id = cDNA[[org]]$cDNA_ID[which_cDNA]
+      cdna = s2c(cDNA[[org]]$cdna[which_cDNA])
+      cdna_id = cDNA[[org]]$ensembl_transcript_id[which_cDNA]
       # Get the predicted length of signal peptide and check if it exists
       # Get the starting and stopping positions of the translated sequence
       codon_start = c()
@@ -237,7 +237,7 @@ for (org in seq_len(ncol(orthologues))) {
       avail_unit_codons_freq = codons_freq[unit_codons]
       
       # Combine results into a matrix
-      result[i, ] = append(cDNA[[org]]$cDNA_ID[which_cDNA], as.vector(avail_unit_codons_freq))
+      result[i, ] = append(cDNA[[org]]$ensembl_transcript_id[which_cDNA], as.vector(avail_unit_codons_freq))
     }
   }
   colnames(result) = append("cDNA_ID",unit_codons)
@@ -269,11 +269,11 @@ for (org in seq_len(ncol(orthologues))) {
   
   for (i in seq_len(nrow(orthologues))) {
     # Find cDNA of interest
-    which_cDNA = which(cDNA[[org]]$ID == orthologues[i, org])
+    which_cDNA = which(cDNA[[org]]$ensembl_peptide_id == orthologues[i, org])
     if (length(which_cDNA) > 0) {
       # Get the sequence
-      cdna = s2c(cDNA[[org]]$SEQUENCE[which_cDNA])
-      cdna_id = cDNA[[org]]$cDNA_ID[which_cDNA]
+      cdna = s2c(cDNA[[org]]$cdna[which_cDNA])
+      cdna_id = cDNA[[org]]$ensembl_transcript_id[which_cDNA]
       # Get the start point and length of SAAR in the predicted signal peptide and check if it exists
       saar_start = SAAR[[org]][which(SAAR[[org]][, 2] == cdna_id), 4]
       saar_length = SAAR[[org]][which(SAAR[[org]][, 2] == cdna_id), 3]
@@ -306,7 +306,7 @@ for (org in seq_len(ncol(orthologues))) {
         avail_unit_codons_freq = codons_freq[unit_codons]
         
         # Combine results into a matrix
-        result[i, ] = append(cDNA[[org]]$cDNA_ID[which_cDNA], as.vector(avail_unit_codons_freq))
+        result[i, ] = append(cDNA[[org]]$ensembl_transcript_id[which_cDNA], as.vector(avail_unit_codons_freq))
       }
     }
   }
