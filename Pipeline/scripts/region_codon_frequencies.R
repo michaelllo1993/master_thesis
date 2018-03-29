@@ -8,7 +8,7 @@ args = commandArgs(trailingOnly = TRUE)
 wd = getwd()
 OoI = args[1]
 repeat_unit = args[2]
-setwd(paste(wd,"/codon_frequency/", OoI, "_orthologues", sep = ""))
+setwd(paste(wd,"/results/codon_frequency/", OoI, "_orthologues", sep = ""))
 
 # Get the files names -----------------------------------------------------
 
@@ -131,7 +131,7 @@ rownames(codons_SAAR_fraction) = names(withinSAAR)
 # Visualize the results ---------------------------------------------------
 print(paste(
   wd,
-  "/codon_frequency/",
+  "/results/codon_frequency/",
   OoI,
   "_orthologues",
   "/plots_",
@@ -145,7 +145,7 @@ for (i in seq(1, dim(codons_SAAR_fraction)[1])) {
   svg(
     filename = paste(
       wd,
-      "/codon_frequency/",
+      "/results/codon_frequency/",
       OoI,
       "_orthologues",
       "/codon_frequency_plots_",

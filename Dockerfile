@@ -13,7 +13,7 @@ RUN apt-get -y update
 RUN apt-get -y dist-upgrade
 
 #Install system requirements for the software packages below
-RUN apt-get install -y build-essential libssl-dev libffi-dev python-dev libcurl4-openssl-dev libxml2-dev wget libx11-dev libcairo2-dev cpanminus
+RUN apt-get install -y build-essential libssl-dev libffi-dev python-dev libcurl4-openssl-dev libxml2-dev wget libx11-dev libcairo2-dev cpanminus vim
 RUN apt -y install python3-pip
 
 #Install snakemake 

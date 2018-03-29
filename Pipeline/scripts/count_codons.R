@@ -127,7 +127,7 @@ for (org in seq_len(ncol(orthologues))) {
   
   for (i in seq_len(nrow(orthologues))) {
     # Find cDNA of interest
-    which_cDNA = which(cDNA[[org]]$ens == orthologues[i, org])
+    which_cDNA = which(cDNA[[org]]$ensembl_peptide_id == orthologues[i, org])
     if (length(which_cDNA) > 0) {
       # Get the sequence
       cdna = s2c(cDNA[[org]]$cdna[which_cDNA])
