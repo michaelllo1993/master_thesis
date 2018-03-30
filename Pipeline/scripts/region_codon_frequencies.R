@@ -33,7 +33,6 @@ myFiles_withinSAAR <- list.files(pattern = "*SAAR.csv")
 #   overall[[k]][is.na(overall[[k]])] = 0
 # }
 # names(overall) = overall_names
-# print("DONE")
 #Overall\SP
 overall_noSP = list()
 overall_noSP_names = c()
@@ -52,7 +51,6 @@ for (k in 1:length(myFiles_overall_noSP)) {
   overall_noSP[[k]][is.na(overall_noSP[[k]])] = 0
 }
 names(overall_noSP) = overall_noSP_names
-print("DONE")
 # Within SP
 withinSP = list()
 withinSP_names = c()
@@ -68,7 +66,6 @@ for (k in 1:length(myFiles_withinSP)) {
   withinSP[[k]][is.na(withinSP[[k]])] = 0
 }
 names(withinSP) = withinSP_names
-print("DONE")
 # Within SAAR
 withinSAAR = list()
 withinSAAR_names = c()
@@ -84,7 +81,6 @@ for (k in 1:length(myFiles_withinSAAR)) {
   withinSAAR[[k]][is.na(withinSAAR[[k]])] = 0
 }
 names(withinSAAR) = withinSAAR_names
-print("DONE")
 
 # Analyze the data --------------------------------------------------------
 
@@ -129,18 +125,6 @@ rownames(codons_SAAR_fraction) = names(withinSAAR)
 
 
 # Visualize the results ---------------------------------------------------
-print(paste(
-  wd,
-  "/results/codon_frequency/",
-  OoI,
-  "_orthologues",
-  "/plots_",
-  OoI,
-  "_orthologues/",
-  rownames(codons_SAAR_fraction)[1],
-  "_codon_usage_region.svg",
-  sep = ""
-))
 for (i in seq(1, dim(codons_SAAR_fraction)[1])) {
   svg(
     filename = paste(

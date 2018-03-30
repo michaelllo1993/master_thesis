@@ -25,6 +25,9 @@ rm(mart,genes)
 merged = inner_join(transcripts2,transcripts_mod)
 #delete the sequences that do not have the peptide counterpart
 merged = merged[-which(merged$ensembl_peptide_id == ""),]
+#rearrange columns order
+merged = merged[,c(1,3,4,5,2)]
+names_merged = names(merged)
 headers=c()
 for(i in seq_len(nrow(merged))){
   starts=gsub(pattern = "NA,",replacement = "",merged$START[i])
@@ -37,17 +40,27 @@ rm(transcripts2,transcripts_mod)
 # assign to the output var
 cDNA[[1]] = merged
 write.fasta(as.list(merged$cdna),names = headers,file.out = paste(wd,"/data/cDNAsequences/",organism_full,"_cDNA.txt",sep = ""))
+#Convert the .txr file to .csv format with a Perl script
+command=(paste("perl scripts/seq2csv_cDNA.pl",paste(wd,"/data/cDNAsequences/",organism_full,"_cDNA.txt",sep = ""),sep=" "))
+system(command)
+#remove rows with 'NA'
+# command = paste("grep -Ev '\\|NA\\|'", paste(wd,"/data/cDNAsequences/",organism_full,"_cDNA.csv",sep = ""), " > ", paste(wd,"/data/cDNAsequences/",organism_full,"_cDNA_edited.csv",sep = ""), sep = "")
+# system(command)
+# system("mv ",paste(paste(wd,"/data/cDNAsequences/",organism_full,"_cDNA_edited.csv",sep = ""),paste(wd,"/data/cDNAsequences/",organism_full,"_cDNA.csv",sep = ""),sep=""))
+rm(cDNA)
+#read the .csv file
+cDNA = read.csv(paste(wd,"/data/cDNAsequences/",organism_full,"_cDNA.csv",sep = ""), stringsAsFactors = F)
+cDNA = cDNA[!(cDNA[,1])=="",]
+cDNA$START = lapply(cDNA$START, function(x)
+  sort(as.numeric(strsplit(x, ";")[[1]])))
+#split by semicolon
+cDNA$STOP = lapply(cDNA$STOP, function(x)
+  sort(as.numeric(strsplit(x, ";")[[1]])))
+#split by semicolon
+names(cDNA) = names_merged
+cDNA = list(cDNA)
 names(cDNA) = organism_full
-
-for (org in seq(1, length(cDNA), by = 1)) {
-  cDNA[[org]]$START = lapply(cDNA[[org]]$START, function(x)
-    sort(as.numeric(strsplit(x, ",")[[1]])))
-  #split by semicolon
-  cDNA[[org]]$STOP = lapply(cDNA[[org]]$STOP, function(x)
-    sort(as.numeric(strsplit(x, ",")[[1]])))
-  #split by semicolon
-}
-
+#save for later use
 saveRDS(cDNA,paste(wd,"/data/readData/readData_cDNA_",organism_full,".rds",sep = ""))
 
 

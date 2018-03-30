@@ -46,6 +46,10 @@ cDNA = list()
 cDNA_names = c()
 for (k in 1:length(myFiles2)) {
   cDNA_names[k] = strsplit(myFiles2, "[.]")[[k]][1]
+  command = paste("grep -Ev '\\|NA\\|' ", myFiles2[k], " > ", "done.csv", sep = "")
+  print(command)
+  system(command,wait = T)
+  system(paste("mv done.csv ",myFiles2[k],sep = ""),wait = T)
   cDNA[[k]] = read.csv(myFiles2[k], stringsAsFactors = F)
   cDNA[[k]] = cDNA[[k]][!(cDNA[[k]][,1])=="",]
 }
@@ -63,4 +67,6 @@ for (org in seq(1, length(cDNA), by = 1)) {
 }
 
 setwd(paste(wd,"/data/readData",sep = ""))
-saveRDS(cDNA, file = "readData_cDNA.rds")
+for(org in seq_len(length(myFiles2))){
+  saveRDS(cDNA[[org]], file =paste("readData_cDNA_",names(cDNA)[org],".rds",sep = ""))
+}

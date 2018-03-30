@@ -13,7 +13,7 @@ my $out_name="$org.csv";
 
 open(IN, '<', $inFile) or die "Could not open '$inFile' $! \n";
 open (OUT, ">$out_name") or die "Couldn't open: $!";
-print OUT "cDNA_ID".","."ID".","."START".","."STOP".","."SEQUENCE";
+print OUT "ensembl_transcript_id".","."ensembl_peptide_id".","."START".","."STOP".","."cdna";
 while (my $line = <IN>){
 	chomp $line;
 	if (($line =~ /^>(ENS\w+)\|(ENS\w+)\|(\S+)\|(\S+)/)) {

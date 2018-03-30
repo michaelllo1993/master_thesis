@@ -22,7 +22,7 @@ cDNA=list()
 
 setwd(paste(wd, "/data/readData", sep = ""))
 for(i in seq_len(length(organisms_names))){
-  cDNA[[i]] = readRDS(paste("readData_cDNA_",organisms_names[i],".rds",sep = ""))[[1]]
+  cDNA[[i]] = readRDS(paste("readData_cDNA_",organisms_names[i],".rds",sep = ""))
 }
 names(cDNA) = organisms_names
 SP = readRDS("readData_SP.rds")
