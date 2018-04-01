@@ -5,7 +5,7 @@ use List::MoreUtils 'first_index';
 
 my $usage = <<EOF;
 
-USAGE: perl prep2spl_length_analysis.pl .cfg extracted_sigp_all.out organism_ids_mapper.csv
+USAGE: perl prep2spl_length_analysis.pl extracted_sigp_all.out organism_ids_mapper.csv
 
 EOF
 
@@ -31,8 +31,8 @@ my @string;
 my $multiplier = 1;
 for(my $i = 0; $i < scalar(@orgs); $i++){
 	my $rnd = int(rand($remember));
-	if(${$HoA{$orgs[$i]}}[$rnd] eq "NULL"){
-		until(${$HoA{$orgs[$i]}}[$rnd] ne "NULL"){
+	if(${$HoA{$orgs[$i]}}[$rnd] eq "NULL" || (${$HoA{$orgs[$i]}}[$rnd] !~ /^ENS/) ){
+		until((${$HoA{$orgs[$i]}}[$rnd] ne "NULL") && (${$HoA{$orgs[$i]}}[$rnd] =~ /^ENS/)){
                         $multiplier++;
 			$rnd = int((rand($remember))*$multiplier);
 		}
@@ -49,7 +49,8 @@ my %tmp_data;
 open (my $sigp, '<', $file) or die "Could not open '$file' $! \n";
 while (my $line1 = <$sigp>) {
 	chomp $line1;
-	if ($line1 =~ /^($string[0]\d+),(\w+\d+),\w+,\d+,\d+,\d+/) {
+	my $temp = $string[0];
+	if ($line1 =~ /($temp\d+),(\w+\d+),\w+,\d+,\d+,\d+/) {
 		my $index = first_index{/$1/} @{$HoA{$orgs[0]}};
 		for(my $org = 0; $org < (scalar(@orgs)); $org++){
 			open (my $sigp2, '<', $file) or die "Could not open '$file' $! \n";
