@@ -258,11 +258,13 @@ rule analyze_region_codon_frequencies:
 
 rule prepare_revtrans:
     input:
-        data_cDNA="data/readData/readData_cDNA.rds"
+        data_cDNA=expand("data/readData/readData_cDNA_{organism}.rds",organism=config["organisms"])
+    params:
+        orgs=orderOrganisms
     output:
         "results/revtrans"
     shell:
-        "mkdir -p {output}; Rscript scripts/prep2revtrans.R"
+        "mkdir -p {output}; Rscript scripts/prep2revtrans.R {params.orgs}"
 
 rule run_revtrans:
     input:
