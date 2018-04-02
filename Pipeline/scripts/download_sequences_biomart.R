@@ -180,6 +180,7 @@ write.fasta(
   as.string = T,
   file.out = paste(wd, "/data/proteinSequences/", organism_full, ".txt", sep = "")
 )
+system(paste("sed -i '/Sequence\ unavailable/d' ",paste(wd, "/data/proteinSequences/", organism_full, ".txt", sep = ""),sep = ""))
 # assign to the output var
 protein[[1]] = peptides
 rm(peptides, genes, mart)

@@ -32,8 +32,8 @@ my @string;
 my $multiplier = 1;
 for(my $i = 0; $i < scalar(@organisms); $i++){
 	my $rnd = int(rand($remember));
-	if(${$HoA{$organisms[$i]}}[$rnd] eq "NULL"){
-		until(${$HoA{$organisms[$i]}}[$rnd] ne "NULL"){
+	if(${$HoA{$organisms[$i]}}[$rnd] eq "NULL" || (${$HoA{$organisms[$i]}}[$rnd] !~ /^ENS/) ){
+		until((${$HoA{$organisms[$i]}}[$rnd] ne "NULL") && (${$HoA{$organisms[$i]}}[$rnd] =~ /^ENS/)){
                         $multiplier++;
 			$rnd = int((rand($remember))*$multiplier);
 		}

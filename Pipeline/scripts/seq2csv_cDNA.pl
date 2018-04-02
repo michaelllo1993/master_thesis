@@ -8,6 +8,7 @@ USAGE: perl seq2csv.pl <filename>
 EOF
 
 my $inFile = $ARGV[0];
+system("sed -i '/Sequence\ unavailable/d' $inFile");
 my $org = substr($inFile,0,-4);
 my $out_name="$org.csv";
 
