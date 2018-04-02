@@ -1,3 +1,4 @@
+#Specify the organisms in the analysis
 organisms:
   homo_sapiens:
   pan_troglodytes:
@@ -8,10 +9,14 @@ organisms:
   bos_taurus:
   gallus_gallus:
   xenopus_tropicalis:
-
+#Specify the repeat building unit
 repeatUnit: "L"
+#Specify the consecutive number of amino acids that should be considered as SAAR
 repeatThreshold: "5"
+#Specify the region of interest
 region: "WHOLE"
 MSAseqNumber: "100"
+#Specify the number of sequences used for the mean pairwise evlutionary distance estination between the organisms
 MSAalgorithm: "Muscle"
+#Specify whether the data should be downloaded or will be fed to the pipeline
 downloadInputData: "YES"

@@ -1,17 +1,19 @@
+#Constrain the wildcards (wildcard should be a latin name of the organism, e.g. homo_sapiens)
 wildcard_constraints:
     sample="\w+\_{1}\w+"
 
+#Specify the configuration file
 configfile: "config.yaml"
 
 #Data preparation
-
+#Read the organisms in the analysis and order them alphabetically and place the organism of interest first
 def orderOrganisms(wildcards):
     orgs = sorted(config["organisms"])
     orgs.remove(wildcards.sample)
     orgs.insert(0,wildcards.sample)
     return orgs
 
-
+#Get the organisms Ensembl codes based on the protein sequences files, e.g. homo_sapiens: ENSP
 rule make_ENS_IDs_dict:
     input:
         files=expand("data/proteinSequences/{organism}.txt",organism=config["organisms"])
@@ -31,6 +33,7 @@ rule make_ENS_IDs_dict:
                 codes[org] = re.match(r">([A-Z]+)([0-9]+)",line).groups()[0]
                 w.writerow([org]+[codes[org]])
 
+#Process the mapper of orthologous proteins
 rule create_ensembl_ids_mapper:
     input:
         ortho_dataset="data/orthoMappers/{sample}.tsv"
@@ -41,6 +44,7 @@ rule create_ensembl_ids_mapper:
     shell:
         "mkdir -p data/orthoMappers; perl scripts/5create_ens_ids_mapper.pl {input} {params.organisms} > {output}"
 
+#Define the input file with sequences names to be aligned in the needle wrapper script depending on the region of interest specified in the config file
 def selectFile(wildcards):
     if config["region"] == "SP":
         selectedFile = "results/SP/extracted_sigp_" + wildcards.sample + ".out"
@@ -48,9 +52,10 @@ def selectFile(wildcards):
         selectedFile = "results/needle/" + wildcards.sample + "_wholeSequence.out"
     else:
         selectedFile = 0
-        print("Wrong region selected. Use 'SP' or 'WHOLE'!")
+        print("Wrong region selected. Use 'SP' or 'WHOLE' in the config file!")
     return selectedFile
 
+#Define the files to be used for the sequences of other organisms in the alignmnet. Although the input is nit defined in the rule explicitly, the scripts uses the file and it is required
 def selectNeedleInput(wildcards):
     if config["region"] == "SP":
         selectedNeedleInput = expand("results/SP/ensembl_parsed_{organism}.txt", organism=config["organisms"])
@@ -61,6 +66,7 @@ def selectNeedleInput(wildcards):
         print("Wrong region selected. Specify 'SP' or 'WHOLE' in the config file!")
     return selectedNeedleInput
 
+#Parse the sequences
 rule prepare_cDNA_sequences:
     input:
         "data/cDNAsequences/{sample}_cDNA.txt"
@@ -69,6 +75,7 @@ rule prepare_cDNA_sequences:
     shell:
         "perl scripts/seq2csv_cDNA.pl {input}"
 
+#Parse the sequences
 rule prepare_protein_sequences:
     input:
         "data/proteinSequences/{sample}.txt"
@@ -77,6 +84,7 @@ rule prepare_protein_sequences:
     shell:
         "perl scripts/seq2csv.pl {input}"
 
+#Extract mapper from the peptide sequences data
 rule build_protein_cDNA_mapper:
     input:
         "data/proteinSequences/{sample}.txt"
@@ -85,6 +93,7 @@ rule build_protein_cDNA_mapper:
     shell:
         "perl scripts/build_protein_cDNA_mapper.pl {input}"
 
+#Read the data in case the user decides to supply the data
 if config["downloadInputData"] == "NO":
     rule read_input_RData:
         input:
@@ -110,6 +119,7 @@ rule read_other_RData:
     shell:
         "mkdir -p {output.directory}; Rscript scripts/readData_other.R"
 
+#Download the data in case the user wants it to be downloaded
 if config["downloadInputData"] == "YES":
     rule download_sequence_data:
         params:
@@ -126,6 +136,7 @@ if config["downloadInputData"] == "YES":
             shell("Rscript scripts/download_mapper_biomart.R {params.organisms}"),
             shell("Rscript scripts/download_sequences_biomart.R {params.organism}")
 
+#Prepare the input files for the SignalP software and run it
 rule prep_and_run_signalp:
     input:
         proteinSequences="data/proteinSequences/{organism}.txt"
@@ -135,6 +146,7 @@ rule prep_and_run_signalp:
     shell:
         "mkdir -p results/SP; perl scripts/1prep_and_run_signalp.pl {input.proteinSequences} > {output.sigpResults}"
 
+#Analyze the SignalP results
 rule analyze_signalp:
     input:
         sigpResults="results/SP/{organism}_sigp.out"
@@ -143,6 +155,7 @@ rule analyze_signalp:
     shell:
         "mkdir -p results/SP; perl scripts/2analyze_signalp.pl {input} > {output}"
 
+#Extract the signal peptides
 rule extract_signalp:
     input:
         sigpPositives="results/SP/{organism}_signalp_positives.out",
@@ -155,7 +168,7 @@ rule extract_signalp:
     shell:
         "mkdir -p results/SP; perl scripts/3extract_signalp.pl {input.sigpPositives} {input.parsedProteinSequences} {params.repeatUnit} {params.repeatThreshold} > {output}"
 
-
+#Prepare the sequences for the alignment in case of the whole proteins are the region of interest
 rule prep_data_for_wholeseq_needle:
     input:
         "data/proteinSequences/{sample}.txt"
@@ -164,8 +177,7 @@ rule prep_data_for_wholeseq_needle:
     shell:
         "mkdir -p results/needle; perl scripts/4prep_needle.pl {input} > {output}"
 
-
-
+#Run needleman-wunsch protein anlignment
 rule run_needle:
     input:
         sequenceFile=selectFile,
@@ -180,6 +192,7 @@ rule run_needle:
     shell:
         "mkdir -p results/needle; perl scripts/6needle_wrapper.pl {input.sequenceFile} {input.mapper} {input.codes_mapper} {params.region} {params.organisms}  > {output}"
 
+#Merge all extracted signal peptide sequences and info (cleavage sites, SAAR sites and lengths) for further use
 rule merge_all_extracted_sigps:
     input:
         expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"])
@@ -188,6 +201,7 @@ rule merge_all_extracted_sigps:
     shell:
         "mkdir -p results/SP; cat {input} >> {output}"
 
+#Prepare the data for the signal peptide and SAAR length analysis
 rule prep_sigp_length_analysis:
     input:
         "results/SP/extracted_sigp_all.out",
@@ -199,6 +213,7 @@ rule prep_sigp_length_analysis:
     shell:
         "mkdir -p results/SP; perl scripts/7prep_length_analysis.pl {input} {params.organisms} > {output}"
 
+#Perform the SAAR and SP length analysis (look for correlation in the SAAR and SP elongation) + scatter plots
 rule sigp_length_analysis:
     input:
         "results/SP/{sample}_to_sigp_length_analysis.csv"
@@ -207,6 +222,7 @@ rule sigp_length_analysis:
     shell:
         "mkdir -p results/SP; Rscript scripts/8sigp_saar_length_analysis.R {input} > {output}"
 
+#Prepare the data for sequence comparision
 rule prep_seq_comp:
     input:
         "results/needle/{sample}.needle_out",
@@ -218,6 +234,7 @@ rule prep_seq_comp:
     shell:
         "perl scripts/9prepare_sequence_comparison.pl {input} {params.organisms} > {output}"
 
+#Perform the sequence comparison - identifing mutations on amino acid level
 rule sequence_comp:
     input:
         "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv"
@@ -228,8 +245,7 @@ rule sequence_comp:
     shell:
         "mkdir -p {output}; Rscript scripts/10sequence_comparison.R {input} {params.repeatUnit}"
 
-
-
+#Count SAAR-building codon occurences
 rule count_repeat_unit_codons:
     input:
         mapper="data/orthoMappers/{sample}_ids_mapper.csv",
@@ -245,6 +261,7 @@ rule count_repeat_unit_codons:
     shell:
         "mkdir -p {output.directory}; Rscript scripts/count_codons.R {input.mapper} {params.repeatUnit} {params.organisms}"
 
+#Perform the SAAR-building codon frequency analysis
 rule analyze_region_codon_frequencies:
     input:
         "results/codon_frequency/{sample}_orthologues"
@@ -256,6 +273,7 @@ rule analyze_region_codon_frequencies:
     shell:
         "mkdir -p {output}; Rscript scripts/region_codon_frequencies.R {params.organism_of_interest} {params.repeatUnit}"
 
+#Preapre data for RevTrans analysis
 rule prepare_revtrans:
     input:
         data_cDNA=expand("data/readData/readData_cDNA_{organism}.rds",organism=config["organisms"])
@@ -266,6 +284,7 @@ rule prepare_revtrans:
     shell:
         "mkdir -p {output}; Rscript scripts/prep2revtrans.R {params.orgs}"
 
+#Run the RevTrans software (perform reverse translation based on the peptide alignment scaffold)
 rule run_revtrans:
     input:
         files_protein = "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv",
@@ -278,6 +297,7 @@ rule run_revtrans:
     shell:
         "perl scripts/run_revtrans.pl {params.organism} {params.organism_code} {input}"
 
+#Analyze codon changes within repeat unit
 rule analyze_codon_changes_within_repeatUnit:
     input:
         revtrans_file="results/revtrans/{sample}_revtrans.csv",
@@ -290,6 +310,7 @@ rule analyze_codon_changes_within_repeatUnit:
     shell:
         "mkdir -p {output}; Rscript scripts/codon_changes_within_repeat_unit.R {input.revtrans_file} {input.codes_dict} {params.organism_of_interest} {params.repeatUnit}"
 
+#Prepare a complex input string for the rule visualize_codon_changes_within_repeatUnit
 def organismsNoSampleExpand(wildcards):
     orgs = sorted(config["organisms"])
     orgs.remove(wildcards.sample)
@@ -299,6 +320,7 @@ def organismsNoSampleExpand(wildcards):
     organisms = str1 + str2 + str3
     return organisms
 
+#Vislualize the codon chages within repeat unit - as heatmaps of codon transitions
 rule visualize_codon_changes_within_repeatUnit:
     input:
         files = organismsNoSampleExpand
@@ -310,6 +332,7 @@ rule visualize_codon_changes_within_repeatUnit:
     shell:
         "mkdir -p {output}; Rscript scripts/visualize_within_repeat_unit_codon_changes.R {input.files} {params.organism_of_interest} {params.repeatUnit}"
 
+#Calculate the mean pairwise evolutionary distances between organisms in the study
 rule calculate_mean_pairwise_evolutionary_distances:
     input:
         data_proteins="data/readData/readData_proteins.rds",

@@ -36,11 +36,11 @@ for (org in seq(2, number_of_orgs, by = 1)) {
   OoI_Ortho_LSAAR_data[[org]] = OoI_Ortho_LSAAR_length_diff[[org]][lengthened_indices[[org]]]
   OoI_Ortho_SP_data[[org]] = OoI_Ortho_SP_length_diff[[org]][lengthened_indices[[org]]]
   correlations[[org]] = cor(OoI_Ortho_LSAAR_data[[org]], OoI_Ortho_SP_data[[org]], method = "pearson")
-  if (!dir.exists(path = paste(wd, sep = "/", "length_analysis_plots"))) {
-    dir.create(path = paste(wd, sep = "/", "length_analysis_plots"))
+  if (!dir.exists(path = paste(wd, sep = "/", "results/SP","length_analysis_plots"))) {
+    dir.create(path = paste(wd, sep = "/", "results/SP","length_analysis_plots"))
   }
   to_plot = data.frame(SAAR = OoI_Ortho_LSAAR_data[[org]], SignalPeptide = OoI_Ortho_SP_data[[org]])
-  sp = ggplot(data = to_plot, mapping = aes(x = LSAAR, y = SP))
+  sp = ggplot(data = to_plot, mapping = aes(x = SAAR, y = SignalPeptide))
   finale = sp + geom_point(alpha = .5,position = position_jitter(width=.1, height=.1)) + ggtitle(
     paste(
       "Scatterplot of SAAR length differences and SP length differences\n",
@@ -53,7 +53,7 @@ for (org in seq(2, number_of_orgs, by = 1)) {
     file = paste(
       sep = "",
       wd,
-      "/length_analysis_plots/",
+      "/results/SP/length_analysis_plots/",
       myNames[1],
       "_",
       myNames[[org]],
