@@ -197,14 +197,14 @@ rule merge_all_extracted_sigps:
     input:
         expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"])
     output:
-        "results/SP/extracted_sigp_all.out"
+        "results/SP/all_extracted_sigp.out"
     shell:
         "mkdir -p results/SP; cat {input} >> {output}"
 
 #Prepare the data for the signal peptide and SAAR length analysis
 rule prep_sigp_length_analysis:
     input:
-        "results/SP/extracted_sigp_all.out",
+        "results/SP/all_extracted_sigp.out",
         "data/orthoMappers/{sample}_ids_mapper.csv"
     params:
         organisms=orderOrganisms
@@ -273,29 +273,45 @@ rule analyze_region_codon_frequencies:
     shell:
         "mkdir -p {output}; Rscript scripts/region_codon_frequencies.R {params.organism_of_interest} {params.repeatUnit}"
 
-#Preapre data for RevTrans analysis
-rule prepare_revtrans:
+#Preapre data for RevTrans and run it
+# rule prepare_and_run_revtrans:
+#     input:
+#         data_cDNA=expand("data/readData/readData_cDNA_{organism}.rds",organism=config["organisms"]),
+#         codes_mapper="ENS_IDs_dict_for_{sample}.csv",
+#         files_protein = "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv"
+#     params:
+#         orgs=orderOrganisms,
+#         organism="{sample}",
+# 	files_cDNA=expand("results/revtrans_{sampl}/prep2revtrans_full_{organism}.csv",sampl="{sample}", organism=config["organisms"])
+#     output:
+#         directory="results/revtrans_{sample}",
+#         file="results/revtrans_{sample}/{sample}_revtrans.csv"
+#     shell:
+#         "mkdir -p {output.directory}; Rscript scripts/prep2revtrans.R {params.orgs}; perl scripts/run_revtrans.pl {input.codes_mapper} {params.organism} {input.files_protein} {params.files_cDNA}"
+#
+
+rule prepare_to_revtrans:
     input:
         data_cDNA=expand("data/readData/readData_cDNA_{organism}.rds",organism=config["organisms"])
     params:
         orgs=orderOrganisms
     output:
-        "results/revtrans"
+        files_cDNA=expand("results/revtrans_{sampl}/prep2revtrans_full_{organism}.csv",sampl="{sample}", organism=config["organisms"]),
+        directory="results/revtrans_{sample}"
     shell:
-        "mkdir -p {output}; Rscript scripts/prep2revtrans.R {params.orgs}"
+        "mkdir -p {output.directory}; Rscript scripts/prep2revtrans.R {params.orgs}"
 
-#Run the RevTrans software (perform reverse translation based on the peptide alignment scaffold)
 rule run_revtrans:
     input:
-        files_protein = "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv",
-        files_cDNA=expand("results/revtrans/prep2revtrans_full_{organism}.csv", organism=config["organisms"])
+        files_cDNA=expand("results/revtrans_{sampl}/prep2revtrans_full_{organism}.csv",sampl="{sample}", organism=config["organisms"]),
+        codes_mapper="ENS_IDs_dict_for_{sample}.csv",
+        files_protein = "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv"
     params:
-        organism="{sample}",
-        organism_code="ENSBTAP"
+        organism="{sample}"
     output:
-        "results/revtrans/{sample}_revtrans.csv"
+        file="results/revtrans_{sample}/{sample}_revtrans.csv"
     shell:
-        "perl scripts/run_revtrans.pl {params.organism} {params.organism_code} {input}"
+        "perl scripts/run_revtrans.pl {input.codes_mapper} {params.organism} {input.files_protein} {input.files_cDNA}"
 
 #Analyze codon changes within repeat unit
 rule analyze_codon_changes_within_repeatUnit:

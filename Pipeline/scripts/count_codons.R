@@ -22,13 +22,12 @@ cDNA=list()
 
 setwd(paste(wd, "/data/readData", sep = ""))
 for(i in seq_len(length(organisms_names))){
-  cDNA[[i]] = readRDS(paste("readData_cDNA_",organisms_names[i],".rds",sep = ""))
+  cDNA[[i]] = readRDS(paste("readData_cDNA_",organisms_names[i],".rds",sep = ""))[[1]]
 }
 names(cDNA) = organisms_names
 SP = readRDS("readData_SP.rds")
 SAAR = readRDS("readData_SAAR.rds")
 setwd(wd)
-
 
 nucleotides = c("A", "T", "G", "C")
 unique_codon_names = c()
@@ -120,8 +119,6 @@ SAAR = SAAR[paste("extracted_sigp_",organisms_names,sep = "")]
 # Within signal peptides --------------------------------------------------
 
 for (org in seq_len(ncol(orthologues))) {
-  result = c()
-  
   # Prepare empty result matrix
   result = matrix("", nrow(orthologues), length(unit_codons) + 1)
   

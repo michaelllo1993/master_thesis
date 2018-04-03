@@ -16,24 +16,34 @@ EOF
 my $dir = getcwd;
 
 #getting the input parameters/files
+my $codes_mapper = shift @ARGV;
 my $organism_name = shift @ARGV;
-my $code = shift @ARGV;
 my $prep2comp_file = shift @ARGV;
 #setting up the Revtrans binary location
 my $revtrans = "$dir/software/RevTrans-1.4/revtrans.py";
 #setting up the output files names
-my $output_file = "$dir/$organism_name\_revtrans.out";
-my $output_file_csv1 = "$dir/$organism_name\_revtrans1.csv";
-my $output_file_csv2 = "$dir/$organism_name\_revtrans2.csv";
-my $output_file_csv = "$dir/$organism_name\_revtrans.csv";
+my $output_file = "$dir/results/revtrans_$organism_name/$organism_name\_revtrans.out";
+my $output_file_csv1 = "$dir/results/revtrans_$organism_name/$organism_name\_revtrans1.csv";
+my $output_file_csv2 = "$dir/results/revtrans_$organism_name/$organism_name\_revtrans2.csv";
+my $output_file_csv = "$dir/results/revtrans_$organism_name/$organism_name\_revtrans.csv";
 
-print "\n\nStarting analysis in: " . $dir . "\n\n";
+# Get letter codes of all analyzed organisms
+open (IN, "<", $codes_mapper);
+my @string;
+my $k = 0;
+while (my $line = <IN>) {
+	chomp $line;
+	my @fields = split "," , $line;
+		$string[$k]= $fields[1];
+$k++;
+}
+close(IN);
 
 #concatenating the compiled cDNA sequences into one file with all organisms
-system("cat @ARGV > prep2revtrans_tmp.csv");
+system("cat @ARGV > $dir/results/revtrans_$organism_name/prep2revtrans_tmp.csv; sed -i 's/\"//g' $dir/results/revtrans_$organism_name/prep2revtrans_tmp.csv");
 
 #reading in the cDNA sequences and IDs
-my $prep2revtrans_file = "$dir/prep2revtrans_tmp.csv";
+my $prep2revtrans_file = "$dir/results/revtrans_$organism_name/prep2revtrans_tmp.csv";
 my @prep2revtrans_ids;
 my @prep2revtrans_seqs;
 open (IN, $prep2revtrans_file) || die("$prep2revtrans_file is missing");
@@ -54,9 +64,9 @@ while (my $line = <IN1>){
 	chomp $line;
 	if ($line =~ /^EN/){
 		my @fields = split(",", $line);
-		my $prot_tmp_file = "prot_tmp_$fields[0]";
+		my $prot_tmp_file = "tmp/prot_tmp_$fields[0]";
 		open (OUT, ">", $prot_tmp_file) || die("$prot_tmp_file is missing");
-		my $cDNA_tmp_file = "cDNA_tmp_$fields[0]";
+		my $cDNA_tmp_file = "tmp/cDNA_tmp_$fields[0]";
 		open (OUT1,">", $cDNA_tmp_file) || die("$cDNA_tmp_file is missing");
 		my $index_interest = first_index {$_ eq $fields[0]} @prep2revtrans_ids;
 		my $index_other = first_index {$_ eq $fields[2]} @prep2revtrans_ids;
@@ -64,26 +74,26 @@ while (my $line = <IN1>){
 		print OUT1 ">$fields[0]\n$prep2revtrans_seqs[$index_interest]\n>$fields[2]\n$prep2revtrans_seqs[$index_other]";
 		close(OUT);
 		close(OUT1);
-		my $revtrans_output_tmp = "tmp_$fields[0].out";		
+		my $revtrans_output_tmp = "tmp/tmp_$fields[0].out";		
 		system("python2.7 $revtrans $cDNA_tmp_file $prot_tmp_file > $revtrans_output_tmp");
 		system("cat $revtrans_output_tmp >> $output_file");
 		system("echo @ >> $output_file");
 		$cnt++; print"$cnt \n";
-		system("rm *tmp*");
+		system("rm tmp/*tmp*");
 	}
 }
 close(IN1);
 print("DONE.\n");
 
 #Parsing the output; writing to the .csv file
-#Firstly, only human? ids and sequences are written
+#Firstly, only OoI ids and sequences are written
 my $status;
 open (IN2, $output_file) || die("$output_file is missing");
 open (OUT2, ">", $output_file_csv1) || die("$output_file_csv1 is missing");
 print OUT2 "$organism_name\_id" . "," . "$organism_name\_sequence" . "\n";
 while (my $line = <IN2>){
 	chomp $line;
-	if ($line =~ /^>($code\d+)/){
+	if ($line =~ /^>($string[0]\d+)/){
 		print OUT2 $1 . ",";
 		$status = 1;
 	}
@@ -108,7 +118,7 @@ open (OUT3, ">", $output_file_csv2) || die("$output_file_csv2 is missing");
 print OUT3 "other_id" . "," . "other_sequence" . "\n";
 while (my $line = <IN2>){
 	chomp $line;
-	if (($line !~ /^>($code\d+)/) && ($line =~ /^>(\w+\d+)/)) {
+	if (($line !~ /^>($string[0]\d+)/) && ($line =~ /^>(\w+\d+)/)) {
 		print OUT3 $1 . ",";
 		$status = 1;
 	}
