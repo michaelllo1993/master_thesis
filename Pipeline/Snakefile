@@ -300,7 +300,7 @@ rule run_revtrans:
 #Analyze codon changes within repeat unit
 rule analyze_codon_changes_within_repeatUnit:
     input:
-        revtrans_file="results/revtrans/{sample}_revtrans.csv",
+        revtrans_file="results/revtrans_{sample}/{sample}_revtrans.csv",
         codes_dict="ENS_IDs_dict_for_{sample}.csv"
     params:
         organism_of_interest="{sample}",
@@ -314,9 +314,9 @@ rule analyze_codon_changes_within_repeatUnit:
 def organismsNoSampleExpand(wildcards):
     orgs = sorted(config["organisms"])
     orgs.remove(wildcards.sample)
-    str1 = expand("results/revtrans/{sampl}_changes_within_repeatUnit/codon_changes_within_repeat_unit_{organism}.csv",organism=orgs,sampl=wildcards.sample)
-    str2 = expand("results/revtrans/{sampl}_changes_within_repeatUnit/codon_changes_within_SAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
-    str3 = expand("results/revtrans/{sampl}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str1 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_repeat_unit_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str2 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_SAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str3 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
     organisms = str1 + str2 + str3
     return organisms
 

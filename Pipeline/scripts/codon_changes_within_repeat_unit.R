@@ -1,10 +1,11 @@
 
 
-# Loading libraries -------------------------------------------------------
 
+# Loading libraries -------------------------------------------------------
+require(readr)
 require(seqinr)
 require(Biostrings)
-
+require(progress)
 # Getting the command line arguments ------------------------------------------
 
 options(warn = -1)
@@ -13,9 +14,9 @@ args = commandArgs(trailingOnly = TRUE)
 
 #read the arguments
 revtrans_file = args[1]
-codes_dict = t(read.csv(args[2], stringsAsFactors = F,header = F))
-colnames(codes_dict) = codes_dict[1,]
-codes_dict = codes_dict[-1,]
+codes_dict = t(read.csv(args[2], stringsAsFactors = F, header = F))
+colnames(codes_dict) = codes_dict[1, ]
+codes_dict = codes_dict[-1, ]
 organism_of_interest_name = args[3]
 repeat_unit = args[4]
 
@@ -36,7 +37,8 @@ tmp_codes = ensembl_exclusive_codes[-which(ensembl_exclusive_codes == organism_o
 
 # Reading the data in --------------------------
 #read the file
-revtrans_data = as.matrix(read.csv(file = revtrans_file, header = F))
+#revtrans_data = as.matrix(read.csv(file = revtrans_file, header = F))
+revtrans_data = as.matrix(read_csv(file = revtrans_file))
 #create an empty list that will store the data in an easily accessbile way
 organism_of_interest = lapply(1:length(tmp_codes), function(x)
   matrix(
@@ -49,7 +51,7 @@ for (org in seq(1, length(tmp_codes), by = 1)) {
   reg_ex = paste(tmp_codes[org], "[0-9]+", sep = "")
   
   #filter just the rows with organism in loop
-  organism_of_interest[[org]] = revtrans_data[grep(pattern = reg_ex , revtrans_data[, 3], perl = T), ]
+  organism_of_interest[[org]] = revtrans_data[grep(pattern = reg_ex , revtrans_data[, 3], perl = T),]
 }
 #name the list elements appropriately
 names(organism_of_interest) = tmp_organisms
@@ -69,7 +71,11 @@ other_codons_SAAR = c()
 
 for (org in seq(1, length(tmp_codes), by = 1)) {
   for (l in seq(1, length(unit_codons), by = 1)) {
+    pb <- progress_bar$new(
+      format = paste("Org:",org,"/",length(tmp_codes),"| Codon:",l,"/",length(unit_codons)," [:bar] :percent eta: :eta"),
+      total = dim(organism_of_interest[[org]])[1], clear = FALSE, width= 80)
     for (i in seq(1, dim(organism_of_interest[[org]])[1], by = 1)) {
+      pb$tick()
       #replace faulty "N" characters with "C"
       check_for_ns = s2c(organism_of_interest[[org]][i, 2])
       check_for_ns[which(check_for_ns == "N")] = "C"
@@ -122,7 +128,7 @@ for (org in seq(1, length(tmp_codes), by = 1)) {
     
   }
 }
-#name the lists approprotely
+#name the lists appropriately
 names(OoI) = tmp_organisms
 for (org in seq(1, length(OoI), by = 1)) {
   names(OoI[[org]]) = unit_codons
@@ -149,21 +155,21 @@ for (org in seq(1, length(OoI), by = 1)) {
     #search for faulty "N" nucleotides and delete the codons that consist of these
     if (any(grep("N", rownames(tmp), perl = T))) {
       rows_to_delete = grep("N", rownames(tmp), perl = T)
-      tmp = tmp[-rows_to_delete, ]
+      tmp = tmp[-rows_to_delete,]
       tmp = as.matrix(tmp)
     }
     #search for faulty lowercase nucleotides and delete the codons that consist of these
     if (any(grep('[a-z]', rownames(tmp), perl = T))) {
       rows_to_delete = grep('[a-z]', rownames(tmp), perl = T)
-      tmp = tmp[-rows_to_delete, ]
+      tmp = tmp[-rows_to_delete,]
       tmp = as.matrix(tmp)
     }
     #merge the temporary and overall results by rownames an keep all results
     output = merge(output, tmp, by = "row.names", all = T)
-    output = as.matrix(output[, -1])
+    output = as.matrix(output[,-1])
     rownames(output) = all_codon_names
   }
-  output = output[, -1]
+  output = output[,-1]
   #convert NAs to 0 - since that's what they mean
   output[which(is.na(output))] = 0
   #write the reslts into CSV file
@@ -172,6 +178,8 @@ for (org in seq(1, length(OoI), by = 1)) {
     x = output,
     file = paste(
       wd,
+      "/results/revtrans_",
+      organism_of_interest_name,
       "/",
       organism_of_interest_name,
       "_changes_within_repeatUnit/codon_changes_within_repeat_unit_",
@@ -195,13 +203,13 @@ for (org in seq(1, length(OoI_SAAR), by = 1)) {
     tmp = as.matrix(OoI_SAAR[[org]][[l]])
     if (any(grep("N", rownames(tmp), perl = T))) {
       rows_to_delete = grep("N", rownames(tmp), perl = T)
-      tmp = tmp[-rows_to_delete, ]
+      tmp = tmp[-rows_to_delete,]
     }
     output = merge(output, tmp, by = "row.names", all = T)
-    output = as.matrix(output[, -1])
+    output = as.matrix(output[,-1])
     rownames(output) = all_codon_names
   }
-  output = output[, -1]
+  output = output[,-1]
   output[which(is.na(output))] = 0
   
   colnames(output) = unit_codons
@@ -209,6 +217,8 @@ for (org in seq(1, length(OoI_SAAR), by = 1)) {
     x = output,
     file = paste(
       wd,
+      "/results/revtrans_",
+      organism_of_interest_name,
       "/",
       organism_of_interest_name,
       "_changes_within_repeatUnit/codon_changes_within_SAAR_",
@@ -222,20 +232,25 @@ for (org in seq(1, length(OoI_SAAR), by = 1)) {
 
 
 # (repeat unit)\SAAR - calculate the differences and write files ----------------------------
-
-setwd(paste(
-  organism_of_interest_name,
-  "_changes_within_repeatUnit",
-  sep = ""
-))
+setwd(
+  paste(
+    wd,
+    "/results/revtrans_",
+    organism_of_interest_name,
+    "/",
+    organism_of_interest_name,
+    "_changes_within_repeatUnit",
+    sep = ""
+  )
+)
 for (org in seq_len(length(nms))) {
-  myFiles1 <- list.files(pattern = paste("_unit_",nms[org], ".csv", sep = ""))
-  myFiles2 <- list.files(pattern = paste("_SAAR_",nms[org], ".csv", sep = ""))
+  myFiles1 <-
+    list.files(pattern = paste("_unit_", nms[org], ".csv", sep = ""))
+  myFiles2 <-
+    list.files(pattern = paste("_SAAR_", nms[org], ".csv", sep = ""))
   X = read.csv(myFiles1)[, 1]
-  repeat_unit_data = read.csv(myFiles1)[, -1]
-  SAAR_data = read.csv(myFiles2)[, -1]
-  print(dim(repeat_unit_data))
-  print(dim(SAAR_data))
+  repeat_unit_data = read.csv(myFiles1)[,-1]
+  SAAR_data = read.csv(myFiles2)[,-1]
   if (all(dim(repeat_unit_data) == dim(SAAR_data))) {
     repeat_unit_no_SAAR_data = repeat_unit_data - SAAR_data
     repeat_unit_no_SAAR_data = cbind(X, repeat_unit_no_SAAR_data)
@@ -243,6 +258,8 @@ for (org in seq_len(length(nms))) {
       x = repeat_unit_no_SAAR_data,
       file = paste(
         wd,
+        "/results/revtrans_",
+        organism_of_interest_name,
         "/",
         organism_of_interest_name,
         "_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_",
@@ -256,4 +273,3 @@ for (org in seq_len(length(nms))) {
     stop("The dimentions of the files are not equal!")
   }
 }
-
