@@ -83,7 +83,7 @@ while (my $line = <IN1>){
 	}
 }
 close(IN1);
-print("DONE.\n");
+
 
 #Parsing the output; writing to the .csv file
 #Firstly, only OoI ids and sequences are written
@@ -118,7 +118,7 @@ open (OUT3, ">", $output_file_csv2) || die("$output_file_csv2 is missing");
 print OUT3 "other_id" . "," . "other_sequence" . "\n";
 while (my $line = <IN2>){
 	chomp $line;
-	if (($line !~ /^>($string[0]\d+)/) && ($line =~ /^>(\w+\d+)/)) {
+	if (($line !~ /^>$string[0]\d+/) && ($line =~ /^>(\w+\d+)/)) {
 		print OUT3 $1 . ",";
 		$status = 1;
 	}

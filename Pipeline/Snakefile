@@ -273,22 +273,6 @@ rule analyze_region_codon_frequencies:
     shell:
         "mkdir -p {output}; Rscript scripts/region_codon_frequencies.R {params.organism_of_interest} {params.repeatUnit}"
 
-#Preapre data for RevTrans and run it
-# rule prepare_and_run_revtrans:
-#     input:
-#         data_cDNA=expand("data/readData/readData_cDNA_{organism}.rds",organism=config["organisms"]),
-#         codes_mapper="ENS_IDs_dict_for_{sample}.csv",
-#         files_protein = "results/sequenceComparison/{sample}_prepared_sequence_comparison.csv"
-#     params:
-#         orgs=orderOrganisms,
-#         organism="{sample}",
-# 	files_cDNA=expand("results/revtrans_{sampl}/prep2revtrans_full_{organism}.csv",sampl="{sample}", organism=config["organisms"])
-#     output:
-#         directory="results/revtrans_{sample}",
-#         file="results/revtrans_{sample}/{sample}_revtrans.csv"
-#     shell:
-#         "mkdir -p {output.directory}; Rscript scripts/prep2revtrans.R {params.orgs}; perl scripts/run_revtrans.pl {input.codes_mapper} {params.organism} {input.files_protein} {params.files_cDNA}"
-#
 
 rule prepare_to_revtrans:
     input:
@@ -322,7 +306,7 @@ rule analyze_codon_changes_within_repeatUnit:
         organism_of_interest="{sample}",
         repeatUnit=config["repeatUnit"]
     output:
-        "results/revtrans/{sample}_changes_within_repeatUnit"
+        "results/revtrans_{sample}/{sample}_changes_within_repeatUnit"
     shell:
         "mkdir -p {output}; Rscript scripts/codon_changes_within_repeat_unit.R {input.revtrans_file} {input.codes_dict} {params.organism_of_interest} {params.repeatUnit}"
 
