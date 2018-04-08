@@ -335,13 +335,13 @@ rule visualize_codon_changes_within_repeatUnit:
 #Calculate the mean pairwise evolutionary distances between organisms in the study
 rule calculate_mean_pairwise_evolutionary_distances:
     input:
-        data_proteins="data/readData/readData_proteins.rds",
-        mapper_common="data/orthoMappers/{sample}_ids_mapper_common.csv",
+        data_proteins=expand("data/readData/readData_proteins_{organism}.rds",organism=config["organisms"]),
+        mapper_common="data/orthoMappers/{sample}_ids_mapper_common.csv"
     params:
-        organism_of_interest="{sample}",
+        orgs=orderOrganisms,
         algorithm = config["MSAalgorithm"],
         no_sequences = config["MSAseqNumber"]
     output:
         "results/{sample}_mean_pairwise_evolutionary_distances.csv"
     shell:
-        "Rscript scripts/calculate_mean_evolutionary_distances.R {params.organism_of_interest} {params.algorithm} {params.no_sequences}"
+        "Rscript scripts/calculate_mean_evolutionary_distances.R {params.algorithm} {params.no_sequences} {params.orgs} "

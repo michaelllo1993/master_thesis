@@ -6,6 +6,7 @@
 
 library(Biostrings)
 library(seqinr)
+require(progress)
 
 # Load data ---------------------------------------------------------------
 wd = getwd()
@@ -121,8 +122,11 @@ SAAR = SAAR[paste("extracted_sigp_",organisms_names,sep = "")]
 for (org in seq_len(ncol(orthologues))) {
   # Prepare empty result matrix
   result = matrix("", nrow(orthologues), length(unit_codons) + 1)
-  
+  pb <- progress_bar$new(
+    format = paste("SP | Org:",org,"/",ncol(orthologues)," [:bar] :percent eta: :eta"),
+    total = nrow(orthologues), clear = FALSE, width= 80)
   for (i in seq_len(nrow(orthologues))) {
+    pb$tick()
     # Find cDNA of interest
     which_cDNA = which(cDNA[[org]]$ensembl_peptide_id == orthologues[i, org])
     if (length(which_cDNA) > 0) {
@@ -195,8 +199,11 @@ for (org in seq_len(ncol(orthologues))) {
   
   # Prepare empty result matrix
   result = matrix("", nrow(orthologues), length(unit_codons) + 1)
-  
+  pb <- progress_bar$new(
+    format = paste("Overall | Org:",org,"/",ncol(orthologues)," [:bar] :percent eta: :eta"),
+    total = nrow(orthologues), clear = FALSE, width= 80)
   for (i in seq_len(nrow(orthologues))) {
+    pb$tick()
     # Find cDNA of interest
     which_cDNA = which(cDNA[[org]]$ensembl_peptide_id == orthologues[i, org])
     if (length(which_cDNA) > 0) {
@@ -263,8 +270,11 @@ for (org in seq_len(ncol(orthologues))) {
   
   # Prepare empty result matrix
   result = matrix("", nrow(orthologues) * 2, length(unit_codons) + 1)
-  
+  pb <- progress_bar$new(
+    format = paste("SAAR | Org:",org,"/",ncol(orthologues)," [:bar] :percent eta: :eta"),
+    total = nrow(orthologues), clear = FALSE, width= 80)
   for (i in seq_len(nrow(orthologues))) {
+    pb$tick()
     # Find cDNA of interest
     which_cDNA = which(cDNA[[org]]$ensembl_peptide_id == orthologues[i, org])
     if (length(which_cDNA) > 0) {

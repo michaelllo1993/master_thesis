@@ -11,13 +11,19 @@ args = commandArgs(trailingOnly = TRUE)
 #suppress printing warning messages (which are caused by cbind in this case)
 options(warn=-1)
 #get command line arguments
+algorithm = args[1];args = args[-1]
+no_samples = as.numeric(args[1]);args=args[-1]
 OoI = args[1]
-algorithm = args[2]
-no_samples = as.numeric(args[3])
+organisms_names=args
 #get working directory
 wd = getwd()
 #read protein sequences
-proteins = readRDS(paste(wd, "/data/readData/readData_proteins.rds", sep = ""))
+setwd(paste(wd, "/data/readData", sep = ""))
+for(i in seq_len(length(organisms_names))){
+  proteins[[i]] = readRDS(paste("readData_proteins_",organisms_names[i],".rds",sep = ""))[[1]]
+}
+names(proteins) = organisms_names
+# proteins = readRDS(paste(wd, "/data/readData/readData_proteins.rds", sep = ""))
 #read mapper with common orthologoues protein IDs
 mapper = as.matrix(read.csv(paste(OoI,"_ids_mapper_common.csv",sep = ""), header = T)[,-1])
 #get number of rows of the mapper 
