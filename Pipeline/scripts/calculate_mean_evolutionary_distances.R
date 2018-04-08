@@ -18,6 +18,7 @@ organisms_names=args
 #get working directory
 wd = getwd()
 #read protein sequences
+proteins=list()
 setwd(paste(wd, "/data/readData", sep = ""))
 for(i in seq_len(length(organisms_names))){
   proteins[[i]] = readRDS(paste("readData_proteins_",organisms_names[i],".rds",sep = ""))[[1]]
@@ -25,7 +26,7 @@ for(i in seq_len(length(organisms_names))){
 names(proteins) = organisms_names
 # proteins = readRDS(paste(wd, "/data/readData/readData_proteins.rds", sep = ""))
 #read mapper with common orthologoues protein IDs
-mapper = as.matrix(read.csv(paste(OoI,"_ids_mapper_common.csv",sep = ""), header = T)[,-1])
+mapper = as.matrix(read.csv(paste(wd,"/data/orthoMappers/",OoI,"_ids_mapper_common.csv",sep = ""), header = T)[,-1])
 #get number of rows of the mapper 
 no_of_proteins = dim(mapper)[1]
 #prepare an empty list for final results
@@ -44,14 +45,14 @@ for (rep in seq_len(no_samples)) {
   i = 1
   #crucial loop - extracts sequences of the ortohlogous proteins from the row which was drawn. Notably, assures all the orthologues are available
   while (i <= length(ids)) {
-    number = (which(proteins[[ids_names[i]]]$ID == ids[i]))
+    number = (which(proteins[[ids_names[i]]]$ensembl_peptide_id == ids[i]))
     if (length(number) < 1) {
       row_number[rep] = sample(1:no_of_proteins, 1)
       ids = mapper[row_number[rep],]
       sequences = c()
       i = 1
     } else{
-      sequences[i] = proteins[[ids_names[i]]]$SEQUENCE[number]
+      sequences[i] = proteins[[ids_names[i]]]$peptide[number]
       i = i + 1
     }
   }
@@ -80,7 +81,7 @@ averaged=summed/length(list_distances)
 #write the averaged distance matrix to CSV file
 write.csv(x = as.matrix(averaged),file = paste(wd,"/results/",OoI,"_mean_pairwise_evolutionary_distances.csv",sep = ""),row.names = T,col.names = T)
 #generate a phylogenetic tree based on averged pairwise distances 
-svglite(file="results/phylogenetic_tree.svg",
+svglite(file=paste(wd,"/results/",OoI,"_phylogenetic_tree.svg",sep = ""),
         width=40, 
         height=30, 
         pointsize=50)
