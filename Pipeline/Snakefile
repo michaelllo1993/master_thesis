@@ -328,7 +328,7 @@ rule visualize_codon_changes_within_repeatUnit:
         repeatUnit=config["repeatUnit"],
         organism_of_interest="{sample}"
     output:
-        "results/revtrans/{sample}_changes_within_repeatUnit/visualization_{sample}"
+        "results/revtrans_{sample}/{sample}_changes_within_repeatUnit/visualization_{sample}"
     shell:
         "mkdir -p {output}; Rscript scripts/visualize_within_repeat_unit_codon_changes.R {input.files} {params.organism_of_interest} {params.repeatUnit}"
 

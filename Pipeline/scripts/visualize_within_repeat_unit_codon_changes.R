@@ -25,8 +25,6 @@ dir=strsplit(codon_changes_files[1],"/")[[1]][1]
 all_codon_names = append("---",sort(names(GENETIC_CODE)))
 #get repeat unit codons
 unit_codons = names(which(GENETIC_CODE == repeat_unit))
-#create an empty list for the results
-within_repeat_unit_list = list()
 #create regions vector
 regions = c("SAAR","repeat_unit")
 i=1
@@ -43,13 +41,16 @@ for (file_name in codon_changes_files){
   #construct the name of the output image
   image_name = gsub(".csv",".svg",basename(file_name))
   #read the data in
+  file_name=paste(wd,"/",file_name,sep = "")
   occurrences=data.matrix(read.csv(file_name,header = T,sep = ",",row.names = all_codon_names))[,-1]
   #change 0 to NAs
   occurrences[which(occurrences==0)] = NA
+  if(any(which(colnames(occurrences)=="X"))){
+    occurrences = occurrences[,-which(colnames(occurrences)=="X")]
+  }
   #keep just the codons encoding the repeat unit
   within_repeat_unit = occurrences[unit_codons,]
-  within_repeat_unit_list[[i]] = within_repeat_unit
-  setwd(paste(dir,"/visualization_",OoI,sep = ""))
+  setwd(paste(wd,"/results/revtrans_",OoI,"/",OoI,"_changes_within_repeatUnit/visualization_",OoI,sep = ""))
   #create image and save it 
   svglite(file=image_name,
       width=40, 
@@ -67,12 +68,12 @@ for (file_name in codon_changes_files){
   }
   kappa_result = Kappa.test(to_kappa_est)
   string = paste(sep = ",",OoI, other_OoI,RoI,round(kappa_result$Result$estimate,digits = 2),paste(sep = "",round(kappa_result$Result$conf.int[1],digits = 2)," - ",round(kappa_result$Result$conf.int[2],digits = 2)),kappa_result$Result$p.value)
-  if(file.exists(paste(dir,"/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""))){
-    write(string,file = paste(dir,"/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
+  if(file.exists(paste(wd,"/results/revtrans_",OoI,"/",OoI,"_changes_within_repeatUnit/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""))){
+    write(string,file = paste(wd,"/results/revtrans_",OoI,"/",OoI,"_changes_within_repeatUnit/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
   } else{
     header = paste(sep=",","organism_of_interest","other_organism","region","Kappa estimate","CI","p-value")
-    write(header,file = paste(dir,"/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
-    write(string,file = paste(dir,"/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
+    write(header,file = paste(wd,"/results/revtrans_",OoI,"/",OoI,"_changes_within_repeatUnit/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
+    write(string,file = paste(wd,"/results/revtrans_",OoI,"/",OoI,"_changes_within_repeatUnit/visualization_",OoI,"/kappa_results_",other_OoI,".csv",sep = ""),append = T);
   }
   i=i+1
 }
