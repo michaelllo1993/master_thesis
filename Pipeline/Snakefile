@@ -84,29 +84,20 @@ rule prepare_protein_sequences:
     shell:
         "perl scripts/seq2csv.pl {input}"
 
-#Extract mapper from the peptide sequences data
-rule build_protein_cDNA_mapper:
-    input:
-        "data/proteinSequences/{sample}.txt"
-    output:
-        "data/mappers/{sample}_mapper.csv"
-    shell:
-        "perl scripts/build_protein_cDNA_mapper.pl {input}"
-
 #Read the data in case the user decides to supply the data
 if config["downloadInputData"] == "NO":
     rule read_input_RData:
         input:
-            expand("data/cDNAsequences/{organism}_cDNA.csv", organism=config["organisms"]),
-            expand("data/mappers/{organism}_mapper.csv", organism=config["organisms"]),
-            expand("data/proteinSequences/{organism}.csv", organism=config["organisms"])
+            "data/cDNAsequences/{sample}_cDNA.csv",
+            "data/proteinSequences/{sample}.csv",
+        params:
+            "{sample}"
         output:
             directory="data/readData",
-            data_cDNA="data/readData/readData_cDNA.rds",
-            data_proteins="data/readData/readData_proteins.rds",
-            data_mapper="data/readData/readData_mapper.rds"
+            data_cDNA="data/readData/readData_cDNA_{sample}.rds",
+            data_proteins="data/readData/readData_proteins_{sample}.rds"
         shell:
-            "mkdir -p {output.directory}; Rscript scripts/readData_input.R"
+            "mkdir -p {output.directory}; Rscript scripts/readData_input.R {params}"
 
 rule read_other_RData:
     input:
@@ -115,7 +106,7 @@ rule read_other_RData:
     output:
         directory="data/readData",
         data_SAAR="data/readData/readData_SAAR.rds",
-	data_SP="data/readData/readData_SP.rds"
+	    data_SP="data/readData/readData_SP.rds"
     shell:
         "mkdir -p {output.directory}; Rscript scripts/readData_other.R"
 
@@ -297,6 +288,16 @@ rule run_revtrans:
     shell:
         "perl scripts/run_revtrans.pl {input.codes_mapper} {params.organism} {input.files_protein} {input.files_cDNA}"
 
+#Prepare a complex input string for the rule visualize_codon_changes_within_repeatUnit
+def organismsNoSampleExpand(wildcards):
+    orgs = sorted(config["organisms"])
+    orgs.remove(wildcards.sample)
+    str1 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_repeat_unit_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str2 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_SAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    str3 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
+    organisms = str1 + str2 + str3
+    return organisms
+
 #Analyze codon changes within repeat unit
 rule analyze_codon_changes_within_repeatUnit:
     input:
@@ -310,27 +311,18 @@ rule analyze_codon_changes_within_repeatUnit:
     shell:
         "mkdir -p {output}; Rscript scripts/codon_changes_within_repeat_unit.R {input.revtrans_file} {input.codes_dict} {params.organism_of_interest} {params.repeatUnit}"
 
-#Prepare a complex input string for the rule visualize_codon_changes_within_repeatUnit
-def organismsNoSampleExpand(wildcards):
-    orgs = sorted(config["organisms"])
-    orgs.remove(wildcards.sample)
-    str1 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_repeat_unit_{organism}.csv",organism=orgs,sampl=wildcards.sample)
-    str2 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_SAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
-    str3 = expand("results/revtrans_{sampl}/{sampl}_changes_within_repeatUnit/codon_changes_within_repeatUnitNoSAAR_{organism}.csv",organism=orgs,sampl=wildcards.sample)
-    organisms = str1 + str2 + str3
-    return organisms
-
 #Vislualize the codon chages within repeat unit - as heatmaps of codon transitions
 rule visualize_codon_changes_within_repeatUnit:
     input:
-        files = organismsNoSampleExpand
+        files_dir = "results/revtrans_{sample}/{sample}_changes_within_repeatUnit"
     params:
+        files = organismsNoSampleExpand,
         repeatUnit=config["repeatUnit"],
         organism_of_interest="{sample}"
     output:
         "results/revtrans_{sample}/{sample}_changes_within_repeatUnit/visualization_{sample}"
     shell:
-        "mkdir -p {output}; Rscript scripts/visualize_within_repeat_unit_codon_changes.R {input.files} {params.organism_of_interest} {params.repeatUnit}"
+        "mkdir -p {output}; Rscript scripts/visualize_within_repeat_unit_codon_changes.R {params.files} {params.organism_of_interest} {params.repeatUnit}"
 
 #Calculate the mean pairwise evolutionary distances between organisms in the study
 rule calculate_mean_pairwise_evolutionary_distances:
