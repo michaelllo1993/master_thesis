@@ -4,8 +4,8 @@
 
 library(Biostrings)
 
-# Get the directory -------------------------------------------------------
-wd = getwd()  
+# Get the directory and arguments -------------------------------------------------------
+wd = getwd()
 
 # Read the predicted signal peptide cleavage sites ------------------------
 

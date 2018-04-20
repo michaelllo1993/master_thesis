@@ -102,11 +102,11 @@ if config["downloadInputData"] == "NO":
 rule read_other_RData:
     input:
         expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"]),
-        expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"])
+        expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"]),
     output:
         directory="data/readData",
         data_SAAR="data/readData/readData_SAAR.rds",
-	    data_SP="data/readData/readData_SP.rds"
+	    data_SP="data/readData/readData_SP.rds",
     shell:
         "mkdir -p {output.directory}; Rscript scripts/readData_other.R"
 
