@@ -13,7 +13,7 @@ RUN apt-get -y update
 RUN apt-get -y dist-upgrade
 
 #Install system requirements for the software packages below
-RUN apt-get install -y build-essential libssl-dev libffi-dev python-dev libcurl4-openssl-dev libxml2-dev wget libx11-dev libcairo2-dev cpanminus vim
+RUN apt-get install -y build-essential libssl-dev libffi-dev python-dev libcurl4-openssl-dev libxml2-dev wget libx11-dev libcairo2-dev cpanminus vim libcairo2-dev libjpeg-dev libgif-dev
 RUN apt -y install python3-pip
 
 #Install snakemake 
@@ -30,8 +30,11 @@ RUN Rscript -e "install.packages('seqinr')"
 RUN Rscript -e "install.packages('svglite')"
 RUN Rscript -e "install.packages('ape')"
 RUN Rscript -e "install.packages('ggplot2')"
+RUN Rscript -e "install.packages('svglite')"
+RUN Rscript -e "install.packages('msa')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('Biostrings')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('biomaRt')"
+RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('msa')"
 #Install require Perl modules
 RUN cpanm List::MoreUtils
 #Install git

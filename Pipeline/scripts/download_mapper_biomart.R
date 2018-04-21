@@ -34,7 +34,7 @@ for (org in seq_len(full_batches)) {
                   paste(organisms[start_element:stop_element], "_homolog_ensembl_peptide", sep = ""))
   #acquire the data
   tryCatch(
-    mappers[[org]] = as.matrix(getBM(
+    mappers[[org]] <- as.matrix(getBM(
       attributes = atrbts,
       mart = mart_name
     )),
@@ -58,7 +58,7 @@ if (stop_element != length(organisms)) {
   atrbts = append("ensembl_peptide_id",
                   paste(leftover, "_homolog_ensembl_peptide", sep = ""))
   tryCatch(
-    mappers[[org + 1]] = as.matrix(getBM(
+    mappers[[org + 1]] <- as.matrix(getBM(
       attributes = atrbts,
       mart = mart_name
     )),

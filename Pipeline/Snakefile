@@ -93,11 +93,10 @@ if config["downloadInputData"] == "NO":
         params:
             "{sample}"
         output:
-            directory="data/readData",
             data_cDNA="data/readData/readData_cDNA_{sample}.rds",
             data_proteins="data/readData/readData_proteins_{sample}.rds"
         shell:
-            "mkdir -p {output.directory}; Rscript scripts/readData_input.R {params}"
+            "mkdir -p data/readData; Rscript scripts/readData_input.R {params}"
 
 rule read_other_RData:
     input:
