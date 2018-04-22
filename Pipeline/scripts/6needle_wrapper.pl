@@ -110,6 +110,7 @@ close(INs);
 my $seq_sigp;
 my $id_o;
 my $index;
+my $flag=0;
 
 foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 		open (OUT, ">","tmp/$ens_id\_L_ALL_temp.fasta") || die("File missing.");
@@ -122,14 +123,20 @@ foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 			$id_o = $HoA{$organisms[$on]}[$index];
 			if(($id_o !~ /^NULL/) && exists($fasta{$organisms[$on]}{$id_o})) {
 				$seq_sigp = $fasta{$organisms[$on]}{$id_o};
+				my $dl = length($seq_sigp);
+				if($dl > 3000){
+					$flag=1;	
+				}
 				print OUT2 ">".$id_o."\n".$seq_sigp."\n";
 				$seq_sigp = "";
 			}
 		}
 		close(OUT2);
-		my $exit_stat = system ("software/EMBOSS-6.6.0/emboss/needle -outfile temp_L_ALL_$organisms[0]_Ortho.needle -gapopen 10.0 -gapextend 0.5 -aformat markx3 tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
-		system ("cat temp_L_ALL_$organisms[0]_Ortho.needle");
-		system ("rm tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
+		if($flag == 0){
+			my $exit_stat = system ("software/EMBOSS-6.6.0/emboss/needle -outfile temp_L_ALL_$organisms[0]_Ortho.needle -gapopen 10.0 -gapextend 0.5 -aformat markx3 tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
+			system ("cat temp_L_ALL_$organisms[0]_Ortho.needle");
+			system ("rm tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
+		}
 }
 #system ("rm ENS*");
 system ("rm tmp/temp*");

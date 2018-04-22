@@ -36,7 +36,7 @@ RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('Biostrin
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('biomaRt')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('msa')"
 #Install require Perl modules
-RUN cpanm List::MoreUtils
+RUN cpan List::MoreUtils
 #Install git
 RUN apt-get install -y git
 #Clone the git repository
