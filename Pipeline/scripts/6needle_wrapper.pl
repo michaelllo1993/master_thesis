@@ -127,7 +127,7 @@ foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 			}
 		}
 		close(OUT2);
-		my $exit_stat = system ("needle -outfile temp_L_ALL_$organisms[0]_Ortho.needle -gapopen 10.0 -gapextend 0.5 -aformat markx3 tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
+		my $exit_stat = system ("software/EMBOSS-6.6.0/emboss/needle -outfile temp_L_ALL_$organisms[0]_Ortho.needle -gapopen 10.0 -gapextend 0.5 -aformat markx3 tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
 		system ("cat temp_L_ALL_$organisms[0]_Ortho.needle");
 		system ("rm tmp/$ens_id\_L_ALL_temp.fasta tmp/$ens_id\_ORTHO_L_ALL_temp.fasta");
 }
