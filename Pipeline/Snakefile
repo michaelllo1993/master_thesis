@@ -20,6 +20,17 @@ def orderOrganisms(wildcards):
     orgs.insert(0,wildcards.sample)
     return orgs
 
+#Perform the preliminary analysis of the data - count proteins and occurrences of SPs and SAARs
+rule preliminary_analysis:
+    input:
+        expand("data/proteinSequences/{organism}.txt", organism=config["organisms"]),
+        expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"]),
+        expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"])
+    output:
+        "{sample}_preliminary_data.csv"
+    shell:
+        "mkdir -p result; Rscript scripts/preliminary_analysis.R {input}"
+	
 
 #Get the organisms Ensembl codes based on the protein sequences files, e.g. homo_sapiens: ENSP
 rule make_ENS_IDs_dict:
