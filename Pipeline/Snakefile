@@ -5,6 +5,13 @@ wildcard_constraints:
 #Specify the configuration file
 configfile: "config.yaml"
 
+rule all:
+    input:
+        evo_dists=expand("results/{sample}_mean_pairwise_evolutionary_distances.csv",sample=config["organismOfInterest"]),
+        rev_trans=expand("results/revtrans_{sample}/{sample}_changes_within_repeatUnit/visualization_{sample}",sample=config["organismOfInterest"]),
+        codon_freq=expand("results/codon_frequency/{sample}_orthologues/codon_frequency_plots_{sample}_orthologues",sample=config["organismOfInterest"]),
+        seq_comp=expand("results/sequenceComparison/{sample}_orthoAAstats",sample=config["organismOfInterest"])
+
 #Data preparation
 #Read the organisms in the analysis and order them alphabetically and place the organism of interest first
 def orderOrganisms(wildcards):
@@ -12,6 +19,7 @@ def orderOrganisms(wildcards):
     orgs.remove(wildcards.sample)
     orgs.insert(0,wildcards.sample)
     return orgs
+
 
 #Get the organisms Ensembl codes based on the protein sequences files, e.g. homo_sapiens: ENSP
 rule make_ENS_IDs_dict:

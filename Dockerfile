@@ -35,7 +35,7 @@ RUN Rscript -e "install.packages('dplyr')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('Biostrings')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('biomaRt')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R');biocLite('msa')"
-#Install require Perl modules
+#Install required Perl modules
 RUN cpan List::MoreUtils
 #Install git
 RUN apt-get install -y git
