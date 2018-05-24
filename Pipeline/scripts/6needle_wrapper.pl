@@ -124,7 +124,7 @@ foreach my $ens_id (sort(keys %sigpL_ALL_L)) {
 			if(($id_o !~ /^NULL/) && exists($fasta{$organisms[$on]}{$id_o})) {
 				$seq_sigp = $fasta{$organisms[$on]}{$id_o};
 				my $dl = length($seq_sigp);
-				if($dl > 3000){
+				if($dl > 3000){ #Do not perform alignment if any of the peptides is of length over 3000 AA, due to memory proiblems. Those are artifacts
 					$flag=1;	
 				}
 				print OUT2 ">".$id_o."\n".$seq_sigp."\n";

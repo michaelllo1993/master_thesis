@@ -10,7 +10,8 @@ rule all:
         evo_dists=expand("results/{sample}_mean_pairwise_evolutionary_distances.csv",sample=config["organismOfInterest"]),
         rev_trans=expand("results/revtrans_{sample}/{sample}_changes_within_repeatUnit/visualization_{sample}",sample=config["organismOfInterest"]),
         codon_freq=expand("results/codon_frequency/{sample}_orthologues/codon_frequency_plots_{sample}_orthologues",sample=config["organismOfInterest"]),
-        seq_comp=expand("results/sequenceComparison/{sample}_orthoAAstats",sample=config["organismOfInterest"])
+        seq_comp=expand("results/sequenceComparison/{sample}_orthoAAstats",sample=config["organismOfInterest"]),
+        preliminary=expand("{sample}_preliminary_data.csv",sample=config["organismOfInterest"])
 
 #Data preparation
 #Read the organisms in the analysis and order them alphabetically and place the organism of interest first
@@ -23,11 +24,11 @@ def orderOrganisms(wildcards):
 #Perform the preliminary analysis of the data - count proteins and occurrences of SPs and SAARs
 rule preliminary_analysis:
     input:
-        expand("data/proteinSequences/{organism}.txt", organism=config["organisms"]),
-        expand("results/SP/{organism}_signalp_positives.out", organism=config["organisms"]),
-        expand("results/SP/extracted_sigp_{organism}.out", organism=config["organisms"])
+        "data/proteinSequences/{sample}.txt",
+        "results/SP/{sample}_signalp_positives.out",
+        "results/SP/extracted_sigp_{sample}.out"
     output:
-        "{sample}_preliminary_data.csv"
+        "results/{sample}_preliminary_data.csv"
     shell:
         "mkdir -p result; Rscript scripts/preliminary_analysis.R {input}"
 	
@@ -225,11 +226,12 @@ rule prep_sigp_length_analysis:
 #Perform the SAAR and SP length analysis (look for correlation in the SAAR and SP elongation) + scatter plots
 rule sigp_length_analysis:
     input:
-        "results/SP/{sample}_to_sigp_length_analysis.csv"
+        "results/SP/{sample}_to_sigp_length_analysis.csv",
+	"ENS_IDs_dict_for_{sample}.csv"
     output:
-        "results/SP/{sample}_sigp_length_analysis.out"
+        "results/SP/{sample}_correlations_sigp_length_analysis.csv"
     shell:
-        "mkdir -p results/SP; Rscript scripts/8sigp_saar_length_analysis.R {input} > {output}"
+        "mkdir -p results/SP; Rscript scripts/8sigp_saar_length_analysis.R {input}"
 
 #Prepare the data for sequence comparision
 rule prep_seq_comp:
