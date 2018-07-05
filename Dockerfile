@@ -1,4 +1,4 @@
-FROM ubuntu:latest as OS
+FROM ubuntu:xenial as OS
 
 MAINTAINER Michal Stolarczyk (stolarczyk.michal93@gmail.com)
 
