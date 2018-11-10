@@ -43,7 +43,7 @@ RUN apt-get install -y git
 RUN git clone https://github.com/michalstolarczyk/SAARpipeline.git
 
 #copy the example data
-COPY ./Pipeline/data SAARpipeline/Pipeline/data
+#COPY ./Pipeline/data SAARpipeline/Pipeline/data
 
 #download and install EMBOSS software
 WORKDIR SAARpipeline/Pipeline
